@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ImpactDatabaseHelper iDH = new ImpactDatabaseHelper();
-        iDH.addNewUser("teubert@gmail.com","Chris Teubert","small_gas");
+        iDH.addNewUser("teubert@gmail.com","Chris Teubert", Transportation.CarType.SMALL_CAR);
 
 // 1) create a java calendar instance
         Calendar calendar = Calendar.getInstance();
@@ -27,7 +27,15 @@ public class MainActivity extends AppCompatActivity {
 
         long currentTime = currentTimestamp.getTime();
 
-        ImpactDatabaseHelper.GPS gpsPoint = new ImpactDatabaseHelper.GPS(currentTime, 51.5034070, -0.1275920);
-        iDH.addNewGPSDataPoint(ImpactDatabaseHelper.emailToUsername("teubert@gmail.com"), gpsPoint);
+        Transportation.GPS gpsPoint = new Transportation.GPS(currentTime, 51.5034070, -0.1275920);
+        iDH.addNewGPSDataPoint(User.emailToUsername("teubert@gmail.com"), gpsPoint);
+
+        iDH.addTrip(User.emailToUsername("teubert@gmail.com"), new Transportation.Trip(gpsPoint,
+                gpsPoint,
+                Transportation.TransportMode.AUTOMOBILE,
+                Transportation.CarType.HYBRID_CAR));
+
+        // TODO(CT): Test the rest
+        // TODO(CT): Move to unit tests
     }
 }

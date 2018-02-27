@@ -4,14 +4,15 @@ import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.Calendar;
+import java.util.List;
 
 // TODO(CT): Add error handling
 // TODO(CT): Remove GPS-> Archive GPS?
-// TODO(CT): Remove hard-coded strings
 // TODO(CT): How are we going to handle email updates if email == id - do we want to support that
+// TODO(CT): Get timestamp
+// TODO(CT): How do we handle days
 
 /**
  * Created by teubert on 2/21/18.
@@ -21,70 +22,21 @@ public class ImpactDatabaseHelper {
 
     private FirebaseDatabase database;
 
-    /**
-     *  Car Categories
-     */
-    public enum car_categories {
-        //TODO(CT): Implement and integrate
-    }
+    public enum TopLevelDirectories {
+        USERS       ("users"),
+        GPS         ("unfiltered_gps_data"),
+        GPS_ARCHIVE ("gps_archive"),
+        TRIPS       ("trips"),
+        ESTIMATES   ("estimates");
+        private final String name;
 
-    /**
-     * Transport Mode
-     */
-    public enum transport_mode {
-        //TODO(CT): Implement and integrate
-    }
-
-    /**
-     * Class to contain user information (element in users key in database)
-     */
-    @IgnoreExtraProperties
-    public static class User {
-        public String email;
-        public String name;
-        public String car_type;
-
-        public User() {
-            // Default constructor required for calls to DataSnapshot.getValue(User.class)
+        TopLevelDirectories(String name) {
+            this.name = name;
         }
 
-        public User(String email, String name, String car_type) {
-            Log.v(DEBUG_TAG, "Creating User Object");
-            this.email = email; // Email Address
-            this.name = name; // Name
-            this.car_type = car_type; // Car type
+        public String getName() {
+            return this.name;
         }
-    }
-
-    /**
-     * Class to contain GPS data (element in unfiltered_gps_data key in database)
-     */
-    public static class GPS {
-        public long timestamp; // Linux time (timestamp.getTime())
-        public double lon; // Longitude (deg)
-        public double lat; // Latitude (deg)
-
-        public GPS() {
-            // Default constructor required for calls to DataSnapshot.getValue(User.class)
-        }
-
-        public GPS(long timestamp, double lon, double lat) {
-            Log.v(DEBUG_TAG, "Creating GPS Object");
-            this.timestamp = timestamp;
-            this.lon = lon;
-            this.lat = lat;
-        }
-    }
-
-    /**
-     * Convert from email to username (which is email with forbidden characters replaced
-     *
-     * @param email Email Address
-     * @return  Associated Username
-     */
-    static public String emailToUsername(String email) {
-        Log.v(DEBUG_TAG, "Converting email:" + email + "to username");
-        return email.replaceAll("[@.]", "_");
     }
 
     /**
@@ -92,7 +44,7 @@ public class ImpactDatabaseHelper {
      *
      * @return Current timestamp in unix time
      */
-    static public long getCurrentTimestamp() {
+    static private long getCurrentTimestamp() {
         Log.v(DEBUG_TAG, "Getting current timestamp");
 
         // 1) create a java calendar instance
@@ -125,12 +77,12 @@ public class ImpactDatabaseHelper {
      * @param name      Name
      * @param car_type  Car type
      */
-    public void addNewUser(String email, String name, String car_type) {
+    public void addNewUser(String email, String name, Transportation.CarType car_type) {
         Log.v(DEBUG_TAG, "addNewUser: Called");
         long currentTime = getCurrentTimestamp();
-        DatabaseReference myRef = database.getReference("users");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName());
         User user = new User(email, name, car_type);
-        String id = emailToUsername(user.email);
+        String id = User.emailToUsername(user.email);
 
         Log.i(DEBUG_TAG, "Registering new user with id=" + id);
         //myRef.child(id).setValue(user);
@@ -152,9 +104,10 @@ public class ImpactDatabaseHelper {
      * @param name
      * @param car_type
      */
-    public void updateUser(String id, String name, String car_type) {
+    public void updateUser(String id, String name, Transportation.CarType car_type) {
         Log.v(DEBUG_TAG, "updateUser: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
+                .child(id);
         Log.i(DEBUG_TAG, "Updating user info for user with id=" + id);
         if (name != null) {
             myRef.child("name").setValue(name);
@@ -166,14 +119,34 @@ public class ImpactDatabaseHelper {
     }
 
     /**
+     * Get data for a specific user
+     *
+     * @param id    User id
+     * @return      User object for user with id
+     */
+    public User getUser(String id) {
+        Log.v(DEBUG_TAG, "getUser: Called");
+
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
+                .child(id);
+        String email = null;
+        String name = null;
+        Transportation.CarType carType = null;
+        // TODO(CT): Implement
+
+        Log.v(DEBUG_TAG, "getUser: finished");
+        return new User(email, name, carType);
+    }
+
+    /**
      * add a new GPS datapoint for a user
      *
      * @param id        User Id
      * @param point     GPS point
      */
-    public void addNewGPSDataPoint(String id, GPS point) {
+    public void addNewGPSDataPoint(String id, Transportation.GPS point) {
         Log.v(DEBUG_TAG, "addNewGPSDataPoint: Called");
-        DatabaseReference myRef = database.getReference("unfiltered_gps_data")
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
                 .child(id)
                 .child(Long.toString(point.timestamp));
         myRef.child("lat").setValue(point.lat);
@@ -188,39 +161,55 @@ public class ImpactDatabaseHelper {
      */
     public void updateLastLogin(String id) {
         Log.v(DEBUG_TAG, "updateLastLogin: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
+                .child(id);
         myRef.child("last_login").setValue(getCurrentTimestamp());
         Log.v(DEBUG_TAG, "updateLastLogin: Finished");
     }
 
     /**
-     * Remove GPS points in range
+     * Archive GPS points in range. This is called once they have been added to a trip
      *
      * @param id        User id
      * @param start     Start time (unix time)
      * @param end       End time (unix time)
      */
-    public void removeGPSPoints(String id, Long start, Long end) {
-        Log.v(DEBUG_TAG, "removeGPSPoints: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
-        // TODO(CT): Implement
+    public void archiveGPSPoints(String id, long start, long end) {
+        Log.v(DEBUG_TAG, "archiveGPSPoints: Called");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
+                .child(id);
 
-        Log.v(DEBUG_TAG, "removeGPSPoints: finished");
+        // Getting points in range
+        Log.i(DEBUG_TAG, "archiveGPSPoints: archiving points in range " + Long.toString(start) + "-" + Long.toString(end));
+        List<Transportation.GPS> points = getGPSPoints(id, start, end);
+
+        // Add to archive
+        Log.v(DEBUG_TAG, "archiveGPSPoints: adding to archive");
+        myRef = myRef.child(TopLevelDirectories.GPS_ARCHIVE.getName());
+        for (Transportation.GPS point : points) {
+            myRef.child("lat").setValue(point.lat);
+            myRef.child("lon").setValue(point.lon);
+        }
+
+        // Removing
+        Log.v(DEBUG_TAG, "archiveGPSPoints: removing old points");
+        // TODO(CT): Implement Removal
+
+        Log.v(DEBUG_TAG, "archiveGPSPoints: finished");
     }
 
     /**
      * Add a new trip
      *
      * @param id                User id
-     * @param transport_mode    Mode of tranportation
-     * @param start             Start GPS location
-     * @param end               End GPS location
+     * @param trip              Trip to add
      *
      * TODO(CT): Replace String transport_mode with enum
      */
-    public void addTrip(String id, String transport_mode, GPS start, GPS end) {
+    public void addTrip(String id, Transportation.Trip trip) {
         Log.v(DEBUG_TAG, "addTrip: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.TRIPS.getName())
+                .child(id);
         // TODO(CT): Implement
 
         Log.v(DEBUG_TAG, "addTrip: Finished");
@@ -235,7 +224,8 @@ public class ImpactDatabaseHelper {
      */
     public void removeTrip(String id) {
         Log.v(DEBUG_TAG, "removeTrip: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.TRIPS.getName())
+                .child(id);
         // TODO(CT): Implement
 
         Log.v(DEBUG_TAG, "removeTrip: Finished");
@@ -250,9 +240,10 @@ public class ImpactDatabaseHelper {
      *
      * TODO(CT): How are we representing days?
      */
-    public void addToDayEstimate(String id, long day, double co2impact) {
+    public void addToDayEstimate(String id, long day, Estimate co2impact) {
         Log.v(DEBUG_TAG, "addToDayEstimate: Called");
-        DatabaseReference myRef = database.getReference("users").child(id);
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
+                .child(id);
         // TODO(CT): Implement
 
         // Add to day impact
@@ -260,5 +251,81 @@ public class ImpactDatabaseHelper {
         // Update total estimate
 
         Log.v(DEBUG_TAG, "addToDayEstimate: Finished");
+    }
+
+    /**
+     * Get gps data points between range
+     *
+     * @param id        User id
+     * @param start     Start time
+     * @param end       End time
+     * @return          List of GPS points
+     */
+    public List<Transportation.GPS> getGPSPoints(String id, long start, long end) {
+        Log.v(DEBUG_TAG, "getGPSPoints: Called");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
+                .child(id);
+        List<Transportation.GPS> gpsList = null;
+
+        // TODO(CT): Implement
+
+        Log.v(DEBUG_TAG, "getGPSPoints: finished");
+        return gpsList;
+    }
+
+    /**
+     * Get trips for day
+     *
+     * @param id    User id
+     * @param day   Day for which to receive trips
+     * @return      Trips for that day
+     */
+    public List<Transportation.Trip> getTrips(String id, long day) {
+        Log.v(DEBUG_TAG, "getTrips: Called");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
+                .child(id);
+        List<Transportation.Trip> tripList = null;
+
+        // TODO(CT): Implement
+
+        Log.v(DEBUG_TAG, "getTrips: finished");
+        return tripList;
+    }
+
+    /**
+     * Get CO2 Estimate for user
+     *
+     * @param id    User Id
+     * @return  Estimate (all-time)
+     */
+    public Estimate getEstimate(String id) {
+        Log.v(DEBUG_TAG, "getEstimate: Called");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
+                .child(id);
+        long nDays = 0;
+        double estimate = 0;
+        // TODO(CT): Implement
+
+        Log.v(DEBUG_TAG, "getEstimate: finished");
+        return new Estimate(estimate, nDays);
+    }
+
+    /**
+     * Get CO2 Estimate for user for day
+     *
+     * @param id    User Id
+     * @param day   Day for id
+     * @return  Estimate (for day)
+     */
+    public Estimate getEstimate(String id, long day) {
+        Log.v(DEBUG_TAG, "getEstimate: Called");
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
+                .child(id);
+        long nDays = 1;
+        double estimate = 0;
+        // TODO(CT): Implement
+
+        Log.v(DEBUG_TAG, "getEstimate: finished");
+        return new Estimate(estimate, nDays);
     }
 }
