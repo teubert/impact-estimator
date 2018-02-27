@@ -2,8 +2,11 @@ package edu.scu.databaseexample;
 
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 import java.util.List;
@@ -21,6 +24,42 @@ public class ImpactDatabaseHelper {
     private static final String DEBUG_TAG = "DatabaseHelper";
 
     private FirebaseDatabase database;
+    String id = null;
+
+    private class UserMonitor implements ValueEventListener {
+        public User user = new User();
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            user.name = dataSnapshot.child("name").getValue(String.class);
+            user.email = dataSnapshot.child("email").getValue(String.class);
+            user.car_type = dataSnapshot.child("car_type").getValue(Transportation.CarType.class);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            System.out.println("The read failed: " + databaseError.getCode());
+        }
+    }
+    UserMonitor userMonitor = new UserMonitor();
+
+    private class EstimateMonitor implements ValueEventListener {
+        public Estimate estimate = new Estimate();
+        public Estimate todaysEstimate = new Estimate();
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            estimate.CO2 = dataSnapshot.child("CO2").getValue(double.class);
+            estimate.nDays = dataSnapshot.child("nDays").getValue(long.class);
+            // TODO(CT): Get today
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            System.out.println("The read failed: " + databaseError.getCode());
+        }
+    }
+    EstimateMonitor estimateMonitor = new EstimateMonitor();
 
     public enum TopLevelDirectories {
         USERS       ("users"),
@@ -61,13 +100,44 @@ public class ImpactDatabaseHelper {
     }
 
     /**
-     * Constructor for Database Helper
+     * Constructor for Database Helper - no user
      */
     public ImpactDatabaseHelper() {
         Log.v(DEBUG_TAG, "Configuring ImpactDataBaseHelper");
 
         // Set Database
         database = FirebaseDatabase.getInstance();
+    }
+
+    /**
+     * Constructor for Database Helper for specific user
+     *
+     * @param id    User Id
+     */
+    public ImpactDatabaseHelper(String id) {
+        Log.v(DEBUG_TAG, "Configuring ImpactDataBaseHelper");
+
+        // Set Database
+        database = FirebaseDatabase.getInstance();
+
+        setUser(id);
+    }
+
+    /**
+     * Set User
+     *
+     * @param id USer Id
+     */
+    public void setUser(String id) {
+        // TODO(CT): Update ID to use auth
+        this.id = id;
+        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
+                .child(id);
+        myRef.addValueEventListener(userMonitor);
+
+        myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
+                .child(id);
+        myRef.addValueEventListener(estimateMonitor);
     }
 
     /**
@@ -94,17 +164,18 @@ public class ImpactDatabaseHelper {
 
         myRef.child("user_since").setValue(currentTime);
         myRef.child("last_login").setValue(currentTime);
+
+        setUser(id);
         Log.v(DEBUG_TAG, "addNewUser: Finished");
     }
 
     /**
      * Update an existing user in the database
      *
-     * @param id
      * @param name
      * @param car_type
      */
-    public void updateUser(String id, String name, Transportation.CarType car_type) {
+    public void updateUser(String name, Transportation.CarType car_type) {
         Log.v(DEBUG_TAG, "updateUser: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
                 .child(id);
@@ -121,30 +192,19 @@ public class ImpactDatabaseHelper {
     /**
      * Get data for a specific user
      *
-     * @param id    User id
      * @return      User object for user with id
      */
-    public User getUser(String id) {
+    public User getUser() {
         Log.v(DEBUG_TAG, "getUser: Called");
-
-        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
-                .child(id);
-        String email = null;
-        String name = null;
-        Transportation.CarType carType = null;
-        // TODO(CT): Implement
-
-        Log.v(DEBUG_TAG, "getUser: finished");
-        return new User(email, name, carType);
+        return userMonitor.user;
     }
 
     /**
      * add a new GPS datapoint for a user
      *
-     * @param id        User Id
      * @param point     GPS point
      */
-    public void addNewGPSDataPoint(String id, Transportation.GPS point) {
+    public void addNewGPSDataPoint(Transportation.GPS point) {
         Log.v(DEBUG_TAG, "addNewGPSDataPoint: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
                 .child(id)
@@ -156,10 +216,8 @@ public class ImpactDatabaseHelper {
 
     /**
      * Update the last login time
-     *
-     * @param id    User id
      */
-    public void updateLastLogin(String id) {
+    public void updateLastLogin() {
         Log.v(DEBUG_TAG, "updateLastLogin: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
                 .child(id);
@@ -170,18 +228,17 @@ public class ImpactDatabaseHelper {
     /**
      * Archive GPS points in range. This is called once they have been added to a trip
      *
-     * @param id        User id
      * @param start     Start time (unix time)
      * @param end       End time (unix time)
      */
-    public void archiveGPSPoints(String id, long start, long end) {
+    public void archiveGPSPoints(long start, long end) {
         Log.v(DEBUG_TAG, "archiveGPSPoints: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
                 .child(id);
 
         // Getting points in range
         Log.i(DEBUG_TAG, "archiveGPSPoints: archiving points in range " + Long.toString(start) + "-" + Long.toString(end));
-        List<Transportation.GPS> points = getGPSPoints(id, start, end);
+        List<Transportation.GPS> points = getGPSPoints(start, end);
 
         // Add to archive
         Log.v(DEBUG_TAG, "archiveGPSPoints: adding to archive");
@@ -201,12 +258,11 @@ public class ImpactDatabaseHelper {
     /**
      * Add a new trip
      *
-     * @param id                User id
      * @param trip              Trip to add
      *
      * TODO(CT): Replace String transport_mode with enum
      */
-    public void addTrip(String id, Transportation.Trip trip) {
+    public void addTrip(Transportation.Trip trip) {
         Log.v(DEBUG_TAG, "addTrip: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.TRIPS.getName())
                 .child(id);
@@ -218,11 +274,9 @@ public class ImpactDatabaseHelper {
     /**
      * Remove a trip
      *
-     * @param id    User id
-     *
      * TODO(CT): What else is needed?
      */
-    public void removeTrip(String id) {
+    public void removeTrip() {
         Log.v(DEBUG_TAG, "removeTrip: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.TRIPS.getName())
                 .child(id);
@@ -234,13 +288,12 @@ public class ImpactDatabaseHelper {
     /**
      * Add to impact estimate for a day
      *
-     * @param id            User id
      * @param day           The day to which the amount is added
      * @param co2impact     Amount to add to day impact
      *
      * TODO(CT): How are we representing days?
      */
-    public void addToDayEstimate(String id, long day, Estimate co2impact) {
+    public void addToDayEstimate(long day, Estimate co2impact) {
         Log.v(DEBUG_TAG, "addToDayEstimate: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
                 .child(id);
@@ -256,12 +309,11 @@ public class ImpactDatabaseHelper {
     /**
      * Get gps data points between range
      *
-     * @param id        User id
      * @param start     Start time
      * @param end       End time
      * @return          List of GPS points
      */
-    public List<Transportation.GPS> getGPSPoints(String id, long start, long end) {
+    public List<Transportation.GPS> getGPSPoints(long start, long end) {
         Log.v(DEBUG_TAG, "getGPSPoints: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
                 .child(id);
@@ -276,11 +328,10 @@ public class ImpactDatabaseHelper {
     /**
      * Get trips for day
      *
-     * @param id    User id
      * @param day   Day for which to receive trips
      * @return      Trips for that day
      */
-    public List<Transportation.Trip> getTrips(String id, long day) {
+    public List<Transportation.Trip> getTrips(long day) {
         Log.v(DEBUG_TAG, "getTrips: Called");
         DatabaseReference myRef = database.getReference(TopLevelDirectories.GPS.getName())
                 .child(id);
@@ -295,37 +346,21 @@ public class ImpactDatabaseHelper {
     /**
      * Get CO2 Estimate for user
      *
-     * @param id    User Id
      * @return  Estimate (all-time)
      */
-    public Estimate getEstimate(String id) {
+    public Estimate getEstimate() {
         Log.v(DEBUG_TAG, "getEstimate: Called");
-        DatabaseReference myRef = database.getReference(TopLevelDirectories.USERS.getName())
-                .child(id);
-        long nDays = 0;
-        double estimate = 0;
-        // TODO(CT): Implement
-
-        Log.v(DEBUG_TAG, "getEstimate: finished");
-        return new Estimate(estimate, nDays);
+        return estimateMonitor.estimate;
     }
 
     /**
      * Get CO2 Estimate for user for day
      *
-     * @param id    User Id
      * @param day   Day for id
      * @return  Estimate (for day)
      */
-    public Estimate getEstimate(String id, long day) {
+    public Estimate getEstimate(long day) {
         Log.v(DEBUG_TAG, "getEstimate: Called");
-        DatabaseReference myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
-                .child(id);
-        long nDays = 1;
-        double estimate = 0;
-        // TODO(CT): Implement
-
-        Log.v(DEBUG_TAG, "getEstimate: finished");
-        return new Estimate(estimate, nDays);
+        return estimateMonitor.todaysEstimate;
     }
 }

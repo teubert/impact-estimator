@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
         long currentTime = currentTimestamp.getTime();
 
         Transportation.GPS gpsPoint = new Transportation.GPS(currentTime, 51.5034070, -0.1275920);
-        iDH.addNewGPSDataPoint(User.emailToUsername("teubert@gmail.com"), gpsPoint);
+        iDH.addNewGPSDataPoint(gpsPoint);
 
-        iDH.addTrip(User.emailToUsername("teubert@gmail.com"), new Transportation.Trip(gpsPoint,
+        iDH.addTrip(new Transportation.Trip(gpsPoint,
                 gpsPoint,
                 Transportation.TransportMode.AUTOMOBILE,
                 Transportation.CarType.HYBRID_CAR));
