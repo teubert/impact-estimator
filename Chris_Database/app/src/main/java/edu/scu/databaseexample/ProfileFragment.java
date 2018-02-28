@@ -1,6 +1,7 @@
 package edu.scu.databaseexample;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,10 +13,16 @@ import android.widget.TextView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProfileFragment extends android.app.Fragment implements UserProfile.UserUpdateInterface {
+public class ProfileFragment extends android.app.Fragment implements UserProfile.UserUpdateInterface, View.OnClickListener {
+
+    public interface ToggleEdit {
+        void toggle();
+    }
+
     static final String DEBUG_TAG = "ProfileFragment";
 
     UserProfile user; // User
+    private ProfileFragment.ToggleEdit mListener;
 
     /**
      *
@@ -23,7 +30,7 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
      * @param id
      * @return
      */
-    static public ProfileFragment getInstance(String id) {
+    static public ProfileFragment newInstance(String id) {
         ProfileFragment profileFragment = new ProfileFragment();
         Log.d(DEBUG_TAG, "Creating Profile Fragment for "+id);
         profileFragment.user = UserProfile.getUserProfileById(id);
@@ -62,5 +69,34 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
         Log.d(DEBUG_TAG, "Setting User Email Field to " + user.getEmail());
         email.setText(user.getEmail());
         name.setText(user.getName());
+    }
+
+    @Override
+    public void onClick(View v) {
+        mListener.toggle();
+    }
+
+    /**
+     *
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ProfileFragment.ToggleEdit) {
+            mListener = (ProfileFragment.ToggleEdit) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 }
