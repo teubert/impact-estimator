@@ -1,0 +1,168 @@
+package edu.scu.databaseexample;
+
+/**
+ * Created by teubert on 2/26/18.
+ */
+
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
+
+/**
+ * Class to contain userProfile information (element in users key in database)
+ */
+public class UserProfile implements ValueEventListener {
+    private static final String DEBUG_TAG = "UserProfile";
+    private static final String TOP_LEVEL_KEY = "users";
+
+    public void setEmail(String email) {
+        if (email != null) {
+            this.email = email;
+            myRef.child("email").setValue(email);
+        }
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setName(String name) {
+
+        if (name != null) {
+            this.name = name;
+            myRef.child("name").setValue(name);
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setCarType(Transportation.CarType car_type) {
+        this.car_type = car_type;
+    }
+
+
+    public Transportation.CarType getCarType() {
+        return car_type;
+    }
+
+    private String email;
+    private String name;
+    private String id;
+    private Transportation.CarType car_type;
+    private DatabaseReference myRef;
+
+    private static FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    /**
+     * get the current timestamp in "unix time"
+     *
+     * @return Current timestamp in unix time
+     */
+    static private long getCurrentTimestamp() {
+        Log.v(DEBUG_TAG, "Getting current timestamp");
+
+        // 1) create a java calendar instance
+        Calendar calendar = Calendar.getInstance();
+
+        // 2) get a java.util.Date from the calendar instance.
+        //    this date will represent the current instant, or "now".
+        java.util.Date now = calendar.getTime();
+
+        // 3) a java current time (now) instance
+        java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
+
+        return currentTimestamp.getTime();
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        this.name = dataSnapshot.child("name").getValue(String.class);
+        this.email = dataSnapshot.child("email").getValue(String.class);
+        this.car_type = dataSnapshot.child("car_type").getValue(Transportation.CarType.class);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+        System.out.println("The read failed: " + databaseError.getCode());
+    }
+
+    /**
+     * Update the last login time
+     */
+    public void updateLastLogin() {
+        Log.v(DEBUG_TAG, "updateLastLogin: Called");
+        myRef.child("last_login").setValue(getCurrentTimestamp());
+        Log.v(DEBUG_TAG, "updateLastLogin: Finished");
+    }
+
+    /**
+     * Add a new userProfile to the database
+     *
+     * @param email     Email address
+     * @param name      Name
+     * @param car_type  Car type
+     */
+    static public UserProfile addNewUserProfile(String email, String name, Transportation.CarType car_type) {
+        UserProfile userProfile = new UserProfile(emailToUsername(email));
+        DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY);
+
+        Log.v(DEBUG_TAG, "addNewUser: Called");
+        long currentTime = getCurrentTimestamp();
+        String id = UserProfile.emailToUsername(email);
+
+        Log.i(DEBUG_TAG, "Registering new userProfile with id=" + id);
+        //myRef.child(id).setValue(userProfile);
+        myRef = myRef.child(id);
+        // TODO(CT): Check if userProfile exists
+        myRef.child("email").setValue(email);
+        myRef.child("name").setValue(name);
+        myRef.child("car_type").setValue(car_type);
+
+        myRef.child("user_since").setValue(currentTime);
+        myRef.child("last_login").setValue(currentTime);
+        Log.v(DEBUG_TAG, "addNewUser: Finished");
+
+        return userProfile;
+    }
+
+    static public UserProfile getUserProfileById(String id) {
+        return new UserProfile(id);
+    }
+
+    static public UserProfile getUserProfileByEmail(String email) {
+        String id = emailToUsername(email);
+        // TODO(CT): Get id from lookup
+        return new UserProfile(id);
+    }
+
+
+    private UserProfile(String id) {
+        this.id = id;
+        myRef = database.getReference(TOP_LEVEL_KEY)
+                .child(id);
+        myRef.addValueEventListener(this);
+    }
+
+    /**
+     * Convert from email to username (which is email with forbidden characters replaced
+     *
+     * @param email Email Address
+     * @return  Associated Username
+     */
+    static public String emailToUsername(String email) {
+        Log.v(DEBUG_TAG, "Converting email:" + email + "to username");
+        return email.replaceAll("[@.]", "_");
+    }
+}
