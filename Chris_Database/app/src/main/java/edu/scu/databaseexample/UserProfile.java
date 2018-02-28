@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * Class to contain userProfile information (element in users key in database)
@@ -21,6 +22,19 @@ public class UserProfile implements ValueEventListener {
     private static final String DEBUG_TAG = "UserProfile";
     private static final String TOP_LEVEL_KEY = "users";
 
+    private String email = null;
+    private String name = null;
+    private String id = null;
+    private Transportation.CarType car_type = null;
+
+    private DatabaseReference myRef;
+    private static FirebaseDatabase database = FirebaseDatabase.getInstance();
+    Vector<UserUpdateInterface> callbacks = new Vector<UserUpdateInterface>();
+
+    /**
+     *
+     * @param email
+     */
     public void setEmail(String email) {
         if (email != null) {
             this.email = email;
@@ -28,42 +42,76 @@ public class UserProfile implements ValueEventListener {
         }
     }
 
+    /**
+     *
+     */
+    public interface UserUpdateInterface {
+        void onUserUpdate();
+    }
+
+    /**
+     *
+     * @param callback
+     */
+    public void addCallback(UserUpdateInterface callback) {
+        if (callback == null) {
+            Log.e(DEBUG_TAG, "tried to add null callback");
+            return;
+        }
+        myRef.addListenerForSingleValueEvent(this);
+        callbacks.add(callback);
+    }
+
+    /**
+     *
+     * @return
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
-
         if (name != null) {
             this.name = name;
             myRef.child("name").setValue(name);
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     *
+     * @param car_type
+     */
     public void setCarType(Transportation.CarType car_type) {
         this.car_type = car_type;
     }
 
-
+    /**
+     *
+     * @return
+     */
     public Transportation.CarType getCarType() {
         return car_type;
     }
-
-    private String email;
-    private String name;
-    private String id;
-    private Transportation.CarType car_type;
-    private DatabaseReference myRef;
-
-    private static FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     /**
      * get the current timestamp in "unix time"
@@ -86,13 +134,28 @@ public class UserProfile implements ValueEventListener {
         return currentTimestamp.getTime();
     }
 
+    /**
+     *
+     * @param dataSnapshot
+     */
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.v(DEBUG_TAG, "onDataChange: Updating user data");
         this.name = dataSnapshot.child("name").getValue(String.class);
         this.email = dataSnapshot.child("email").getValue(String.class);
-        this.car_type = dataSnapshot.child("car_type").getValue(Transportation.CarType.class);
+        this.car_type = Transportation.CarType.fromValue(dataSnapshot.child("car_type").getValue(String.class));
+        Log.d(DEBUG_TAG, "onDataChange: Updated user to " + this.name + " (" + this.email + ")");
+        if (callbacks != null) {
+            for (UserUpdateInterface callback : callbacks) {
+                callback.onUserUpdate();
+            }
+        }
     }
 
+    /**
+     *
+     * @param databaseError
+     */
     @Override
     public void onCancelled(DatabaseError databaseError) {
         System.out.println("The read failed: " + databaseError.getCode());
@@ -147,7 +210,11 @@ public class UserProfile implements ValueEventListener {
         return new UserProfile(id);
     }
 
-
+    /**
+     * Create a new User Profile by id
+     *
+     * @param id    Id of user
+     */
     private UserProfile(String id) {
         this.id = id;
         myRef = database.getReference(TOP_LEVEL_KEY)

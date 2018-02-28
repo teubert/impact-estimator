@@ -8,57 +8,6 @@ import android.util.Log;
 
 public class Transportation {
     /**
-     * Class to contain GPS data (element in unfiltered_gps_data key in database)
-     */
-    public static class GPS {
-        private final static String DEBUG_TAG = "GPS";
-
-        public long timestamp; // Linux time (timestamp.getTime())
-        public double lon; // Longitude (deg)
-        public double lat; // Latitude (deg)
-
-        public GPS() {
-            // Default constructor required for calls to DataSnapshot.getValue(GPS.class)
-        }
-
-        public GPS(long timestamp, double lon, double lat) {
-            Log.v(DEBUG_TAG, "Creating GPS Object");
-            this.timestamp = timestamp;
-            this.lon = lon;
-            this.lat = lat;
-        }
-    }
-
-    /**
-     * Class to contain information for a single trip
-     */
-    public static class Trip {
-        private final static String DEBUG_TAG = "Trip";
-
-        public GPS start;
-        public GPS end;
-        public long day;
-        TransportMode transport_mode;
-        CarType car_type;
-
-        public Trip() {
-            // Default constructor required for calls to DataSnapshot.getValue(Trip.class)
-        }
-
-        public Trip(GPS start, GPS end,
-                    Transportation.TransportMode transport_mode,
-                    Transportation.CarType car_type) {
-            Log.v(DEBUG_TAG, "Creating Trip Object");
-            this.start = start;
-            this.end = end;
-            this.transport_mode = transport_mode;
-            this.car_type = car_type;
-            // TODO(CT): get day from range
-        }
-
-    }
-
-    /**
      * Transport Modes
      */
     public enum TransportMode {
@@ -116,6 +65,15 @@ public class Transportation {
         public double getMpw() {
             Log.v(DEBUG_TAG, "Getting MPW");
             return this.mpw;
+        }
+
+        public static CarType fromValue(String carTypeName){
+            for (CarType l : CarType.values()){
+                if (l.name().equals(carTypeName)){
+                    return l;
+                }
+            }
+            throw new IllegalArgumentException("Invalid car type: " + carTypeName);
         }
     }
 }

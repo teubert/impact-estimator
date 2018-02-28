@@ -1,0 +1,36 @@
+package edu.scu.databaseexample;
+
+import android.util.Log;
+
+import com.google.firebase.database.DatabaseReference;
+
+/**
+ * Created by teubert on 2/27/18.
+ */
+
+public class GPSPoint {
+    private final static String DEBUG_TAG = "GPSPoint";
+
+    public long timestamp; // Linux time (timestamp.getTime())
+    public double lon; // Longitude (deg)
+    public double lat; // Latitude (deg)
+
+    public static GPSPoint getPointFromDatabase() {
+        GPSPoint newPoint = new GPSPoint();
+
+        return newPoint;
+    }
+
+
+
+    public GPSPoint() {
+        // Default constructor required for calls to DataSnapshot.getValue(GPS.class)
+    }
+
+    public GPSPoint(long timestamp, double lon, double lat) {
+        Log.v(DEBUG_TAG, "Creating GPS Object");
+        this.timestamp = timestamp;
+        this.lon = lon;
+        this.lat = lat;
+    }
+}
