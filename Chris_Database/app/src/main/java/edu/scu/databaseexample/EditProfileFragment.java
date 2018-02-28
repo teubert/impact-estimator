@@ -19,6 +19,8 @@ public class EditProfileFragment extends  android.app.Fragment implements UserPr
     private final static String DEBUG_TAG = "EditProfile";
     private ProfileFragment.ToggleEdit mListener;
     private UserProfile user;
+    TextView email;
+    TextView name;
 
     public EditProfileFragment() {
         // Required empty public constructor
@@ -48,12 +50,18 @@ public class EditProfileFragment extends  android.app.Fragment implements UserPr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        View v =  inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        user.addCallback(this);
+        v.findViewById(R.id.submit_button).setOnClickListener(this);
+        name = v.findViewById(R.id.name_edit);
+        email = v.findViewById(R.id.email_edit);
+        return v;
     }
 
     /**
+     * Called on attach. Handles receipt of listener interface
      *
-     * @param context
+     * @param context   Attached context
      */
     @Override
     public void onAttach(Context context) {
@@ -66,13 +74,20 @@ public class EditProfileFragment extends  android.app.Fragment implements UserPr
         }
     }
 
+    /**
+     * Called on click of "complete" button
+     *
+     * @param v Active view
+     */
     @Override
     public void onClick(View v) {
+        user.setName(name.getText().toString());
+        user.setEmail(email.getText().toString());
         mListener.toggle();
     }
 
     /**
-     *
+     *  Called on detach- handles removal of listener
      */
     @Override
     public void onDetach() {
@@ -85,8 +100,6 @@ public class EditProfileFragment extends  android.app.Fragment implements UserPr
      */
     @Override
     public void onUserUpdate() {
-        TextView email = getView().findViewById(R.id.email_edit);
-        TextView name = getView().findViewById(R.id.name_edit);
         Log.d(DEBUG_TAG, "Setting User Email Field to " + user.getEmail());
         email.setText(user.getEmail());
         name.setText(user.getName());

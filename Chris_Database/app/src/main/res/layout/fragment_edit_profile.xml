@@ -12,7 +12,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginEnd="12dp"
         android:layout_marginTop="22dp"
-        android:onClick="onClick"
         android:text="@string/done_button_txt" />
 
     <EditText

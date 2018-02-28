@@ -23,6 +23,8 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
 
     UserProfile user; // User
     private ProfileFragment.ToggleEdit mListener;
+    TextView email;
+    TextView name;
 
     /**
      *
@@ -58,14 +60,15 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         user.addCallback(this);
+        view.findViewById(R.id.edit_button).setOnClickListener(this);
+        email = view.findViewById(R.id.email_view);
+        name = view.findViewById(R.id.name_view);
         return view;
 
     }
 
     @Override
     public void onUserUpdate() {
-        TextView email = getView().findViewById(R.id.email_view);
-        TextView name = getView().findViewById(R.id.name_view);
         Log.d(DEBUG_TAG, "Setting User Email Field to " + user.getEmail());
         email.setText(user.getEmail());
         name.setText(user.getName());
