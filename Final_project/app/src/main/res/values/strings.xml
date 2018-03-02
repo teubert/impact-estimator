@@ -5,6 +5,13 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string-array name="myCarType">
+        <item> car1 </item>
+        <item> car2 </item>
+        <item> car3 </item>
+        <item> car4 </item>
+        <item> car5 </item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
