@@ -1,13 +1,16 @@
 package com.coen.scu.final_project.fragment;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.SharedElementCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +25,19 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -47,6 +58,8 @@ public class ProfileEditFragment extends Fragment {
     private boolean mChangeImage = false;
     private boolean mFirstTime = false;
     private String mNewUserEmail;
+    private ProgressDialog  mProgressDialog;
+    private ArrayAdapter<CharSequence> mAdapter;
     private final int PICK_IMAGE_REQUEST = 999;
 
     @Override
@@ -77,19 +90,44 @@ public class ProfileEditFragment extends Fragment {
         mCarType = view.findViewById(R.id.profile_carType);
         mUserName = view.findViewById(R.id.profile_userName);
         mImage = view.findViewById(R.id.profile_image);
+        mUpdateBtn = view.findViewById(R.id.btn_updateProfile);
+        displayPreUserInfo(mUser.getUid());
         return view;
     }
 
+
+    private void displayPreUserInfo(final String uid) {
+        mRef.child("users").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userName =  dataSnapshot.child(uid).child("name").getValue(String.class);
+                String carType =  dataSnapshot.child(uid).child("car_type").getValue(String.class);
+                //display
+                if(userName!= null){
+                    mUserName.setText(userName);
+                }
+                if(carType!= null){
+                    int position = mAdapter.getPosition(carType);
+                    mCarType.setSelection(position);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        mAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.myCarType, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mCarType.setAdapter(adapter);
-        mUpdateBtn = (Button) getView().findViewById(R.id.btn_updateProfile);
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCarType.setAdapter(mAdapter);
+        displayPreUserPic(mUser.getUid());
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +141,8 @@ public class ProfileEditFragment extends Fragment {
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mProgressDialog = ProgressDialog.show(getActivity(), "Upload",
+                        "Please wait...", true);
                 if (mUser!= null) {
                     String carText= mCarType.getSelectedItem().toString();
                     String userNameText = mUserName.getText().toString();
@@ -125,6 +165,9 @@ public class ProfileEditFragment extends Fragment {
             }
         });
     }
+
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -141,17 +184,56 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
+
+    private void displayPreUserPic(String uid) {
+        try {
+            final File localFile = File.createTempFile("portrait", "jpg");
+            mProgressDialog = ProgressDialog.show(getActivity(), "Retrieving Data",
+                    "Loading...", true);
+            mStorageRef.child("Portrait").child(uid).getFile(localFile)
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            // Successfully downloaded data to local file
+                            Bitmap bMap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                            mImage.setImageBitmap(bMap);
+                            mProgressDialog.dismiss();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Snackbar.make(getView(), "load pic failed", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    // Handle failed download
+                    // ...
+                }
+            });
+        }catch (IOException e){
+
+        }
+    }
+
     public void uploadPicture(FirebaseUser firebaseUser){
+        byte[] data = new byte[0];
         if(mUri!= null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, out);
+                data = out.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             StorageReference childRef = mStorageRef.child("Portrait").child(firebaseUser.getUid());
 
             //uploading the image
-            UploadTask uploadTask = childRef.putFile(mUri);
+            UploadTask uploadTask = childRef.putBytes(data);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
+ //                   Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -163,6 +245,13 @@ public class ProfileEditFragment extends Fragment {
         else {
             Toast.makeText(getContext(), "Select an image", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
 }

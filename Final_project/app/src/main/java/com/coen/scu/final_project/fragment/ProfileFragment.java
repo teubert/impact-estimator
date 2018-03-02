@@ -38,8 +38,8 @@ public class ProfileFragment extends Fragment {
                         .replace(R.id.flContent, fragment)
                         .addToBackStack(null)
                         .commit();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
         return view;
