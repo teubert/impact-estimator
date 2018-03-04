@@ -70,7 +70,7 @@ public class EditProfileFragment extends  android.app.Fragment implements UserPr
             mListener = (ProfileFragment.ToggleEdit) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement onDateUpdateListener");
         }
     }
 

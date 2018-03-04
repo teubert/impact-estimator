@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Calendar;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -71,6 +73,9 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
     public void onUserUpdate() {
         Log.d(DEBUG_TAG, "Setting User Email Field to " + user.getEmail());
         email.setText(user.getEmail());
+        Calendar c = Calendar.getInstance();
+        c.set(2017,11,13);
+        email.setText(DayTripsSummary.getDateString(c));
         name.setText(user.getName());
     }
 
@@ -90,7 +95,7 @@ public class ProfileFragment extends android.app.Fragment implements UserProfile
             mListener = (ProfileFragment.ToggleEdit) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement onDateUpdateListener");
         }
     }
 

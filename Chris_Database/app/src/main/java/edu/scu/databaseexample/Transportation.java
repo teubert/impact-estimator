@@ -11,7 +11,16 @@ public class Transportation {
      * Transport Modes
      */
     public enum TransportMode {
-        WALK, BIKE, AUTOMOBILE, AIRCRAFT, TRAIN, BOAT
+        WALK, BIKE, AUTOMOBILE, AIRCRAFT, TRAIN, BOAT;
+
+        public static TransportMode fromValue(String transportTypeName){
+            for (TransportMode l : TransportMode.values()){
+                if (l.name().equals(transportTypeName)){
+                    return l;
+                }
+            }
+            throw new IllegalArgumentException("Invalid transport mode: " + transportTypeName);
+        }
     }
 
     /**

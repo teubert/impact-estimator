@@ -6,21 +6,23 @@ package edu.scu.databaseexample;
 
 import android.util.Log;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Class to contain information for a single trip
  */
+@IgnoreExtraProperties
 public class Trip {
     private final static String DEBUG_TAG = "Trip";
 
     public GPSPoint start;
     public GPSPoint end;
-    public long day;
     Transportation.TransportMode transport_mode;
     Transportation.CarType car_type;
 
     public Trip() {
-        // Default constructor required for calls to DataSnapshot.getValue(Trip.class)
-    }
+
+    };
 
     public Trip(GPSPoint start, GPSPoint end,
                 Transportation.TransportMode transport_mode,
@@ -30,7 +32,5 @@ public class Trip {
         this.end = end;
         this.transport_mode = transport_mode;
         this.car_type = car_type;
-        // TODO(CT): get day from range
     }
-
 }
