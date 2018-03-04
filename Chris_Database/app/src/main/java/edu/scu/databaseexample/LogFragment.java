@@ -89,7 +89,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                 listItem = LayoutInflater.from(mContext).inflate(R.layout.log_entry, parent, false);
             }
 
-            Trip currentTrip = mTrips.get(position);
+            final Trip currentTrip = mTrips.get(position);
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting mode");
             TextView mode = (TextView) listItem.findViewById(R.id.text_mode);
@@ -161,7 +161,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    DialogFragment newFragment = EditTripDialogFragment.newInstance("s", 1, "1");
+                    DialogFragment newFragment = EditTripDialogFragment.newInstance(currentTrip.tripId, getTimestamp(mDate), userId);
                     newFragment.show(ft, "dialog");
                 }
             });
@@ -175,6 +175,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
     // TODO: Rename and change types of parameters
     private Calendar mDate;
     private DayTripsSummary dayTripsSummary;
+    private String userId;
 
     public LogFragment() {
         // Required empty public constructor
@@ -231,8 +232,10 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         } else {
             Log.d(DEBUG_TAG, "onCreate: no set day... using today");
         }
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay("teubert_gmail_com", mDate);
+        userId = "teubert_gmail_com";
+        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, mDate);
         dayTripsSummary.addCallback(this);
+
 
         logAdapter = new LogAdapter(getActivity(), dayTripsSummary.trips);
         setListAdapter(logAdapter);

@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -65,6 +66,7 @@ public class DayTripsSummary implements ValueEventListener, ChildEventListener {
                     tripSnapshot.child("transportation_mode").getValue(String.class));
             trip.start = tripSnapshot.child("start").getValue(GPSPoint.class);
             trip.end = tripSnapshot.child("end").getValue(GPSPoint.class);
+            trip.tripId = key;
             trips.add(trip);
         } catch (java.lang.IllegalArgumentException ex) {
             Log.w(DEBUG_TAG, "Ran into unfinished trip (id=" + key +")");
@@ -186,6 +188,25 @@ public class DayTripsSummary implements ValueEventListener, ChildEventListener {
     }
 
     /**
+     *
+     * @param tripId
+     * @return
+     */
+    public Trip getTrip(String tripId) {
+        Log.d(DEBUG_TAG, "GetTrip: getting trip with id=" + tripId);
+        for (Trip trip : trips) {
+            Log.v(DEBUG_TAG, "GetTrip " + trip.tripId + "-" + tripId);
+            if (trip.tripId.equals(tripId)) {
+                Log.d(DEBUG_TAG, "GetTrip: trip found, returning trip");
+                return trip;
+            }
+        }
+        Log.w(DEBUG_TAG, "getTrip: Trip doesn't exist");
+
+        return null;
+    }
+
+    /**
      * Get the trips for a specific calendar day
      *
      * @param id    User Id
@@ -197,6 +218,10 @@ public class DayTripsSummary implements ValueEventListener, ChildEventListener {
         return new DayTripsSummary(id, day);
     }
 
+    /**
+     *
+     * @param day
+     */
     public void setDay(Calendar day) {
         String dayKey = getDateString(day);
         Log.v(DEBUG_TAG, "DayTripsSummary: Setting reference " +

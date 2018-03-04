@@ -17,12 +17,13 @@ public class Trip {
 
     public GPSPoint start;
     public GPSPoint end;
+    String tripId = null;
     Transportation.TransportMode transport_mode;
     Transportation.CarType car_type;
 
     public Trip() {
 
-    };
+    }
 
     public Trip(GPSPoint start, GPSPoint end,
                 Transportation.TransportMode transport_mode,
@@ -32,5 +33,16 @@ public class Trip {
         this.end = end;
         this.transport_mode = transport_mode;
         this.car_type = car_type;
+    }
+
+    public Trip(GPSPoint start, GPSPoint end,
+                Transportation.TransportMode transport_mode,
+                Transportation.CarType car_type, String tripId) {
+        Log.v(DEBUG_TAG, "Creating Trip Object");
+        this.start = start;
+        this.end = end;
+        this.transport_mode = transport_mode;
+        this.car_type = car_type;
+        this.tripId = tripId;
     }
 }
