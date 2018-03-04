@@ -1,7 +1,6 @@
 package edu.scu.databaseexample;
 
 import android.util.Log;
-import android.view.View;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -12,7 +11,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * Created by teubert on 2/28/18.

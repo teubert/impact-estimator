@@ -1,6 +1,8 @@
 package edu.scu.databaseexample;
 
 import android.app.DatePickerDialog;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -18,6 +22,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -31,7 +36,7 @@ import java.util.Vector;
  * Use the {@link LogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LogFragment extends android.app.ListFragment implements DayTripsSummary.TripUpdateInterface, DatePickerDialog.OnDateSetListener{
+public class LogFragment extends android.app.ListFragment implements DayTripsSummary.TripUpdateInterface, DatePickerDialog.OnDateSetListener {
     private static final String DEBUG_TAG = "LogFragment";
 
     private static final String ARG_DATE = "date";
@@ -54,7 +59,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
             super(context, R.layout.fragment_log, trips);
             Log.v(DEBUG_TAG, "LogAdapter: Creating");
             this.mContext = context;
-            this.mTrips = new ArrayList<Trip>();
+            this.mTrips = new ArrayList<>();
             this.mTrips = trips;
         }
 
@@ -144,6 +149,23 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                     break;
             }
 
+            ImageButton edit = listItem.findViewById(R.id.edit_button);
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // DialogFragment.show() will take care of adding the fragment
+                    // in a transaction.  We also want to remove any currently showing
+                    // dialog, so make our own transaction and take care of that here.
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    DialogFragment newFragment = EditTripDialogFragment.newInstance("s", 1, "1");
+                    newFragment.show(ft, "dialog");
+                }
+            });
+
             Log.v(DEBUG_TAG, "LogAdapter.getView: done");
 
             return listItem;
@@ -214,6 +236,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
 
         logAdapter = new LogAdapter(getActivity(), dayTripsSummary.trips);
         setListAdapter(logAdapter);
+
         Log.v(DEBUG_TAG, "onCreate: done");
     }
 
