@@ -1,5 +1,6 @@
 package edu.scu.databaseexample;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,11 +31,20 @@ import java.util.Vector;
  * Use the {@link LogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LogFragment extends android.app.ListFragment implements DayTripsSummary.TripUpdateInterface {
+public class LogFragment extends android.app.ListFragment implements DayTripsSummary.TripUpdateInterface, DatePickerDialog.OnDateSetListener{
     private static final String DEBUG_TAG = "LogFragment";
 
     private static final String ARG_DATE = "date";
     private LogAdapter logAdapter;
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, dayOfMonth);
+        mDate = cal;
+        dayTripsSummary.setDay(cal);
+        updateView();
+    }
 
     public class LogAdapter extends ArrayAdapter<Trip> {
         private Context mContext;
@@ -233,10 +244,11 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         ImageButton right = v.findViewById(R.id.right_button);
         right.setOnClickListener(onClickRight);
 
-        Button date = getActivity().findViewById(R.id.button_date);
+        Button date = v.findViewById(R.id.button_date);
         if (date != null) {
             date.setText(DayTripsSummary.getDateString(mDate));
         }
+        date.setOnClickListener(onClickDate);
 
         return v;
     }
@@ -255,6 +267,12 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         @Override
         public void onClick(View v) {
             Log.i(DEBUG_TAG, "Clicked date- opening date selector");
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                    LogFragment.this,
+                    mDate.get(Calendar.YEAR),
+                    mDate.get(Calendar.MONTH),
+                    mDate.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
         }
     };
 
