@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.fragment.MainPageFragment;
+import com.coen.scu.final_project.fragment.NotificationFragment;
 import com.coen.scu.final_project.fragment.ProfileEditFragment;
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.fragment.ProfileFragment;
@@ -164,7 +165,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile_page) {
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
-        }
+        } else if (id == R.id.nav_notification_page) {
+        fragmentClass = NotificationFragment.class;
+        title = "Notification";
+    }
 
         try {
             Fragment fragment = (Fragment) fragmentClass.newInstance();
@@ -184,6 +188,10 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
 }
 
 

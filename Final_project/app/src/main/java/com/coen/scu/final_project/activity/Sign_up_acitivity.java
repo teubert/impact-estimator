@@ -23,7 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Sign_up_acitivity extends AppCompatActivity {
     EditText mEmail;
@@ -133,6 +135,8 @@ public class Sign_up_acitivity extends AppCompatActivity {
         List<String> friendList = new ArrayList<>();
         mDatabase.child("userList").child(Util.emailToUser(email)).setValue(userId);
         mDatabase.child("idEmailMap").child(userId).setValue(email);
+        Map<String, List<String>> friendMap = new HashMap<>();
+        mDatabase.child("friendMap").child(userId).setValue(friendMap);
     }
 
 
