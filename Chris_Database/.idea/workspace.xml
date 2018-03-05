@@ -47,8 +47,8 @@
       <file leaf-file-name="Trip.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/Trip.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="125" column="13" lean-forward="false" selection-start-line="125" selection-start-column="13" selection-end-line="125" selection-end-column="13" />
+            <state relative-caret-position="138">
+              <caret line="99" column="8" lean-forward="false" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="39" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#683#684#0" expanded="true" />
@@ -100,17 +100,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FootprintEstimate.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="FootprintEstimate.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/FootprintEstimate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="29" column="28" lean-forward="false" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="28" />
+            <state relative-caret-position="1232">
+              <caret line="94" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LogFragment.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LogFragment.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/LogFragment.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="226">
@@ -1953,7 +1953,6 @@
         <option value="$PROJECT_DIR$/app/src/main/res/drawable/resource_selector.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/fragment_edit_trip_dialog.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/colors.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/FootprintEstimate.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/TestdataDatabaseFiller.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/EditTripDialogFragment.java" />
@@ -1961,6 +1960,7 @@
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/Trip.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/DayTripsSummary.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/LogFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/FootprintEstimate.java" />
       </list>
     </option>
   </component>
@@ -2188,7 +2188,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520218164529" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520220866339" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -2236,7 +2236,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520218164530" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520220866339" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2419,7 +2419,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520218164536" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1520220866339" />
       </method>
     </configuration>
     <list size="1">
@@ -2934,11 +2934,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/FootprintEstimate.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="29" column="28" lean-forward="false" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="28" />
+        <state relative-caret-position="187">
+          <caret line="62" column="0" lean-forward="false" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/LogFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="41" column="42" lean-forward="false" selection-start-line="41" selection-start-column="42" selection-end-line="41" selection-end-column="42" />
+          <folding>
+            <element signature="e#5976#6740#0" expanded="true" />
+            <element signature="e#6739#6740#0" expanded="true" />
+            <element signature="e#10605#10967#0" expanded="true" />
+            <element signature="e#10966#10967#0" expanded="true" />
+            <element signature="e#11016#11492#0" expanded="true" />
+            <element signature="e#11491#11492#0" expanded="true" />
+            <element signature="e#11542#11907#0" expanded="true" />
+            <element signature="e#11906#11907#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2946,14 +2963,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="177">
           <caret line="15" column="15" lean-forward="false" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="62" column="0" lean-forward="false" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -2970,8 +2979,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/Trip.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="125" column="13" lean-forward="false" selection-start-line="125" selection-start-column="13" selection-end-line="125" selection-end-column="13" />
+        <state relative-caret-position="138">
+          <caret line="99" column="8" lean-forward="false" selection-start-line="99" selection-start-column="8" selection-end-line="99" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#683#684#0" expanded="true" />
@@ -3011,20 +3020,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/LogFragment.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/edu/scu/databaseexample/FootprintEstimate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="41" column="42" lean-forward="false" selection-start-line="41" selection-start-column="42" selection-end-line="41" selection-end-column="42" />
-          <folding>
-            <element signature="e#5976#6740#0" expanded="true" />
-            <element signature="e#6739#6740#0" expanded="true" />
-            <element signature="e#10605#10967#0" expanded="true" />
-            <element signature="e#10966#10967#0" expanded="true" />
-            <element signature="e#11016#11492#0" expanded="true" />
-            <element signature="e#11491#11492#0" expanded="true" />
-            <element signature="e#11542#11907#0" expanded="true" />
-            <element signature="e#11906#11907#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1232">
+          <caret line="94" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
