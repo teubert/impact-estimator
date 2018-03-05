@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -90,9 +91,16 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
             }
 
             final Trip currentTrip = mTrips.get(position);
+            if (currentTrip == null) {
+                Log.e(DEBUG_TAG, String.format("Null trip in position %d", position));
+                return listItem;
+            }
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting mode");
             TextView mode = (TextView) listItem.findViewById(R.id.text_mode);
+            if (currentTrip.transport_mode == null) {
+                Log.e(DEBUG_TAG, String.format("Null trip mode in position %d", position));
+            }
             mode.setText(currentTrip.transport_mode.name());
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting impact");
@@ -166,6 +174,10 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                 }
             });
 
+            TextView estimate = listItem.findViewById(R.id.text_impact);
+            estimate.setText(Double.toString(currentTrip.estimate.CO2) + " kg CO2 emitted");
+            // TODO(CT): Switch to km
+
             Log.v(DEBUG_TAG, "LogAdapter.getView: done");
 
             return listItem;
@@ -234,8 +246,6 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         }
         userId = "teubert_gmail_com";
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, mDate);
-        dayTripsSummary.addCallback(this);
-
 
         logAdapter = new LogAdapter(getActivity(), dayTripsSummary.trips);
         setListAdapter(logAdapter);
@@ -321,5 +331,19 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                 Integer.toString(dayTripsSummary.trips.size()) + " item(s) )");
         logAdapter.notifyDataSetChanged();
         Log.v(DEBUG_TAG, "onTripUpdate: done");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(DEBUG_TAG, "Removing callback");
+        dayTripsSummary.removeCallback(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.v(DEBUG_TAG, "Adding callback");
+        dayTripsSummary.addCallback(this);
     }
 }

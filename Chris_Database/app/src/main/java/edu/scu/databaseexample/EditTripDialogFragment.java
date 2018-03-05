@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static edu.scu.databaseexample.DayTripsSummary.updateTrip;
+
 /**
  * A simple {@link Fragment} subclass.
 agment#newInstance} factory method to
@@ -35,6 +37,7 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
     DayTripsSummary tripSummary;
     Transportation.TransportMode activeTransportMode = null;
     String mTripId;
+    String mUserId;
 
     /**
      *
@@ -80,7 +83,7 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
             long mTimestamp = getArguments().getLong(ARG_DAYID);
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(mTimestamp);
-            String mUserId = getArguments().getString(ARG_USERID);
+            mUserId = getArguments().getString(ARG_USERID);
             tripSummary = DayTripsSummary.getDayTripsForDay(mUserId, cal);
             tripSummary.addCallback(this);
         }
@@ -92,12 +95,19 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
      */
     public void updateSelected(Transportation.TransportMode transportMode) {
         activeTransportMode = transportMode;
+
+        if (getActivity() == null) {
+            return;
+        }
+        ColorStateList lightGrey = getActivity().getResources().getColorStateList(R.color.light_grey);
+        ColorStateList white = getActivity().getResources().getColorStateList(R.color.white);
+
         for (Map.Entry<Transportation.TransportMode, View> transportModeViewPair : transportButtons.entrySet()) {
             if (transportMode == transportModeViewPair.getKey()) {
                 Log.d(DEBUG_TAG, "Selecting " + transportMode.name());
-                transportModeViewPair.getValue().setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.light_grey));
+                transportModeViewPair.getValue().setBackgroundTintList(lightGrey);
             } else {
-                transportModeViewPair.getValue().setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.white));
+                transportModeViewPair.getValue().setBackgroundTintList(white);
             }
         }
     }
@@ -123,14 +133,6 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
             }
         });
 
-        Button submit = v.findViewById(R.id.submit_button);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
         editText = v.findViewById(R.id.distance);
 
         transportButtons = new HashMap<Transportation.TransportMode, View>();
@@ -150,6 +152,18 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
             });
         }
 
+        Button submit = v.findViewById(R.id.submit_button);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(DEBUG_TAG, "onClick(Submit): Updating trip");
+                trip.setDistance(Double.parseDouble(editText.getText().toString()));
+                trip.setTransport_mode(activeTransportMode);
+                DayTripsSummary.updateTrip(mUserId, trip);
+                EditTripDialogFragment.this.dismiss();
+            }
+        });
+
         return v;
     }
 
@@ -159,7 +173,7 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
         if (trip != null) {
             // Editing trip
             updateSelected(trip.transport_mode);
-            editText.setText("DISTANCE");
+            editText.setText(Double.toString(trip.distance));
         }
     }
 }

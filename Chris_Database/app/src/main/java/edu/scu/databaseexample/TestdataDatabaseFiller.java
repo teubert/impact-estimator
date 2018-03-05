@@ -54,7 +54,7 @@ public class TestdataDatabaseFiller {
 
         GPSPoint start = new GPSPoint(currentTimestamp.getTime()-16*60*60*1000, -121.9, 37.39);
         GPSPoint end = new GPSPoint(start.timestamp + 75*60 * 1000, -121.89, 37.38);
-        Trip newTrip = new Trip(start, end, Transportation.TransportMode.AUTOMOBILE, Transportation.CarType.SUV);
+        Trip newTrip = new Trip(start, end, 20, Transportation.TransportMode.AUTOMOBILE, Transportation.CarType.SUV);
         DayTripsSummary.append("teubert_gmail_com",newTrip);
         newTrip.start = newTrip.end;
         newTrip.end.lat -= 0.4;

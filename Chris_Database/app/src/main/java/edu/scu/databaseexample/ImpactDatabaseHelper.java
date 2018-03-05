@@ -111,7 +111,7 @@ public class ImpactDatabaseHelper {
 //     *
 //     * TODO(CT): How are we representing days?
 //     */
-//    public void addToDayEstimate(long day, TotalEstimate co2impact) {
+//    public void addToDayEstimate(long day, FootprintEstimate co2impact) {
 //        Log.v(DEBUG_TAG, "addToDayEstimate: Called");
 //        DatabaseReference myRef = database.getReference(TopLevelDirectories.ESTIMATES.getName())
 //                .child(id);
@@ -143,22 +143,22 @@ public class ImpactDatabaseHelper {
 //    }
 //
 //    /**
-//     * Get CO2 TotalEstimate for userProfile
+//     * Get CO2 FootprintEstimate for userProfile
 //     *
-//     * @return  TotalEstimate (all-time)
+//     * @return  FootprintEstimate (all-time)
 //     */
-//    public TotalEstimate getEstimate() {
+//    public FootprintEstimate getEstimate() {
 //        Log.v(DEBUG_TAG, "getEstimate: Called");
 //        return estimateMonitor.estimate;
 //    }
 //
 //    /**
-//     * Get CO2 TotalEstimate for userProfile for day
+//     * Get CO2 FootprintEstimate for userProfile for day
 //     *
 //     * @param day   Day for id
-//     * @return  TotalEstimate (for day)
+//     * @return  FootprintEstimate (for day)
 //     */
-//    public TotalEstimate getEstimate(long day) {
+//    public FootprintEstimate getEstimate(long day) {
 //        Log.v(DEBUG_TAG, "getEstimate: Called");
 //        return estimateMonitor.todaysEstimate;
 //    }

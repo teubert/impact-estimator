@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             onDateUpdate(Calendar.getInstance());
         }
         Log.v(DEBUG_TAG, "onCreate: done");
-        TestdataDatabaseFiller.fill();
+        //TestdataDatabaseFiller.fill();
     }
 
     @Override
