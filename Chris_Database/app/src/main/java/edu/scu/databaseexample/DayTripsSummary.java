@@ -7,15 +7,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
  * Created by teubert on 2/28/18.
  */
+
+// TODO(CT): Error handling
 
 public class DayTripsSummary implements ChildEventListener {
     private final static String DEBUG_TAG = "DayTripsSummary";
@@ -35,20 +35,20 @@ public class DayTripsSummary implements ChildEventListener {
     }
 
     static public void updateTrip(String id, Trip trip) {
-        Log.d(DEBUG_TAG, "Updating trip " + trip.tripId);
+        Log.d(DEBUG_TAG, "Updating trip " + trip.getTripId());
         // Get day
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(trip.end.timestamp);
+        cal.setTimeInMillis(trip.getEnd().timestamp);
         String dayKey = getDateString(cal);
 
         // Update
         DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey).child(trip.getTripId());
-        myRef.child("car_type").setValue(trip.car_type);
-        myRef.child("transportation_mode").setValue(trip.transport_mode);
-        myRef.child("distance").setValue(trip.distance);
-        myRef.child("estimates").child("CO2").setValue(trip.estimate.CO2);
-        myRef.child("start").setValue(trip.start);
-        myRef.child("end").setValue(trip.end);
+        myRef.child("car_type").setValue(trip.getCar_type());
+        myRef.child("transportation_mode").setValue(trip.getTransport_mode());
+        myRef.child("distance").setValue(trip.getDistance());
+        myRef.child("estimates").child("CO2").setValue(trip.getEstimate().CO2);
+        myRef.child("start").setValue(trip.getStart());
+        myRef.child("end").setValue(trip.getEnd());
     }
 
     /**
@@ -58,18 +58,16 @@ public class DayTripsSummary implements ChildEventListener {
     private Trip addTripSnapshot(DataSnapshot tripSnapshot) {
         String key = tripSnapshot.getKey();
        try {
-            Trip trip = new Trip();
-            trip.car_type = Transportation.CarType.fromValue(
-                    tripSnapshot.child("car_type").getValue(String.class));
-            trip.transport_mode = Transportation.TransportMode.fromValue(
-                    tripSnapshot.child("transportation_mode").getValue(String.class));
-            trip.distance = tripSnapshot.child("distance").getValue(Double.class);
+            GPSPoint start = tripSnapshot.child("start").getValue(GPSPoint.class);
+            GPSPoint end = tripSnapshot.child("end").getValue(GPSPoint.class);
+            double dist = tripSnapshot.child("distance").getValue(Double.class);
+            Transportation.TransportMode mode = Transportation.TransportMode.fromValue(
+                   tripSnapshot.child("transportation_mode").getValue(String.class));
+            Transportation.CarType carType = Transportation.CarType.fromValue(
+                   tripSnapshot.child("car_type").getValue(String.class));
             double co2 = tripSnapshot.child("estimates").child("CO2").getValue(Double.class);
-            trip.estimate = new FootprintEstimate(co2, 1);
-            trip.start = tripSnapshot.child("start").getValue(GPSPoint.class);
-            trip.end = tripSnapshot.child("end").getValue(GPSPoint.class);
-            trip.tripId = key;
-            return trip;
+            FootprintEstimate estimate = new FootprintEstimate(co2, 1);
+            return new Trip(start, end, dist, mode, carType, tripSnapshot.getKey(), estimate);
         } catch (java.lang.IllegalArgumentException ex) {
             Log.w(DEBUG_TAG, "Ran into unfinished trip (id=" + key +")");
             return null;
@@ -91,7 +89,7 @@ public class DayTripsSummary implements ChildEventListener {
         if (prevChildKey != null) {
             int id = 0;
             for (; id < trips.size(); id++) {
-                if (trips.get(id).tripId.equals(prevChildKey)) {
+                if (trips.get(id).getTripId().equals(prevChildKey)) {
                     break;
                 }
             }
@@ -214,18 +212,18 @@ public class DayTripsSummary implements ChildEventListener {
 
         // Get day
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(trip.end.timestamp);
+        cal.setTimeInMillis(trip.getEnd().timestamp);
         String dayKey = getDateString(cal);
 
         // Push for day
         DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey);
         myRef = myRef.push();
-        myRef.child("car_type").setValue(trip.car_type);
-        myRef.child("transportation_mode").setValue(trip.transport_mode);
-        myRef.child("distance").setValue(trip.distance);
-        myRef.child("estimates").child("CO2").setValue(trip.estimate.CO2);
-        myRef.child("start").setValue(trip.start);
-        myRef.child("end").setValue(trip.end);
+        myRef.child("car_type").setValue(trip.getCar_type());
+        myRef.child("transportation_mode").setValue(trip.getTransport_mode());
+        myRef.child("distance").setValue(trip.getDistance());
+        myRef.child("estimates").child("CO2").setValue(trip.getEstimate().CO2);
+        myRef.child("start").setValue(trip.getStart());
+        myRef.child("end").setValue(trip.getEnd());
 
         Log.v(DEBUG_TAG, "append: Done");
     }
@@ -238,7 +236,7 @@ public class DayTripsSummary implements ChildEventListener {
     public Trip getTrip(String tripId) {
         Log.d(DEBUG_TAG, "GetTrip: getting trip with id=" + tripId);
         for (Trip trip : trips) {
-            if (trip.tripId.equals(tripId)) {
+            if (trip.getTripId().equals(tripId)) {
                 Log.d(DEBUG_TAG, "GetTrip: trip found, returning trip");
                 return trip;
             }
@@ -271,10 +269,9 @@ public class DayTripsSummary implements ChildEventListener {
         if (myRef != null) {
             myRef.removeEventListener(DayTripsSummary.this);
         }
-
+        trips.clear();
         myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey);
 
-        //myRef.addListenerForSingleValueEvent(this);
         myRef.addChildEventListener(this);
     }
 

@@ -56,40 +56,53 @@ public class TestdataDatabaseFiller {
         GPSPoint end = new GPSPoint(start.timestamp + 75*60 * 1000, -121.89, 37.38);
         Trip newTrip = new Trip(start, end, 20, Transportation.TransportMode.AUTOMOBILE, Transportation.CarType.SUV);
         DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.4;
-        newTrip.end.timestamp += 180*60*1000;
-        newTrip.transport_mode = Transportation.TransportMode.AIRCRAFT;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 25*60*1000;
-        newTrip.transport_mode = Transportation.TransportMode.TRAIN;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 10*60*1000;
-        newTrip.transport_mode = Transportation.TransportMode.BIKE;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 25*60*1000;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 45*60*1000;
-        newTrip.transport_mode = Transportation.TransportMode.BOAT;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 60*60*1000;
-        newTrip.transport_mode = Transportation.TransportMode.WALK;
-        DayTripsSummary.append("teubert_gmail_com",newTrip);
-        newTrip.start = newTrip.end;
-        newTrip.end.lat -= 0.01;
-        newTrip.end.timestamp += 25*60*1000;
+
+        newTrip.setStart(newTrip.getEnd());
+        GPSPoint gpsEnd = newTrip.getEnd();
+        gpsEnd.lat -= 0.04;
+        gpsEnd.timestamp += 180*60*1000;
+        newTrip.setEnd(gpsEnd);
+        newTrip.setTransport_mode(Transportation.TransportMode.AIRCRAFT);
         DayTripsSummary.append("teubert_gmail_com",newTrip);
 
-//        DayTripsSummary.append(new Trip( )));
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 25*60*1000;
+        newTrip.setEnd(gpsEnd);
+        newTrip.setTransport_mode(Transportation.TransportMode.TRAIN);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
+
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 10*60*1000;
+        newTrip.setEnd(gpsEnd);
+        newTrip.setTransport_mode(Transportation.TransportMode.BIKE);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
+
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 25*60*1000;
+        newTrip.setEnd(gpsEnd);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
+
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 45*60*1000;
+        newTrip.setEnd(gpsEnd);
+        newTrip.setTransport_mode(Transportation.TransportMode.BOAT);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
+
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 60*60*1000;
+        newTrip.setEnd(gpsEnd);
+        newTrip.setTransport_mode(Transportation.TransportMode.WALK);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
+
+        newTrip.setStart(newTrip.getEnd());
+        gpsEnd.lat -= 0.01;
+        gpsEnd.timestamp += 25*60*1000;
+        newTrip.setEnd(gpsEnd);
+        DayTripsSummary.append("teubert_gmail_com",newTrip);
     }
 }

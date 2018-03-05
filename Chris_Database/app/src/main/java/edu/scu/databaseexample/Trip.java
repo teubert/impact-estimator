@@ -15,11 +15,13 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class Trip {
     private final static String DEBUG_TAG = "Trip";
 
-    public GPSPoint start;
-    public GPSPoint end;
-    public String tripId = null;
-    public Transportation.TransportMode transport_mode;
-    public Transportation.CarType car_type;
+    private GPSPoint start;
+    private GPSPoint end;
+    private String tripId = null;
+    private Transportation.TransportMode transport_mode = Transportation.TransportMode.WALK;
+    private Transportation.CarType car_type = Transportation.CarType.SMALL_CAR;
+    private double distance = 0;
+    private FootprintEstimate estimate;
 
     public GPSPoint getStart() {
         return start;
@@ -63,25 +65,22 @@ public class Trip {
 
     public void setTransport_mode(Transportation.TransportMode transport_mode) {
         this.transport_mode = transport_mode;
-        this.estimate = getEstimate();
+        this.estimate = estimateImpact();
     }
 
     public void setCar_type(Transportation.CarType car_type) {
         this.car_type = car_type;
-        this.estimate = getEstimate();
+        this.estimate = estimateImpact();
     }
 
     public void setDistance(double distance) {
         this.distance = distance;
-        this.estimate = getEstimate();
+        this.estimate = estimateImpact();
     }
 
     public void setEstimate(FootprintEstimate estimate) {
         this.estimate = estimate;
     }
-
-    public double distance;
-    public FootprintEstimate estimate;
 
     /**
      *
@@ -98,16 +97,44 @@ public class Trip {
     public FootprintEstimate estimateImpact() {
         FootprintEstimate impact = new FootprintEstimate(1);
 
-        double gasEstimate = distance * transport_mode.getMpg();
-        double elecEstimate = distance * transport_mode.getMpw();
-        if (transport_mode == Transportation.TransportMode.AUTOMOBILE) {
-            gasEstimate *= car_type.getMpg();
-            elecEstimate *= car_type.getMpw();
-        }
-        // TODO(CT): Include electricity production in elec estimate
-        // TODO(CT): Add cost of owning car
+        final double lbsPerKWh = 1.222;
+        final double lbsPerGal = 19.6;
 
-        impact.addToEstimate(gasEstimate + elecEstimate);
+        double gasEstimate = 0;
+        double elecEstimate = 0;
+        double purchaseEstimate = 0;
+
+        if (transport_mode.getMpg() != 0) {
+            gasEstimate = lbsPerGal * distance / transport_mode.getMpg();
+        }
+        if (transport_mode.getMpw() != 0) {
+            elecEstimate = lbsPerKWh * distance / transport_mode.getMpw();
+        }
+
+        if (transport_mode == Transportation.TransportMode.AUTOMOBILE) {
+            if (car_type.getMpg() == 0) {
+                // No gas
+                gasEstimate = 0;
+            } else {
+                gasEstimate /= car_type.getMpg();
+            }
+            if (car_type.getMpw() == 0) {
+                // No elec
+                elecEstimate = 0;
+            } else {
+                elecEstimate /= car_type.getMpw();
+            }
+            purchaseEstimate = distance * 0.120958; // CO2 for building the car- from
+            // https://www.theguardian.com/environment/green-living-blog/2010/sep/23/carbon-footprint-new-car,
+            // Used 20tons over 150k miles
+        }
+
+        double estimate = gasEstimate + elecEstimate + purchaseEstimate;
+
+        Log.d(DEBUG_TAG, String.format("Estimate (distance: %f) (MPG: %f, MPW: %f) total: %f",
+                distance, transport_mode.getMpg(), transport_mode.getMpw(), estimate));
+
+        impact.addToEstimate(estimate);
         return impact;
     }
 

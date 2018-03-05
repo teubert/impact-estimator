@@ -4,33 +4,23 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,6 +38,8 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, dayOfMonth);
         mDate = cal;
+        logAdapter.clear();
+        logAdapter.notifyDataSetChanged();
         dayTripsSummary.setDay(cal);
         updateView();
     }
@@ -98,10 +90,10 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting mode");
             TextView mode = (TextView) listItem.findViewById(R.id.text_mode);
-            if (currentTrip.transport_mode == null) {
+            if (currentTrip.getTransport_mode() == null) {
                 Log.e(DEBUG_TAG, String.format("Null trip mode in position %d", position));
             }
-            mode.setText(currentTrip.transport_mode.name());
+            mode.setText(currentTrip.getTransport_mode().name());
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting impact");
             TextView impact = (TextView) listItem.findViewById(R.id.text_impact);
@@ -110,9 +102,9 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
             TextView time = (TextView) listItem.findViewById(R.id.text_time);
             Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(currentTrip.start.timestamp);
+            start.setTimeInMillis(currentTrip.getStart().timestamp);
             Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(currentTrip.end.timestamp);
+            end.setTimeInMillis(currentTrip.getEnd().timestamp);
             int startHr     = start.get(Calendar.HOUR);
             int startMin    = start.get(Calendar.MINUTE);
             int endHr       = end.get(Calendar.HOUR);
@@ -121,7 +113,7 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting icon");
             ImageView icon = listItem.findViewById(R.id.image_icon);
-            switch (currentTrip.transport_mode) {
+            switch (currentTrip.getTransport_mode()) {
                 case BIKE:
                     Log.d(DEBUG_TAG, "LogAdapter.getView: Setting icon bike");
                     icon.setImageResource(R.drawable.ic_bike);
@@ -169,13 +161,13 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    DialogFragment newFragment = EditTripDialogFragment.newInstance(currentTrip.tripId, getTimestamp(mDate), userId);
+                    DialogFragment newFragment = EditTripDialogFragment.newInstance(currentTrip.getTripId(), getTimestamp(mDate), userId);
                     newFragment.show(ft, "dialog");
                 }
             });
 
             TextView estimate = listItem.findViewById(R.id.text_impact);
-            estimate.setText(Double.toString(currentTrip.estimate.CO2) + " kg CO2 emitted");
+            estimate.setText(Double.toString(currentTrip.getEstimate().CO2) + " kg CO2 emitted");
             // TODO(CT): Switch to km
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: done");
@@ -294,6 +286,8 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         public void onClick(View v) {
             Log.i(DEBUG_TAG, "Clicked left arrow- going back one day");
             mDate.add(Calendar.DATE, -1);
+            logAdapter.clear();
+            logAdapter.notifyDataSetChanged();
             dayTripsSummary.setDay(mDate);
             updateView();
         }
@@ -317,6 +311,8 @@ public class LogFragment extends android.app.ListFragment implements DayTripsSum
         public void onClick(View v) {
             Log.i(DEBUG_TAG, "Clicked right arrow- going forward one day");
             mDate.add(Calendar.DATE, 1);
+            logAdapter.clear();
+            logAdapter.notifyDataSetChanged();
             dayTripsSummary.setDay(mDate);
             updateView();
         }

@@ -172,8 +172,8 @@ public class EditTripDialogFragment extends android.app.DialogFragment implement
         trip = tripSummary.getTrip(mTripId);
         if (trip != null) {
             // Editing trip
-            updateSelected(trip.transport_mode);
-            editText.setText(Double.toString(trip.distance));
+            updateSelected(trip.getTransport_mode());
+            editText.setText(Double.toString(trip.getDistance()));
         }
     }
 }
