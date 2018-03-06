@@ -23,7 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Sign_up_acitivity extends AppCompatActivity {
     EditText mEmail;
@@ -107,7 +109,12 @@ public class Sign_up_acitivity extends AppCompatActivity {
                             addToFireBase(userEmail);
                             Intent intent = new Intent(Sign_up_acitivity.this,HomeActivity.class);
                             intent.putExtra("newUser", true);
+                            intent.putExtra("email", mEmail.getText().toString().trim());
+                            mEmail.setText("");
+                            mPassword.setText("");
+                            mRepeatedPassword.setText("");
                             startActivity(intent);
+                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
@@ -126,8 +133,10 @@ public class Sign_up_acitivity extends AppCompatActivity {
     public void addToFireBase(String email){
         String userId = mUser.getUid();
         List<String> friendList = new ArrayList<>();
-        mDatabase.child("friendMap").child(userId).setValue(friendList);
-        mDatabase.child("emailIDMap").child(Util.emailToUser(email)).setValue(userId);
+        mDatabase.child("userList").child(Util.emailToUser(email)).setValue(userId);
+        mDatabase.child("idEmailMap").child(userId).setValue(email);
+        Map<String, List<String>> friendMap = new HashMap<>();
+        mDatabase.child("friendMap").child(userId).setValue(friendMap);
     }
 
 

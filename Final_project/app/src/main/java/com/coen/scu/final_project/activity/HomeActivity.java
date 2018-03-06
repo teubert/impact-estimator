@@ -10,25 +10,31 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.fragment.MainPageFragment;
-import com.coen.scu.final_project.fragment.ProfileFragment;
+import com.coen.scu.final_project.fragment.NotificationFragment;
+import com.coen.scu.final_project.fragment.ProfileEditFragment;
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.fragment.ProfileFragment;
 import com.coen.scu.final_project.fragment.RankingFragment;
 import com.coen.scu.final_project.fragment.SummaryFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -39,16 +45,25 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+//        View header =navigationView.inflateHeaderView(R.layout.nav_header_main);
+        TextView name = (TextView)header.findViewById(R.id.head_name);
+        name.setText("bla");
 
         Intent intent = getIntent();
         boolean isNewUser = intent.getBooleanExtra("newUser", false);
         boolean isOldUser = intent.getBooleanExtra("preUser", false);
+        String newUserEmail = intent.getStringExtra("email");
         if(isNewUser){
-            Class fragmentClass = ProfileFragment.class;
+            Class fragmentClass = ProfileEditFragment.class;
             try {
+                Bundle bundle = new Bundle();
+                bundle.putInt("key", 1);
+                bundle.putString("email",newUserEmail);
                 Fragment fragment = (Fragment) fragmentClass.newInstance();
+                fragment.setArguments(bundle);
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.flContent, fragment).commit();
+                fragmentManager.beginTransaction().add(R.id.flContent, fragment, "initial_profile_edit").commit();
                 getSupportActionBar().setTitle("My Profile");
             } catch (Exception e) {
                 Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
@@ -79,16 +94,32 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag("initial_profile_edit");
+            if (fragment instanceof ProfileEditFragment) {
+                sendToSart();
+            }
             super.onBackPressed();
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currUser = mAuth.getCurrentUser();
+        if(currUser == null) {
+            sendToSart();
+        }
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -98,11 +129,20 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_logout) {
+            FirebaseAuth.getInstance().signOut();
+            sendToSart();
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sendToSart() {
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -125,12 +165,19 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile_page) {
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
-        }
+        } else if (id == R.id.nav_notification_page) {
+        fragmentClass = NotificationFragment.class;
+        title = "Notification";
+    }
 
         try {
             Fragment fragment = (Fragment) fragmentClass.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.flContent, fragment)
+                    .addToBackStack(null)
+                    .commit();
             getSupportActionBar().setTitle(title);
         } catch (Exception e) {
             Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
@@ -141,6 +188,10 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
 }
 
 

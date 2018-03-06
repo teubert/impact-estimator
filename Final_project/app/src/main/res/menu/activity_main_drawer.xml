@@ -20,6 +20,10 @@
             android:id="@+id/nav_profile_page"
             android:icon="@drawable/ic_menu_manage"
             android:title="Profile" />
+        <item
+            android:id="@+id/nav_notification_page"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Norification" />
     </group>
 
     <!--<item android:title="Communicate">-->
