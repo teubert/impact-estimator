@@ -34,7 +34,8 @@ public class FootprintEstimate {
 
         // Add breathing
         // From http://www.slate.com/articles/news_and_politics/explainer/2009/08/7_billion_carbon_sinks.html
-        co2 += 2.3;
+        final double humanCO2Breathing = 2.3;
+        co2 += humanCO2Breathing;
         // TODO(CT): Add pets
 
         // Add food
@@ -84,8 +85,10 @@ public class FootprintEstimate {
         // TODO(CT): Add house size
 
         // Add other sources
-        double other = 0;
-        co2 += other;
+        // http://shrinkthatfootprint.com/what-is-your-carbon-footprint
+        double products = 7.666; //kg/day
+        double services = 8.214; //kg/day
+        co2 += products + services;
 
         // Reductions
         double reductions  = 0;
