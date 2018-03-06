@@ -340,6 +340,7 @@ public class AddFriendFragment extends Fragment {
                     Picasso.with(getContext())
                             .load(url)
                             .placeholder(R.mipmap.ic_launcher)
+                            .resize(100, 100)
                             .into(mFriendImage, new com.squareup.picasso.Callback() {
                                 @Override
                                 public void onSuccess() {

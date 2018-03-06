@@ -130,6 +130,7 @@ public class ProfileEditFragment extends Fragment {
                     String url = dataSnapshot.child(uid).child("image").getValue(String.class);
                     Picasso.with(getContext())
                             .load(url)
+                            .resize(100, 100)
                             .into(mImage, new com.squareup.picasso.Callback() {
                                 @Override
                                 public void onSuccess() {

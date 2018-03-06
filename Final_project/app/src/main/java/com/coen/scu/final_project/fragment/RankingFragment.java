@@ -16,8 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
-import com.coen.scu.final_project.activity.HomeActivity;
 import com.coen.scu.final_project.java.FriendUser;
+import com.coen.scu.final_project.java.RankingUser;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +28,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,6 +44,7 @@ public class RankingFragment extends Fragment {
     private DatabaseReference mFriendDataRef;
     private DatabaseReference mFriendReqRef;
     private FirebaseUser mUser;
+    private String mUid;
     private RecyclerView mRecyclerView;
 
 
@@ -53,6 +58,64 @@ public class RankingFragment extends Fragment {
         mRef = FirebaseDatabase.getInstance().getReference();
         mRef.keepSynced(true);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUid = mUser.getUid();
+
+        //add self
+        mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userName = dataSnapshot.child(mUid).child("name").getValue(String.class);
+                String userEmission = dataSnapshot.child(mUid).child("total_emission").getValue(String.class);
+                String userImageUrl = dataSnapshot.child(mUid).child("image").getValue(String.class);
+                RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl);
+                mRef.child("ranking").child(mUid).child(mUid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //loop through each friend
+        mRef.child("friend_data").getRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot FriendUserData : dataSnapshot.child(mUid).getChildren()) {
+                    FriendUser friendUser = FriendUserData.getValue(FriendUser.class);
+                    final String uid = friendUser.getmId();
+                    //generate ranking class
+                    mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
+                            String userEmission = dataSnapshot.child(uid).child("total_emission").getValue(String.class);
+                            String userImageUrl = dataSnapshot.child(uid).child("image").getValue(String.class);
+                            RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl);
+                            mRef.child("ranking").child(mUid).child(uid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -61,6 +124,7 @@ public class RankingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ranking, container, false);
         FloatingActionButton fab = view.findViewById(R.id.fltAddBtn);
+        fab.show();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,37 +149,18 @@ public class RankingFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.i("DEBUG_TAG", mUser.getUid());
-        FirebaseRecyclerAdapter<FriendUser, FriendViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<FriendUser, FriendViewHolder>(
-                FriendUser.class,
+        FirebaseRecyclerAdapter<RankingUser, FriendViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<RankingUser, FriendViewHolder>(
+                RankingUser.class,
                 R.layout.list_item,
                 FriendViewHolder.class,
-                mRef.child("friend_data").child(mUser.getUid())
+                mRef.child("ranking").child(mUid).orderByChild("mEmission")
         ) {
             @Override
-            protected void populateViewHolder(final FriendViewHolder viewHolder, final FriendUser model, int position) {
+            protected void populateViewHolder(final FriendViewHolder viewHolder, final RankingUser model, int position) {
 
-                final String uid = model.getmId();
-                Log.i("DEBUG_TAG", uid);
-                mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
-                        String userEmission = dataSnapshot.child(uid).child("total_emission").getValue(String.class);
-                        String userImageUrl = dataSnapshot.child(uid).child("image").getValue(String.class);
-                        Log.i("DEBUG_TAG", userName);
-                        viewHolder.setUser(userName);
-                        viewHolder.setEmission(userEmission);
-                        viewHolder.setImage(userImageUrl, getContext());
-                        Log.i("DEBUG_TAG", "done");
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-
+                viewHolder.setUser(model.getmName());
+                viewHolder.setEmission(model.getmEmission());
+                viewHolder.setImage(model.getmImageUrl(), getContext(),model.getmName());
             }
         };
 
@@ -141,22 +186,12 @@ public class RankingFragment extends Fragment {
             emission.setText(message);
         }
 
-        public void setImage (String url, final Context ctx) {
+        public void setImage(final String url, final Context ctx, final String name) {
             CircleImageView mFriendImage = mView.findViewById(R.id.ranking_image);
             Picasso.with(ctx)
                     .load(url)
-                    .placeholder(R.mipmap.ic_launcher)
-                    .into(mFriendImage, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
-
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
+                    .resize(100,100)
+                    .into(mFriendImage);
         }
 
     }
