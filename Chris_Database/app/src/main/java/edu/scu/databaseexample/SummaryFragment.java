@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -22,6 +25,7 @@ import com.github.mikephil.charting.utils.MPPointF;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,8 +44,9 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
     private Calendar mDate = null;
     UserProfile user;
     String id;
-    Map<DayTripsSummary, TextView> map = new HashMap<>();
+    List<DayTripsSummary> list = new ArrayList<>();
     private PieChart mChart;
+    private LineChart mLine;
 
     boolean userSet = false;
 
@@ -134,37 +139,37 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         Calendar date = mDate;
         DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.today));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.yesterday));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.two_days_ago));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.three_days_ago));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.four_days_ago));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.five_days_ago));
+        list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
-        map.put(dayTripsSummary, (TextView) view.findViewById(R.id.six_days_ago));
+        list.add(dayTripsSummary);
 
         mChart = (PieChart) view.findViewById(R.id.chart1);
         mChart.getDescription().setEnabled(false);
@@ -174,12 +179,15 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         mChart.setMaxAngle(180f); // HALF CHART
         mChart.setRotationAngle(180f);
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mChart.setMinimumHeight(width*3/2);
+        mChart.setMinimumHeight(width*2/3);
 
         // radius of the center hole in percent of maximum radius
         mChart.setHoleRadius(45f);
         mChart.setTransparentCircleRadius(47f);
         mChart.getLegend().setEnabled(false);
+
+        mLine = (LineChart) view.findViewById(R.id.chart2);
+        mLine.setMinimumHeight(width*2/3);
 
         return view;
     }
@@ -204,15 +212,17 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         double electricity = 0;
         double products = 0;
         double services = 0;
-        for (Map.Entry<DayTripsSummary, TextView> mapEntry : map.entrySet()) {
-            FootprintEstimate estimate = FootprintEstimate.generateEstimate(mapEntry.getKey(), user);
+        List<Entry> lineEntries = new ArrayList<>();
+        int i = 0;
+        for (DayTripsSummary dayTripsSummary : list) {
+            FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary, user);
             trips       += estimate.trips;
             breathing   += estimate.breathing;
             food        += estimate.food;
             electricity += estimate.electricity;
             products    += estimate.products;
             services    += estimate.services;
-            mapEntry.getValue().setText(String.format("%.5f", estimate.CO2));
+            lineEntries.add(new Entry((float) ++i, (float) estimate.CO2));
         }
         ArrayList<PieEntry> entries = new ArrayList<>();
         double total = trips + breathing + food + electricity + products + services;
@@ -224,6 +234,8 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
         ArrayList<Integer> colors = new ArrayList<>();
 
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, "total");
+        LineData lineData = new LineData(lineDataSet);
         for (int c : ColorTemplate.COLORFUL_COLORS)
             colors.add(c);
 
@@ -243,6 +255,7 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         data.setValueTextColor(Color.WHITE);
 
         mChart.setData(data);
+        mLine.setData(lineData);
     }
 
     /**
