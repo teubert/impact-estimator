@@ -1,41 +1,73 @@
+// Arrow icons made by Dave Gandy at https://www.flaticon.com/free-icon/arrowhead-pointing-to-the-right_25446#term=right arrow&page=1&position=9
+
 package edu.scu.databaseexample;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String DEBUG_TAG = "Main Activity";
+    private static final String ARG_DATE = "date";
+
+    private Calendar mDate;
+
+    public void onDateUpdate(Calendar date) {
+        Log.v(DEBUG_TAG, "onDateUpdate: Creating fragment and commiting");
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        LogFragment fragment = LogFragment.newInstance(date);
+        ft.replace(R.id.flContent, fragment).commit();
+        Log.v(DEBUG_TAG, "onDateUpdate: done");
+    }
+
+    /**
+     * get the current timestamp in "unix time"
+     *
+     * @return Current timestamp in unix time
+     */
+    static private long getTimestamp(Calendar calendar) {
+        Log.v(DEBUG_TAG, "Getting current timestamp");
+
+        // 2) get a java.util.Date from the calendar instance.
+        //    this date will represent the current instant, or "now".
+        java.util.Date now = calendar.getTime();
+
+        // 3) a java current time (now) instance
+        java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
+
+        return currentTimestamp.getTime();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(DEBUG_TAG, "onCreate: Creating log view");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null) {
+            long date = savedInstanceState.getLong(ARG_DATE);
+            mDate = Calendar.getInstance();
+            mDate.setTimeInMillis(date);
+            Log.i(DEBUG_TAG, "onCreate: Restoring last date (" + mDate + ")");
+            onDateUpdate(mDate);
+        } else {
+            Log.v(DEBUG_TAG, "onCreate: No previous date");
+            onDateUpdate(Calendar.getInstance());
+        }
+        Log.v(DEBUG_TAG, "onCreate: done");
+        TestdataDatabaseFiller.fill();
+    }
 
-        ImpactDatabaseHelper iDH = new ImpactDatabaseHelper();
-        iDH.addNewUser("teubert@gmail.com","Chris Teubert", Transportation.CarType.SMALL_CAR);
-
-// 1) create a java calendar instance
-        Calendar calendar = Calendar.getInstance();
-
-// 2) get a java.util.Date from the calendar instance.
-//    this date will represent the current instant, or "now".
-        java.util.Date now = calendar.getTime();
-
-// 3) a java current time (now) instance
-        java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
-
-        long currentTime = currentTimestamp.getTime();
-
-        Transportation.GPS gpsPoint = new Transportation.GPS(currentTime, 51.5034070, -0.1275920);
-        iDH.addNewGPSDataPoint(User.emailToUsername("teubert@gmail.com"), gpsPoint);
-
-        iDH.addTrip(User.emailToUsername("teubert@gmail.com"), new Transportation.Trip(gpsPoint,
-                gpsPoint,
-                Transportation.TransportMode.AUTOMOBILE,
-                Transportation.CarType.HYBRID_CAR));
-
-        // TODO(CT): Test the rest
-        // TODO(CT): Move to unit tests
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(DEBUG_TAG, "onSaveInstanceState: Saving instance state");
+        super.onSaveInstanceState(outState);
+        outState.putLong(ARG_DATE, getTimestamp(mDate));
+        Log.v(DEBUG_TAG, "onSaveInstanceState: done");
     }
 }

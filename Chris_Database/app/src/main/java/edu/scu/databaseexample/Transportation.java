@@ -8,61 +8,61 @@ import android.util.Log;
 
 public class Transportation {
     /**
-     * Class to contain GPS data (element in unfiltered_gps_data key in database)
-     */
-    public static class GPS {
-        private final static String DEBUG_TAG = "GPS";
-
-        public long timestamp; // Linux time (timestamp.getTime())
-        public double lon; // Longitude (deg)
-        public double lat; // Latitude (deg)
-
-        public GPS() {
-            // Default constructor required for calls to DataSnapshot.getValue(GPS.class)
-        }
-
-        public GPS(long timestamp, double lon, double lat) {
-            Log.v(DEBUG_TAG, "Creating GPS Object");
-            this.timestamp = timestamp;
-            this.lon = lon;
-            this.lat = lat;
-        }
-    }
-
-    /**
-     * Class to contain information for a single trip
-     */
-    public static class Trip {
-        private final static String DEBUG_TAG = "Trip";
-
-        public GPS start;
-        public GPS end;
-        public long day;
-        TransportMode transport_mode;
-        CarType car_type;
-
-        public Trip() {
-            // Default constructor required for calls to DataSnapshot.getValue(Trip.class)
-        }
-
-        public Trip(GPS start, GPS end,
-                    Transportation.TransportMode transport_mode,
-                    Transportation.CarType car_type) {
-            Log.v(DEBUG_TAG, "Creating Trip Object");
-            this.start = start;
-            this.end = end;
-            this.transport_mode = transport_mode;
-            this.car_type = car_type;
-            // TODO(CT): get day from range
-        }
-
-    }
-
-    /**
      * Transport Modes
      */
     public enum TransportMode {
-        WALK, BIKE, AUTOMOBILE, AIRCRAFT, TRAIN, BOAT
+        //https://truecostblog.com/2010/05/27/fuel-efficiency-modes-of-transportation-ranked-by-mpg/
+        // NAME (mpg, mpw)
+        WALK (0,0),
+        BIKE (0,0),
+        AUTOMOBILE (1,1),
+        AIRCRAFT (42.6, 0),
+        TRAIN (71.6, 0),
+        BOAT (340, 0);
+        // TODO(CT): Add bus
+        // BUS (38.3, 0)
+
+        private final static String DEBUG_TAG = "TransportMode";
+        private double mpg; // Miles per gallon
+        private double mpw; // Miles per Watt
+        // TODO(CT): Is this really the right metric?
+        // TODO(CT): How is Natural Gas covered
+        // TODO(CT): What about diesel?
+
+        TransportMode(double mpg, double mpw) {
+            Log.v(DEBUG_TAG, "Creating Transport Mode Object");
+            this.mpg = mpg;
+            this.mpw = mpw;
+        }
+
+        /**
+         * Get the gas fuel efficiency
+         *
+         * @return gas fuel efficiency (in miles per gallon)
+         */
+        public double getMpg() {
+            Log.v(DEBUG_TAG, "Getting MPG");
+            return this.mpg;
+        }
+
+        /**
+         * Get the electric fuel efficiency
+         *
+         * @return electric fuel efficiency (in miles per watt)
+         */
+        public double getMpw() {
+            Log.v(DEBUG_TAG, "Getting MPW");
+            return this.mpw;
+        }
+
+        public static TransportMode fromValue(String transportTypeName){
+            for (TransportMode l : TransportMode.values()){
+                if (l.name().equals(transportTypeName)){
+                    return l;
+                }
+            }
+            throw new IllegalArgumentException("Invalid transport mode: " + transportTypeName);
+        }
     }
 
     /**
@@ -71,7 +71,8 @@ public class Transportation {
      *  TODO(CT): Switch to metric
      */
     public enum CarType {
-        // NAME  (mgp, mpw)
+        // NAME  (mpg, mpw)
+        MOTORCYCLE      (71.8, 0),
         SMALL_CAR       (40, 0),
         MID_CAR         (30, 0),
         LARGE_CAR       (20, 0),  // Cars
@@ -116,6 +117,15 @@ public class Transportation {
         public double getMpw() {
             Log.v(DEBUG_TAG, "Getting MPW");
             return this.mpw;
+        }
+
+        public static CarType fromValue(String carTypeName){
+            for (CarType l : CarType.values()){
+                if (l.name().equals(carTypeName)){
+                    return l;
+                }
+            }
+            throw new IllegalArgumentException("Invalid car type: " + carTypeName);
         }
     }
 }
