@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.activity.HomeActivity;
+import com.coen.scu.final_project.java.FriendUser;
 import com.coen.scu.final_project.java.Notification;
 import com.coen.scu.final_project.java.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -158,10 +159,12 @@ public class AddFriendFragment extends Fragment {
                 //received request and accept
                 if (mCurrent_state == 2) {
                     final String currDate = DateFormat.getDateInstance().format(new Date());
-                    mFriendDataRef.child(mUser.getUid()).child(mFreindUid).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    FriendUser myFriendUser = new FriendUser(mFreindUid, currDate);
+                    final FriendUser otherFriendUser = new FriendUser(mUser.getUid(), currDate);
+                    mFriendDataRef.child(mUser.getUid()).child(mFreindUid).setValue(myFriendUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            mFriendDataRef.child(mFreindUid).child(mUser.getUid()).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            mFriendDataRef.child(mFreindUid).child(mUser.getUid()).setValue(otherFriendUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     mFriendReqRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
