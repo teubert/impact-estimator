@@ -1,7 +1,7 @@
 package edu.scu.databaseexample;
 
-import android.content.Context;
-import android.net.Uri;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,10 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.MPPointF;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,22 +33,17 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
     // TODO: Rename parameter arguments, choose names that match
 
     private static final String DEBUG_TAG = "Summary Fragment";
+
     private static final String ARG_DATE = "date";
+    private static final String ARG_USER = "user";
 
     private Calendar mDate = null;
     UserProfile user;
     String id;
     Map<DayTripsSummary, TextView> map = new HashMap<>();
+    private PieChart mChart;
 
-    TextView todayView;
     boolean userSet = false;
-
-    public void onDateUpdate(Calendar date) {
-        id = "teubert_gmail_com";
-        user = UserProfile.getUserProfileById(id);
-        user.addCallback(this);
-        mDate = date;
-    }
 
     /**
      * get the current timestamp in "unix time"
@@ -59,6 +63,9 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         return currentTimestamp.getTime();
     }
 
+    /**
+     *
+     */
     public SummaryFragment() {
         // Required empty public constructor
     }
@@ -71,14 +78,19 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
      * @return A new instance of fragment SummaryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SummaryFragment newInstance(Calendar date) {
+    public static SummaryFragment newInstance(Calendar date, String user) {
         SummaryFragment fragment = new SummaryFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_DATE, getTimestamp(date));
+        args.putString(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,9 +98,17 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
             long date = getArguments().getLong(ARG_DATE);
             mDate = Calendar.getInstance();
             mDate.setTimeInMillis(date);
+            id = getArguments().getString(ARG_USER);
         }
     }
 
+    /**
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,7 +126,10 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
                 mDate = Calendar.getInstance();
             }
         }
-        onDateUpdate(mDate);
+
+        id = "teubert_gmail_com";
+        user = UserProfile.getUserProfileById(id);
+        user.addCallback(this);
 
         Calendar date = mDate;
         DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
@@ -143,10 +166,27 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         dayTripsSummary.addCallback(this);
         map.put(dayTripsSummary, (TextView) view.findViewById(R.id.six_days_ago));
 
+        mChart = (PieChart) view.findViewById(R.id.chart1);
+        mChart.getDescription().setEnabled(false);
+
+        mChart.setCenterText("CO2e");
+        mChart.setCenterTextSize(32f);
+        mChart.setMaxAngle(180f); // HALF CHART
+        mChart.setRotationAngle(180f);
+        int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+        mChart.setMinimumHeight(width*3/2);
+
+        // radius of the center hole in percent of maximum radius
+        mChart.setHoleRadius(45f);
+        mChart.setTransparentCircleRadius(47f);
+        mChart.getLegend().setEnabled(false);
 
         return view;
     }
 
+    /**
+     *
+     */
     @Override
     public void onTripUpdate() {
         if (userSet) {
@@ -154,19 +194,70 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         }
     }
 
+    /**
+     *
+     */
     public void update() {
+        double trips = 0;
+        double breathing = 0;
+        double food = 0;
+        double electricity = 0;
+        double products = 0;
+        double services = 0;
         for (Map.Entry<DayTripsSummary, TextView> mapEntry : map.entrySet()) {
             FootprintEstimate estimate = FootprintEstimate.generateEstimate(mapEntry.getKey(), user);
+            trips       += estimate.trips;
+            breathing   += estimate.breathing;
+            food        += estimate.food;
+            electricity += estimate.electricity;
+            products    += estimate.products;
+            services    += estimate.services;
             mapEntry.getValue().setText(String.format("%.5f", estimate.CO2));
         }
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        double total = trips + breathing + food + electricity + products + services;
+        entries.add(new PieEntry((float) (trips/total*100.0),       "Transport"));
+        entries.add(new PieEntry((float) (breathing/total*100.0),   "Breathing"));
+        entries.add(new PieEntry((float) (food/total*100.0),        "Food"));
+        entries.add(new PieEntry((float) (electricity/total*100.0), "Electricity"));
+        entries.add(new PieEntry((float) (products/total*100.0),    "Products"));
+        entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        PieDataSet dataSet = new PieDataSet(entries, "Week Results");
+        dataSet.setDrawIcons(false);
+
+        dataSet.setSliceSpace(3f);
+        dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+        dataSet.setColors(colors);
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter());
+        data.setValueTextSize(11f);
+        data.setValueTextColor(Color.WHITE);
+
+        mChart.setData(data);
     }
 
+    /**
+     *
+     */
     @Override
     public void onUserUpdate() {
         userSet = true;
         update();
     }
 
+    /**
+     *
+     * @param outState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(DEBUG_TAG, "onSaveInstanceState: Saving instance state");

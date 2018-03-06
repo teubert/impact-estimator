@@ -2,10 +2,6 @@ package edu.scu.databaseexample;
 
 import android.util.Log;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-
 /**
  * Class to contain an impact estimate (initially just CO2)
  *
@@ -18,25 +14,37 @@ public class FootprintEstimate {
     public double CO2 = 0;
     // Future versions could include other metrics
 
+    public double trips = 0;
+    public double breathing = 0;
+    public double food = 0;
+    public double electricity = 0;
+    public double products = 0;
+    public double services = 0;
+    public double reductions = 0;
+
     public long nDays;
 
     public static FootprintEstimate generateEstimate(DayTripsSummary dayTrips, UserProfile user) {
         double co2 = 0;
 
         // TODO(CT): FIX UNITS- KG
+        FootprintEstimate footprint = new FootprintEstimate(1);
 
         // http://shrinkthatfootprint.com/what-is-your-carbon-footprint
 
+        footprint.trips = 0;
         // Add trips portion
         for (Trip trip : dayTrips.trips) {
-            co2 += trip.getEstimate().CO2;
+            footprint.trips += trip.getEstimate().CO2;
         }
+        footprint.CO2 += footprint.trips;
 
         // Add breathing
         // From http://www.slate.com/articles/news_and_politics/explainer/2009/08/7_billion_carbon_sinks.html
         final double humanCO2Breathing = 2.3;
-        co2 += humanCO2Breathing;
+        footprint.breathing = humanCO2Breathing;
         // TODO(CT): Add pets
+        footprint.CO2 += footprint.breathing;
 
         // Add food
         // 	= Σ[CO2 from farm] + Σ[CO2 from transport]
@@ -70,7 +78,8 @@ public class FootprintEstimate {
         final double freight_average    = average_distance * (air_cargo + train + sea)/3; // average
         final double freight_local      = local_distance * truck;  // local typically truck
 
-        co2 += averageFoodCO2 + freight_average;
+        footprint.food = averageFoodCO2 + freight_average;
+        footprint.CO2 += footprint.food;
 
         // Add electricity
         //= Σ[Source efficiency]*[Percentage from source]*[Total Amount]
@@ -78,7 +87,8 @@ public class FootprintEstimate {
         // - Decreased by degrading amount
         final double lbsPerKWh = 1.222;
         final double averageKWh = 29.4757; // from: https://www.eia.gov/tools/faqs/faq.php?id=97&t=3
-        co2 += averageKWh*lbsPerKWh;
+        footprint.electricity = averageKWh*lbsPerKWh;
+        footprint.CO2 += footprint.electricity;
 
         // TODO(CT): Add locality for power source/average house use
         // TODO(CT): Add actual energy use
@@ -86,15 +96,15 @@ public class FootprintEstimate {
 
         // Add other sources
         // http://shrinkthatfootprint.com/what-is-your-carbon-footprint
-        double products = 7.666; //kg/day
-        double services = 8.214; //kg/day
-        co2 += products + services;
+        footprint.products = 7.666; //kg/day
+        footprint.services = 8.214; //kg/day
+        footprint.CO2 += footprint.products + footprint.services;
 
         // Reductions
-        double reductions  = 0;
-        co2 -= reductions;
+        footprint.reductions  = 0;
+        footprint.CO2 -= footprint.reductions;
 
-        return new FootprintEstimate(co2, 1);
+        return footprint;
     }
 
     /**

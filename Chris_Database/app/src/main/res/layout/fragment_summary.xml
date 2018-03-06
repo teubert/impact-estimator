@@ -7,6 +7,11 @@
     android:orientation="vertical"
     tools:context="edu.scu.databaseexample.SummaryActivity">
 
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/chart1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/six_days_ago"
         android:layout_width="wrap_content"
