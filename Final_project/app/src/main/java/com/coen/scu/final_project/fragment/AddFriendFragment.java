@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.activity.HomeActivity;
+import com.coen.scu.final_project.java.Notification;
 import com.coen.scu.final_project.java.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +42,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * A simple {@link Fragment} subclass.
  */
 public class AddFriendFragment extends Fragment {
+    private String mCurrUserName;
     private EditText mSearchEmail;
     private Button mSearchBtn;
     private CircleImageView mFriendImage;
@@ -47,11 +50,12 @@ public class AddFriendFragment extends Fragment {
     private Button mRequestBtn;
     private Button mDeclineBtn;
     private DatabaseReference mRef;
-    private DatabaseReference mFriendRef;
-    private DatabaseReference mFriendData;
+    private DatabaseReference mFriendReqRef;
+    private DatabaseReference mFriendDataRef;
+    private DatabaseReference mNotificationRef;
     private FirebaseUser mUser;
     private String mFreindUid;
-    private int mCurrent_state;  // 0: not friend; 1: request sent; 2: request received; 3:friends; 3:friends
+    private int mCurrent_state;  // 0: not friend; 1: request sent; 2: request received; 3:friends;
 
     public AddFriendFragment() {
         // Required empty public constructor
@@ -65,10 +69,11 @@ public class AddFriendFragment extends Fragment {
         ((HomeActivity) getActivity())
                 .setActionBarTitle("Add Friend");
         mRef = FirebaseDatabase.getInstance().getReference();
-        mFriendRef = mRef.child("friend_req");
-        mFriendData = mRef.child("friend_data");
+        mFriendReqRef = mRef.child("friend_req");
+        mFriendDataRef = mRef.child("friend_data");
+        mNotificationRef = mRef.child("notification");
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        findUserName(mUser.getUid());
     }
 
     @Override
@@ -103,20 +108,26 @@ public class AddFriendFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // if not friends yet
+                // if not friends yet sent request
                 if (mCurrent_state == 0) {
                     mDeclineBtn.setVisibility(View.GONE);
-                    mFriendRef.child(mUser.getUid()).child(mFreindUid).child("request_type").setValue("req_sent").addOnCompleteListener(new OnCompleteListener<Void>() {
+                    mFriendReqRef.child(mUser.getUid()).child(mFreindUid).child("request_type").setValue("req_sent").addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                mFriendRef.child(mFreindUid).child(mUser.getUid()).child("request_type").setValue("req_received").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                mFriendReqRef.child(mFreindUid).child(mUser.getUid()).child("request_type").setValue("req_received").addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getContext(), "Request sent", Toast.LENGTH_SHORT).show();
-                                        mCurrent_state = 1;
-                                        mRequestBtn.setText("Cancel Friend Request");
-                                        mDeclineBtn.setVisibility(View.GONE);
+                                        Notification notification = new Notification(mUser.getUid(), mCurrUserName);
+                                        mNotificationRef.child(mFreindUid).child(mUser.getUid()).setValue(notification).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getContext(), "Request sent", Toast.LENGTH_SHORT).show();
+                                                mCurrent_state = 1;
+                                                mRequestBtn.setText("Cancel Friend Request");
+                                                mDeclineBtn.setVisibility(View.GONE);
+                                            }
+                                        });
                                     }
                                 });
                             } else {
@@ -128,39 +139,41 @@ public class AddFriendFragment extends Fragment {
 
                 //cancel request
                 if (mCurrent_state == 1) {
-                    mFriendRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    mFriendReqRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            mFriendRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            mFriendReqRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     mCurrent_state = 0;
                                     mRequestBtn.setText("Send Friend Request");
                                     mDeclineBtn.setVisibility(View.GONE);
+                                    deleteNotification(mFreindUid, mUser.getUid());
                                 }
                             });
                         }
                     });
                 }
 
-                //received request
+                //received request and accept
                 if (mCurrent_state == 2) {
                     final String currDate = DateFormat.getDateInstance().format(new Date());
-                    mFriendData.child(mUser.getUid()).child(mFreindUid).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    mFriendDataRef.child(mUser.getUid()).child(mFreindUid).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            mFriendData.child(mFreindUid).child(mUser.getUid()).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            mFriendDataRef.child(mFreindUid).child(mUser.getUid()).setValue(currDate).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    mFriendRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    mFriendReqRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            mFriendRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            mFriendReqRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     mCurrent_state = 3;
                                                     mRequestBtn.setText("Unfriend");
                                                     mDeclineBtn.setVisibility(View.GONE);
+                                                    deleteNotification(mUser.getUid(), mFreindUid);
                                                 }
                                             });
                                         }
@@ -173,17 +186,17 @@ public class AddFriendFragment extends Fragment {
                 }
 
                 //delete friend
-                if(mCurrent_state == 3){
+                if (mCurrent_state == 3) {
                     Map unfriendMap = new HashMap();
                     unfriendMap.put("friend_data/" + mUser.getUid() + "/" + mFreindUid, null);
-                    unfriendMap.put("friend_data/" + mFreindUid+ "/" + mUser.getUid(), null);
+                    unfriendMap.put("friend_data/" + mFreindUid + "/" + mUser.getUid(), null);
 
                     mRef.updateChildren(unfriendMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
 
-                            if(databaseError == null){
+                            if (databaseError == null) {
 
                                 mCurrent_state = 0;
                                 mRequestBtn.setText("Send Friend Request");
@@ -205,12 +218,13 @@ public class AddFriendFragment extends Fragment {
         mDeclineBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFriendRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                mFriendReqRef.child(mUser.getUid()).child(mFreindUid).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        mFriendRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        mFriendReqRef.child(mFreindUid).child(mUser.getUid()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
+                                deleteNotification(mUser.getUid(),mFreindUid);
                                 mCurrent_state = 0;
                                 mRequestBtn.setText("Send Friend Request");
                                 mDeclineBtn.setVisibility(View.GONE);
@@ -220,6 +234,61 @@ public class AddFriendFragment extends Fragment {
                 });
             }
         });
+    }
+
+    private void deleteNotification(String to, String from) {
+        Map notification = new HashMap();
+        notification.put("notification/" + to + "/" + from, null);
+        mRef.updateChildren(notification, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                if (databaseError == null) {
+
+                } else {
+
+                }
+            }
+        });
+    }
+
+
+    private void findUserName(final String uid) {
+
+        mRef.child("users").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
+
+                //display
+                if (userName != null) {
+                    mCurrUserName = userName;
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+                Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // Read from the database
+//        mRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                mCurrUserName = dataSnapshot.child("users").child(uid).child("name").getValue(String.class);
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//            }
+//        });
     }
 
     private void findUser(final String friendEmail) {
@@ -282,7 +351,7 @@ public class AddFriendFragment extends Fragment {
                             });
                 }
 
-                mFriendRef.child(mUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                mFriendReqRef.child(mUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(mFreindUid)) {
@@ -296,7 +365,7 @@ public class AddFriendFragment extends Fragment {
                                 mRequestBtn.setText("Cancel Friend Request");
                             }
                         } else {
-                            mFriendData.child(mUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            mFriendDataRef.child(mUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.hasChild(mFreindUid)) {
