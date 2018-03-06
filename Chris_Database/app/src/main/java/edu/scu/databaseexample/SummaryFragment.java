@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -24,9 +23,7 @@ import com.github.mikephil.charting.utils.MPPointF;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +46,8 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
     private LineChart mLine;
 
     boolean userSet = false;
+
+    final boolean HALF_CHART = false;
 
     /**
      * get the current timestamp in "unix time"
@@ -176,10 +175,9 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
 
         mChart.setCenterText("CO2e");
         mChart.setCenterTextSize(32f);
-        mChart.setMaxAngle(180f); // HALF CHART
-        mChart.setRotationAngle(180f);
+
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mChart.setMinimumHeight(width*2/3);
+        mChart.setMinimumHeight(width*3/4);
 
         // radius of the center hole in percent of maximum radius
         mChart.setHoleRadius(45f);
@@ -188,6 +186,11 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
 
         mLine = (LineChart) view.findViewById(R.id.chart2);
         mLine.setMinimumHeight(width*2/3);
+
+        if (HALF_CHART) {
+//        mChart.setMaxAngle(180f); // HALF CHART
+//        mChart.setRotationAngle(180f);
+        }
 
         return view;
     }
@@ -256,6 +259,8 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
 
         mChart.setData(data);
         mLine.setData(lineData);
+        mChart.invalidate();
+        mLine.invalidate();
     }
 
     /**
