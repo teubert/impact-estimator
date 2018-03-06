@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.coen.scu.final_project.R;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
