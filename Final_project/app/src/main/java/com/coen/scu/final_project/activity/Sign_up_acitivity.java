@@ -137,6 +137,11 @@ public class Sign_up_acitivity extends AppCompatActivity {
         mDatabase.child("idEmailMap").child(userId).setValue(email);
         Map<String, List<String>> friendMap = new HashMap<>();
         mDatabase.child("friendMap").child(userId).setValue(friendMap);
+        mDatabase.child("users").child(userId).child("name").setValue("Unnamed User");
+        mDatabase.child("users").child(userId).child("email").setValue(email);
+        mDatabase.child("users").child(userId).child("car_type").setValue("UNKOWN");
+        String url = "https://firebasestorage.googleapis.com/v0/b/android-final-project-471bd.appspot.com/o/Portrait%2Fdefault.png?alt=media&token=922d687a-6c4a-4b08-940b-303b570e6894";
+        mDatabase.child("users").child(userId).child("image").setValue(url);
     }
 
 

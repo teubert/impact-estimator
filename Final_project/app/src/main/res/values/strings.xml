@@ -16,6 +16,7 @@
         <item> Hybrid Truck </item>
         <item> Electric Car </item>
         <item> Electric Truck </item>
+        <item> Unknow </item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
