@@ -108,8 +108,8 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             mode.setText(currentTrip.getTransport_mode().name());
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting impact");
-            TextView impact = (TextView) listItem.findViewById(R.id.text_impact);
-            impact.setText("XXX KG CO2 Emissions");
+            TextView estimate = listItem.findViewById(R.id.text_impact);
+            estimate.setText(String.format("%.2f kg CO2 emitted", currentTrip.getEstimate().CO2));
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
             TextView time = (TextView) listItem.findViewById(R.id.text_time);
@@ -177,10 +177,6 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                     newFragment.show(ft, "dialog");
                 }
             });
-
-            TextView estimate = listItem.findViewById(R.id.text_impact);
-            estimate.setText(Double.toString(currentTrip.getEstimate().CO2) + " kg CO2 emitted");
-            // TODO(CT): Switch to km
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: done");
 
