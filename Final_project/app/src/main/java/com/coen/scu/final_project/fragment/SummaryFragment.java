@@ -24,6 +24,8 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -82,23 +84,6 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param date Parameter 1.
-     * @return A new instance of fragment SummaryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SummaryFragment newInstance(Calendar date, String user) {
-        SummaryFragment fragment = new SummaryFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_DATE, getTimestamp(date));
-        args.putString(ARG_USER, user);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    /**
      *
      * @param savedInstanceState
      */
@@ -106,7 +91,9 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDate = Calendar.getInstance();
-        id = "teubert_gmail_com";
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        id = firebaseUser.getUid();
         if (getArguments() != null) {
             long date = getArguments().getLong(ARG_DATE);
             mDate.setTimeInMillis(date);
@@ -139,7 +126,6 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
             }
         }
 
-        id = "teubert_gmail_com";
         user = UserProfile.getUserProfileById(id);
         user.addCallback(this);
 

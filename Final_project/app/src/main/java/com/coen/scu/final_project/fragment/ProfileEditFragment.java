@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.java.Transportation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -193,7 +194,10 @@ public class ProfileEditFragment extends Fragment {
                         mRef.child("users").child(uid).child("name").setValue(userNameText);
                     }
                     if (carText != null) {
-                        mRef.child("users").child(uid).child("car_type").setValue(carText);
+                        String carItemText = carText.toUpperCase()
+                                .replace(" ", "_");
+                        Transportation.CarType selectedCarType = Transportation.CarType.fromValue(carItemText);
+                        mRef.child("users").child(uid).child("car_type").setValue(carItemText);
                     }
                     if (mFirstTime) {
                         mRef.child("users").child(uid).child("email").setValue(mNewUserEmail);

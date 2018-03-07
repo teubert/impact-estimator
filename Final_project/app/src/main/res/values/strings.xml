@@ -6,11 +6,16 @@
 
     <string name="action_settings">Settings</string>
     <string-array name="myCarType">
-        <item> car1 </item>
-        <item> car2 </item>
-        <item> car3 </item>
-        <item> car4 </item>
-        <item> car5 </item>
+        <item> Motorcycle </item>
+        <item> Small Car </item>
+        <item> Mid Car </item>
+        <item> Large Car </item>
+        <item> Small Truck </item>
+        <item> SUV </item>
+        <item> Hybrid Car </item>
+        <item> Hybrid Truck </item>
+        <item> Electric Car </item>
+        <item> Electric Truck </item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -83,8 +83,8 @@ public class Transportation {
         HYBRID_TRUCK    (25, 0),       // Hybrid
         ELECTRIC_CAR    (0,  100),
         ELECTRIC_TRUCK  (0,  50),   // Electric
-        NGAS_CAR        (0,  0),
-        NGAS_TRUCK      (0,  0);           // Natural Gas
+        UNKNOWN         (30, 0);
+
 
         private final static String DEBUG_TAG = "CarType";
         private double mpg; // Miles per gallon
@@ -125,7 +125,8 @@ public class Transportation {
                     return l;
                 }
             }
-            throw new IllegalArgumentException("Invalid car type: " + carTypeName);
+            Log.d(DEBUG_TAG, "Invalid car type: " + carTypeName);
+            return UNKNOWN;
         }
     }
 }

@@ -4,6 +4,7 @@ package com.coen.scu.final_project.fragment;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,9 +25,15 @@ import android.widget.TextView;
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.Trip;
+import com.google.android.gms.internal.kx;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -245,7 +252,9 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
         } else {
             Log.d(DEBUG_TAG, "onCreate: no set day... using today");
         }
-        userId = "teubert_gmail_com";
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        userId = firebaseUser.getUid();
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, mDate);
 
         logAdapter = new LogAdapter(getActivity(), dayTripsSummary.trips);
