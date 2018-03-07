@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.DayTripsSummary;
+import com.coen.scu.final_project.java.TestdataDatabaseFiller;
 import com.coen.scu.final_project.java.Trip;
 import com.google.android.gms.internal.kx;
 import com.google.firebase.FirebaseApp;
@@ -246,6 +247,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
         Log.d(DEBUG_TAG, "onCreate: Creating new LogFragment");
         super.onCreate(savedInstanceState);
         mDate = Calendar.getInstance();
+        //TestdataDatabaseFiller.fill();
         if (getArguments() != null) {
             mDate.setTimeInMillis(getArguments().getLong(ARG_DATE));
             Log.d(DEBUG_TAG, "onCreate: date set to " + mDate);
