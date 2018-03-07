@@ -180,7 +180,7 @@ public class HomeActivity extends AppCompatActivity
                     .commit();
             getSupportActionBar().setTitle(title);
         } catch (Exception e) {
-            Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

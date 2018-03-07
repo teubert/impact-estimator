@@ -237,6 +237,8 @@ public class SummaryFragment extends android.app.Fragment implements UserProfile
         entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
         ArrayList<Integer> colors = new ArrayList<>();
 
+        // TODO(CT): Combine categories
+
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "total");
         LineData lineData = new LineData(lineDataSet);
         for (int c : ColorTemplate.COLORFUL_COLORS)
