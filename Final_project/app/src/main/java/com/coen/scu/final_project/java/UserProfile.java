@@ -25,7 +25,7 @@ public class UserProfile implements ValueEventListener {
     private String email = null;
     private String name = null;
     private String id = null;
-    private Transportation.CarType car_type = null;
+    private Transportation.CarType car_type = Transportation.CarType.UNKNOWN;
 
     private DatabaseReference myRef;
     private static FirebaseDatabase database = FirebaseDatabase.getInstance();

@@ -51,6 +51,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
     private LineChart mLine;
 
     boolean userSet = false;
+    private ArrayList<Integer> colors = new ArrayList<>();
 
     final boolean HALF_CHART = false;
 
@@ -164,6 +165,11 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+
         mChart = (PieChart) view.findViewById(R.id.chart1);
         mChart.getDescription().setEnabled(false);
 
@@ -209,6 +215,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         double electricity = 0;
         double products = 0;
         double services = 0;
+
         List<Entry> lineEntries = new ArrayList<>();
         int i = 0;
         for (DayTripsSummary dayTripsSummary : list) {
@@ -224,21 +231,16 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         ArrayList<PieEntry> entries = new ArrayList<>();
         double total = trips + breathing + food + electricity + products + services;
         entries.add(new PieEntry((float) (trips/total*100.0),       "Transport"));
-        entries.add(new PieEntry((float) (breathing/total*100.0),   "Breathing"));
         entries.add(new PieEntry((float) (food/total*100.0),        "Food"));
         entries.add(new PieEntry((float) (electricity/total*100.0), "Electricity"));
-        entries.add(new PieEntry((float) (products/total*100.0),    "Products"));
-        entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
-        ArrayList<Integer> colors = new ArrayList<>();
-
-        // TODO(CT): Combine categories
+//        entries.add(new PieEntry((float) (breathing/total*100.0),   "Breathing"));
+//        entries.add(new PieEntry((float) (products/total*100.0),    "Products"));
+//        entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
+        entries.add(new PieEntry((float) ((services + products + breathing)/total*100), "Home"));
 
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "total");
         LineData lineData = new LineData(lineDataSet);
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
+        lineData.setValueTextSize(20f);
 
         PieDataSet dataSet = new PieDataSet(entries, "Week Results");
         dataSet.setDrawIcons(false);
@@ -250,7 +252,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
+        data.setValueTextSize(16f);
         data.setValueTextColor(Color.WHITE);
 
         mChart.setData(data);

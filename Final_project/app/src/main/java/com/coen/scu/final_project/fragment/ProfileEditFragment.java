@@ -195,7 +195,6 @@ public class ProfileEditFragment extends Fragment {
                     if (mChangeImage) {
                         uploadPicture(mUser);
                     }
-
                 }
             }
         });

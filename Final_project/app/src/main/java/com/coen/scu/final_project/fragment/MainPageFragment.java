@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.DayTripsSummary;
+import com.coen.scu.final_project.java.TestdataDatabaseFiller;
 import com.coen.scu.final_project.java.Trip;
 import com.google.android.gms.internal.kx;
 import com.google.firebase.FirebaseApp;
@@ -107,8 +108,8 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             mode.setText(currentTrip.getTransport_mode().name());
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting impact");
-            TextView impact = (TextView) listItem.findViewById(R.id.text_impact);
-            impact.setText("XXX KG CO2 Emissions");
+            TextView estimate = listItem.findViewById(R.id.text_impact);
+            estimate.setText(String.format("%.2f kg CO2 emitted", currentTrip.getEstimate().CO2));
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
             TextView time = (TextView) listItem.findViewById(R.id.text_time);
@@ -177,10 +178,6 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                 }
             });
 
-            TextView estimate = listItem.findViewById(R.id.text_impact);
-            estimate.setText(Double.toString(currentTrip.getEstimate().CO2) + " kg CO2 emitted");
-            // TODO(CT): Switch to km
-
             Log.v(DEBUG_TAG, "LogAdapter.getView: done");
 
             return listItem;
@@ -246,6 +243,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
         Log.d(DEBUG_TAG, "onCreate: Creating new LogFragment");
         super.onCreate(savedInstanceState);
         mDate = Calendar.getInstance();
+        //TestdataDatabaseFiller.fill();
         if (getArguments() != null) {
             mDate.setTimeInMillis(getArguments().getLong(ARG_DATE));
             Log.d(DEBUG_TAG, "onCreate: date set to " + mDate);
