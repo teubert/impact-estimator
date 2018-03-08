@@ -1,6 +1,5 @@
 package com.coen.scu.final_project.fragment;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,22 +14,26 @@ import com.coen.scu.final_project.java.FootprintEstimate;
 import com.coen.scu.final_project.java.UserProfile;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +50,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
     UserProfile user;
     String id;
     List<DayTripsSummary> list = new ArrayList<>();
+    List<String> dayList = new ArrayList<>();
     private PieChart mChart;
     private LineChart mLine;
 
@@ -80,6 +84,10 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         // Required empty public constructor
     }
 
+    /**
+     *
+     * @return
+     */
     public static SummaryFragment newInstance() {
         return new SummaryFragment();
     }
@@ -130,50 +138,57 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         user = UserProfile.getUserProfileById(id);
         user.addCallback(this);
 
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.US);
+
         Calendar date = mDate;
+        dayList.add(dayFormat.format(date.getTime()));
         DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
+        dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(id, date);
         dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
-        for (int c : ColorTemplate.COLORFUL_COLORS)
+        for (int c : ColorTemplate.LIBERTY_COLORS)
             colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
 
         mChart = (PieChart) view.findViewById(R.id.chart1);
         mChart.getDescription().setEnabled(false);
 
-        mChart.setCenterText("CO2e");
+        mChart.setCenterText(getString(R.string.pie_chart_center_text));
         mChart.setCenterTextSize(32f);
 
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
@@ -185,11 +200,33 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         mChart.getLegend().setEnabled(false);
 
         mLine = (LineChart) view.findViewById(R.id.chart2);
-        mLine.setMinimumHeight(width*2/3);
+        mLine.getDescription().setEnabled(false);
+        mLine.getLegend().setEnabled(false);
+        mLine.setMinimumHeight(width*3/4);
+        mLine.getAxisLeft().setEnabled(true);
+        mLine.getAxisLeft().setTextSize(16f);
+        mLine.getAxisLeft().setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.format(getString(R.string.line_left_label_format), value);
+            }
+        });
+        mLine.getAxisRight().setEnabled(false);
+        XAxis xAxis = mLine.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(20f);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelRotationAngle(75);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return dayList.get((int) value-1);
+            }
+        });
 
         if (HALF_CHART) {
-//        mChart.setMaxAngle(180f); // HALF CHART
-//        mChart.setRotationAngle(180f);
+            mChart.setMaxAngle(180f); // HALF CHART
+            mChart.setRotationAngle(180f);
         }
 
         return view;
@@ -209,6 +246,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
      *
      */
     public void update() {
+        // Initialize Data
         double trips = 0;
         double breathing = 0;
         double food = 0;
@@ -216,8 +254,9 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         double products = 0;
         double services = 0;
 
+        // Prepare data
         List<Entry> lineEntries = new ArrayList<>();
-        int i = 0;
+        int i = 1;
         for (DayTripsSummary dayTripsSummary : list) {
             FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary, user);
             trips       += estimate.trips;
@@ -226,23 +265,21 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
             electricity += estimate.electricity;
             products    += estimate.products;
             services    += estimate.services;
-            lineEntries.add(new Entry((float) ++i, (float) estimate.CO2));
+            lineEntries.add(new Entry((float) i++, (float) estimate.CO2));
         }
+
+        // Create Pie Chart
         ArrayList<PieEntry> entries = new ArrayList<>();
         double total = trips + breathing + food + electricity + products + services;
-        entries.add(new PieEntry((float) (trips/total*100.0),       "Transport"));
-        entries.add(new PieEntry((float) (food/total*100.0),        "Food"));
-        entries.add(new PieEntry((float) (electricity/total*100.0), "Electricity"));
+        entries.add(new PieEntry((float) (trips/total*100.0),        getString(R.string.transport_category_label)));
+        entries.add(new PieEntry((float) (food/total*100.0),         getString(R.string.food_category_label)));
+        entries.add(new PieEntry((float) (electricity/total*100.0),  getString(R.string.elec_category_label)));
 //        entries.add(new PieEntry((float) (breathing/total*100.0),   "Breathing"));
 //        entries.add(new PieEntry((float) (products/total*100.0),    "Products"));
 //        entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
-        entries.add(new PieEntry((float) ((services + products + breathing)/total*100), "Home"));
+        entries.add(new PieEntry((float) ((services + products + breathing)/total*100), getString(R.string.home_category_label)));
 
-        LineDataSet lineDataSet = new LineDataSet(lineEntries, "total");
-        LineData lineData = new LineData(lineDataSet);
-        lineData.setValueTextSize(20f);
-
-        PieDataSet dataSet = new PieDataSet(entries, "Week Results");
+        PieDataSet dataSet = new PieDataSet(entries, getString(R.string.pie_dataset_label));
         dataSet.setDrawIcons(false);
 
         dataSet.setSliceSpace(3f);
@@ -253,10 +290,18 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(16f);
-        data.setValueTextColor(Color.WHITE);
+        data.setValueTextColor(Color.BLACK);
 
         mChart.setData(data);
+
+        // Create Line Chart
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, getString(R.string.line_dataset_label));
+        lineDataSet.setDrawFilled(true);
+        LineData lineData = new LineData(lineDataSet);
+        lineData.setDrawValues(false);
         mLine.setData(lineData);
+
+        // Update
         mChart.invalidate();
         mLine.invalidate();
     }

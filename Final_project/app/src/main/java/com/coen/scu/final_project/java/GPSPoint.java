@@ -14,6 +14,7 @@ public class GPSPoint {
     public long timestamp; // Linux time (timestamp.getTime())
     public double lon; // Longitude (deg)
     public double lat; // Latitude (deg)
+    public double speed; // km/s
 
     public GPSPoint() {
         // Default constructor required for calls to DataSnapshot.getValue(GPS.class)
