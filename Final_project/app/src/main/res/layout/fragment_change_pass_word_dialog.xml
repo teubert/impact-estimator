@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="60dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/password_title"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        android:minWidth="100dp"
+        android:minHeight="45dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24dp"
+        android:text="Change Password" />
+
+    <EditText
+        android:id="@+id/new_password1"
+        android:layout_width="match_parent"
+        android:textSize="16sp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:hint="new passowrd"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/new_password2"
+        android:textSize="16sp"
+        android:paddingLeft="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="repeat password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/update_password"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="80dp"
+        android:minHeight="25dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/colorPrimary"
+        android:text="Update" />
+
+</LinearLayout>
