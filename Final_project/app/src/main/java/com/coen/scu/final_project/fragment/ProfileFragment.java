@@ -1,6 +1,7 @@
 package com.coen.scu.final_project.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -40,6 +41,7 @@ public class ProfileFragment extends Fragment {
     private TextView mUserName;
     private TextView mEmail;
     private TextView mCar;
+    private Button mBtn;
     private CircleImageView mImage;
     private ProgressDialog mUpdateDialog;
 
@@ -79,8 +81,22 @@ public class ProfileFragment extends Fragment {
         mEmail= view.findViewById(R.id.my_profile_email);
         mCar= view.findViewById(R.id.my_profile_car);
         mImage= view.findViewById(R.id.my_profile_image);
+        mBtn = view. findViewById(R.id.my_profile_password_btn);
         displayPreUserInfo(mUser.getUid());
         return view;
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                ChangePassWordDialogFragment dialog = new ChangePassWordDialogFragment();
+                dialog.show(getFragmentManager(), "Password Fragment");
+            }
+        });
 
     }
 

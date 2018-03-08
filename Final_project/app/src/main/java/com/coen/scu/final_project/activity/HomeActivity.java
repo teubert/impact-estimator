@@ -1,16 +1,25 @@
 package com.coen.scu.final_project.activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +33,8 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.fragment.ProfileFragment;
 import com.coen.scu.final_project.fragment.RankingFragment;
 import com.coen.scu.final_project.fragment.SummaryFragment;
+import com.coen.scu.final_project.java.GPSPath;
+import com.coen.scu.final_project.java.GPSPoint;
 import com.coen.scu.final_project.java.FriendUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,10 +45,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.time.LocalDate;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final String DEBUG_TAG = "HomeActivity";
 
     private FirebaseAuth mAuth;
     private DatabaseReference mRef;
@@ -45,9 +60,64 @@ public class HomeActivity extends AppCompatActivity
 
 
 
+    private LocationManager lm;
+    private String id;
+
+    /**
+     *  Start the location connection
+     */
+    void startConnection() {
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 10, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    GPSPoint gpsPoint = new GPSPoint(location.getTime(), location.getLongitude(), location.getLatitude());
+                    gpsPoint.speed = location.getSpeed();
+                    Log.v(DEBUG_TAG, String.format("LocationListener: Writing position update to database: %f, %f %f", gpsPoint.lat, gpsPoint.lon, gpsPoint.speed));
+                    GPSPath.addNewGPSDataPoint(id, gpsPoint);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            });
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+            Log.w(DEBUG_TAG, "startConnection: Missing required permissions (FINE_LOCATION)");
+        }
+    }
+
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        id = firebaseUser.getUid();
+        startConnection();
+
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -124,7 +194,6 @@ public class HomeActivity extends AppCompatActivity
                 Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
-
         }
 
         if (isOldUser) {
@@ -138,11 +207,12 @@ public class HomeActivity extends AppCompatActivity
                 Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
-
         }
-
     }
 
+    /**
+     *
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -198,6 +268,11 @@ public class HomeActivity extends AppCompatActivity
         finish();
     }
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -247,6 +322,10 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     *
+     * @param title
+     */
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }

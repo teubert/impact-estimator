@@ -21,6 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
             android:layout_marginBottom="20dp"
             android:textColorHint="#ffffff">
             <EditText android:id="@+id/profile_userName"
@@ -33,17 +35,23 @@
 
         <TextView
             android:layout_width="wrap_content"
+            android:paddingLeft="50dp"
             android:text="Choose Your Car Type Below:"
             android:layout_height="wrap_content" />
         <Spinner
             android:layout_width="match_parent"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
             android:layout_height="40dp"
             android:id="@+id/profile_carType"/>
 
 
         <Button
             android:id="@+id/btn_updateProfile"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/button"
+            android:minHeight="15dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"

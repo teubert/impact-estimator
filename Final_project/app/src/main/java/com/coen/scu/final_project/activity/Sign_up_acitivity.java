@@ -82,8 +82,8 @@ public class Sign_up_acitivity extends AppCompatActivity {
                 }
 
                 if (passwordString.length() < 6) {
-                    mRepeatedPassword.setError("Minimum lenght of mPassword should be 6");
-                    mRepeatedPassword.requestFocus();
+                    mPassword.setError("Minimum lenght of mPassword should be 6");
+                    mPassword.requestFocus();
                     return;
                 }
 
