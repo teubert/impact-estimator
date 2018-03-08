@@ -1,10 +1,7 @@
 package com.coen.scu.final_project.fragment;
 
-
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,15 +23,11 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.TestdataDatabaseFiller;
 import com.coen.scu.final_project.java.Trip;
-import com.google.android.gms.internal.kx;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -109,7 +102,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting impact");
             TextView estimate = listItem.findViewById(R.id.text_impact);
-            estimate.setText(String.format("%.2f kg CO2 emitted", currentTrip.getEstimate().CO2));
+            estimate.setText(String.format(getString(R.string.emmission_label_format), currentTrip.getEstimate().CO2));
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
             TextView time = (TextView) listItem.findViewById(R.id.text_time);
@@ -121,7 +114,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             int startMin    = start.get(Calendar.MINUTE);
             int endHr       = end.get(Calendar.HOUR);
             int endMin      = end.get(Calendar.MINUTE);
-            time.setText(String.format("%02d:%02d - %02d:%02d", startHr, startMin, endHr, endMin));
+            time.setText(String.format(getString(R.string.timerange_lbl_format), startHr, startMin, endHr, endMin));
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting icon");
             ImageView icon = listItem.findViewById(R.id.image_icon);
@@ -173,7 +166,9 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    EditTripDialogFragment newFragment = EditTripDialogFragment.newInstance(currentTrip.getTripId(), getTimestamp(mDate), userId);
+                    EditTripDialogFragment newFragment =
+                            EditTripDialogFragment.newInstance(currentTrip.getTripId(),
+                                    getTimestamp(mDate), userId);
                     newFragment.show(ft, "dialog");
                 }
             });

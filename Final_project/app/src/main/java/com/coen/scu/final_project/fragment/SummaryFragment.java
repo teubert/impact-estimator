@@ -1,6 +1,5 @@
 package com.coen.scu.final_project.fragment;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -85,6 +84,10 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         // Required empty public constructor
     }
 
+    /**
+     *
+     * @return
+     */
     public static SummaryFragment newInstance() {
         return new SummaryFragment();
     }
@@ -135,8 +138,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         user = UserProfile.getUserProfileById(id);
         user.addCallback(this);
 
-        String weekDay;
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.US);
 
         Calendar date = mDate;
         dayList.add(dayFormat.format(date.getTime()));
@@ -186,7 +188,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         mChart = (PieChart) view.findViewById(R.id.chart1);
         mChart.getDescription().setEnabled(false);
 
-        mChart.setCenterText("CO2e");
+        mChart.setCenterText(getString(R.string.pie_chart_center_text));
         mChart.setCenterTextSize(32f);
 
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
@@ -206,7 +208,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         mLine.getAxisLeft().setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return String.format("%.0f kg", value);
+                return String.format(getString(R.string.line_left_label_format), value);
             }
         });
         mLine.getAxisRight().setEnabled(false);
@@ -223,8 +225,8 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         });
 
         if (HALF_CHART) {
-//        mChart.setMaxAngle(180f); // HALF CHART
-//        mChart.setRotationAngle(180f);
+            mChart.setMaxAngle(180f); // HALF CHART
+            mChart.setRotationAngle(180f);
         }
 
         return view;
@@ -269,15 +271,15 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         // Create Pie Chart
         ArrayList<PieEntry> entries = new ArrayList<>();
         double total = trips + breathing + food + electricity + products + services;
-        entries.add(new PieEntry((float) (trips/total*100.0),       "Transport"));
-        entries.add(new PieEntry((float) (food/total*100.0),        "Food"));
-        entries.add(new PieEntry((float) (electricity/total*100.0), "Electricity"));
+        entries.add(new PieEntry((float) (trips/total*100.0),        getString(R.string.transport_category_label)));
+        entries.add(new PieEntry((float) (food/total*100.0),         getString(R.string.food_category_label)));
+        entries.add(new PieEntry((float) (electricity/total*100.0),  getString(R.string.elec_category_label)));
 //        entries.add(new PieEntry((float) (breathing/total*100.0),   "Breathing"));
 //        entries.add(new PieEntry((float) (products/total*100.0),    "Products"));
 //        entries.add(new PieEntry((float) (services/total*100.0),    "Services"));
-        entries.add(new PieEntry((float) ((services + products + breathing)/total*100), "Home"));
+        entries.add(new PieEntry((float) ((services + products + breathing)/total*100), getString(R.string.home_category_label)));
 
-        PieDataSet dataSet = new PieDataSet(entries, "Week Results");
+        PieDataSet dataSet = new PieDataSet(entries, getString(R.string.pie_dataset_label));
         dataSet.setDrawIcons(false);
 
         dataSet.setSliceSpace(3f);
@@ -293,7 +295,7 @@ public class SummaryFragment extends Fragment implements UserProfile.UserUpdateI
         mChart.setData(data);
 
         // Create Line Chart
-        LineDataSet lineDataSet = new LineDataSet(lineEntries, "total");
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, getString(R.string.line_dataset_label));
         lineDataSet.setDrawFilled(true);
         LineData lineData = new LineData(lineDataSet);
         lineData.setDrawValues(false);
