@@ -101,7 +101,7 @@ public class NotificationFragment extends Fragment {
                                 });
                             }
                         });
-                        Toast.makeText(getContext(), "accept" + model.getmUserName(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), "accept" + model.getmUserName(), Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -111,7 +111,7 @@ public class NotificationFragment extends Fragment {
                     public void onClick(View view) {
                         deleteReqNoti(model);
 
-                        Toast.makeText(getContext(), "reject" + model.getmUserName(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), "reject" + model.getmUserName(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }

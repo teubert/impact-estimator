@@ -1,5 +1,6 @@
 package com.coen.scu.final_project.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,13 +24,27 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.fragment.ProfileFragment;
 import com.coen.scu.final_project.fragment.RankingFragment;
 import com.coen.scu.final_project.fragment.SummaryFragment;
+import com.coen.scu.final_project.java.FriendUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mRef;
+    private FirebaseUser mUser;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,21 +60,61 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
 //        View header =navigationView.inflateHeaderView(R.layout.nav_header_main);
-        TextView name = (TextView)header.findViewById(R.id.head_name);
-        name.setText("bla");
+        mAuth = FirebaseAuth.getInstance();
+        mRef = FirebaseDatabase.getInstance().getReference();
+        mUser = mAuth.getCurrentUser();
+        final TextView name = (TextView) header.findViewById(R.id.head_name);
+        final TextView email = (TextView) header.findViewById(R.id.head_email);
+        final CircleImageView image = header.findViewById(R.id.head_pic);
+        mRef.child("users").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String uid = mUser.getUid();
+                String userEmail = dataSnapshot.child(uid).child("email").getValue(String.class);
+                String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
+                String url = dataSnapshot.child(uid).child("image").getValue(String.class);
+
+                //display
+                if (userName != null) {
+                    name.setText(userName);
+                }
+
+                if (userEmail!= null) {
+                    email.setText(userEmail);
+                }
+
+                Picasso.with(HomeActivity.this)
+                        .load(url)
+                        .resize(100, 100)
+                        .into(image, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
+                            }
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         Intent intent = getIntent();
         boolean isNewUser = intent.getBooleanExtra("newUser", false);
         boolean isOldUser = intent.getBooleanExtra("preUser", false);
         String newUserEmail = intent.getStringExtra("email");
-        if(isNewUser){
+        if (isNewUser) {
             Class fragmentClass = ProfileEditFragment.class;
             try {
                 Bundle bundle = new Bundle();
                 bundle.putInt("key", 1);
-                bundle.putString("email",newUserEmail);
+                bundle.putString("email", newUserEmail);
                 Fragment fragment = (Fragment) fragmentClass.newInstance();
                 fragment.setArguments(bundle);
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -72,7 +127,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
-        if(isOldUser){
+        if (isOldUser) {
             Class fragmentClass = MainPageFragment.class;
             try {
                 Fragment fragment = (Fragment) fragmentClass.newInstance();
@@ -101,42 +156,40 @@ public class HomeActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currUser = mAuth.getCurrentUser();
-        if(currUser == null) {
+        if (currUser == null) {
             sendToSart();
         }
 
     }
 
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut();
-            sendToSart();
-
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_logout) {
+//            FirebaseAuth.getInstance().signOut();
+//            sendToSart();
+//
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void sendToSart() {
         Intent intent = new Intent(HomeActivity.this, MainActivity.class);
@@ -166,28 +219,34 @@ public class HomeActivity extends AppCompatActivity
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
         } else if (id == R.id.nav_notification_page) {
-        fragmentClass = NotificationFragment.class;
-        title = "Notification";
-    }
+            fragmentClass = NotificationFragment.class;
+            title = "Notification";
+        } else if (id == R.id.nav_log_out) {
+            FirebaseAuth.getInstance().signOut();
+            sendToSart();
+        }
 
-        try {
-            Fragment fragment = (Fragment) fragmentClass.newInstance();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.flContent, fragment)
-                    .addToBackStack(null)
-                    .commit();
-            getSupportActionBar().setTitle(title);
-        } catch (Exception e) {
-            Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+        if (id != R.id.nav_log_out) {
+            try {
+                Fragment fragment = (Fragment) fragmentClass.newInstance();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.flContent, fragment)
+                        .addToBackStack(null)
+                        .commit();
+                getSupportActionBar().setTitle(title);
+            } catch (Exception e) {
+                Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }

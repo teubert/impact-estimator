@@ -8,15 +8,25 @@ public class RankingUser {
     private String mName;
     private String mEmission;
     private String mImageUrl;
+    private String mId;
 
     public RankingUser(){
 
     }
 
-    public RankingUser(String name, String emission, String image){
+    public String getmId() {
+        return mId;
+    }
+
+    public void setmId(String mId) {
+        this.mId = mId;
+    }
+
+    public RankingUser(String name, String emission, String image, String id){
        mName = name;
        mEmission = emission;
        mImageUrl = image;
+       mId = id;
     }
 
     public String getmName() {

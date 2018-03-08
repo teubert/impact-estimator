@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
                         mPBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(MainActivity.this, "Login succeed",
-                                    Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "Login succeed",
+//                                    Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this,HomeActivity.class);
                             intent.putExtra("preUser", true);
                             mEmail.setText("");

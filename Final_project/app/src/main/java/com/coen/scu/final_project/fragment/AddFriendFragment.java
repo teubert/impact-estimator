@@ -19,6 +19,7 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.activity.HomeActivity;
 import com.coen.scu.final_project.java.FriendUser;
 import com.coen.scu.final_project.java.Notification;
+import com.coen.scu.final_project.java.RankingUser;
 import com.coen.scu.final_project.java.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,7 +62,6 @@ public class AddFriendFragment extends Fragment {
     public AddFriendFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -185,7 +185,6 @@ public class AddFriendFragment extends Fragment {
                             });
                         }
                     });
-
                 }
 
                 //delete friend
@@ -212,6 +211,17 @@ public class AddFriendFragment extends Fragment {
                                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
 
                             }
+                        }
+                    });
+
+
+                    Map rankingMap = new HashMap();
+                    rankingMap.put("ranking/" + mUser.getUid() + "/" + mFreindUid, null);
+                    rankingMap.put("ranking/" + mFreindUid + "/" + mUser.getUid(), null);
+                    mRef.updateChildren(rankingMap, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
                         }
                     });
 

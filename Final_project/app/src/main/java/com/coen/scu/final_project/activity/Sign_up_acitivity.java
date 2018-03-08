@@ -12,15 +12,20 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.java.RankingUser;
 import com.coen.scu.final_project.java.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,8 +107,8 @@ public class Sign_up_acitivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         mPBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Registration succeed",
-                                    Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getApplicationContext(), "Registration succeed",
+//                                    Toast.LENGTH_SHORT).show();
                             mUser = mAuth.getCurrentUser();
                             String userEmail = mEmail.getText().toString().trim();
                             addToFireBase(userEmail);

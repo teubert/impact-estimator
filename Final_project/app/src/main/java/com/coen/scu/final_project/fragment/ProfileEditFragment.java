@@ -60,6 +60,7 @@ public class ProfileEditFragment extends Fragment {
     private EditText mUserName;
     private CircleImageView mImage;
     private Button mUpdateBtn;
+    private ProgressDialog mUpdateDialog;
     private boolean mChangeImage = false;
     private boolean mFirstTime = false;
     private ArrayAdapter<CharSequence> mAdapter;
@@ -123,7 +124,7 @@ public class ProfileEditFragment extends Fragment {
                 }
 
 
-                if (url != null) {
+                if (!mFirstTime) {
 
                     Picasso.with(getContext())
                             .load(url)
@@ -148,6 +149,9 @@ public class ProfileEditFragment extends Fragment {
 //                    }
 //                    Bitmap bitmap = BitmapFactory.decodeStream(in);
 //                    mImage.setImageBitmap(bitmap);
+                } else {
+                    progressDialog.dismiss();
+
                 }
             }
 
@@ -179,6 +183,8 @@ public class ProfileEditFragment extends Fragment {
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mUpdateDialog = ProgressDialog.show(getActivity(), "Update",
+                        "Please wait...", true);
                 if (mUser != null) {
                     String carText = mCarType.getSelectedItem().toString();
                     String userNameText = mUserName.getText().toString();
@@ -194,6 +200,9 @@ public class ProfileEditFragment extends Fragment {
                     }
                     if (mChangeImage) {
                         uploadPicture(mUser);
+                    } else {
+                        mUpdateDialog.dismiss();
+                        Toast.makeText(getContext(), "Update successful", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -207,21 +216,21 @@ public class ProfileEditFragment extends Fragment {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             mUri = data.getData();
-            try {
-                //getting image from gallery
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
-                //Setting image to ImageView
-                mImage.setImageBitmap(bitmap);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (mUri != null) {
+                try {
+                    //getting image from gallery
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
+                    //Setting image to ImageView
+                    mImage.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
 
     public void uploadPicture(final FirebaseUser firebaseUser) {
-        final ProgressDialog progressDialogUpLoad = ProgressDialog.show(getActivity(), "Update",
-                "Please wait...", true);
         byte[] data = new byte[0];
         if (mUri != null) {
             try {
@@ -242,8 +251,8 @@ public class ProfileEditFragment extends Fragment {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri imageUrl = taskSnapshot.getDownloadUrl();
                     mRef.child("users").child(firebaseUser.getUid()).child("image").setValue(imageUrl.toString());
-                    progressDialogUpLoad.dismiss();
-                    Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                    mUpdateDialog.dismiss();
+                    Toast.makeText(getContext(), "Update successful", Toast.LENGTH_SHORT).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -252,7 +261,8 @@ public class ProfileEditFragment extends Fragment {
                 }
             });
         } else {
-            Toast.makeText(getContext(), "Select an image", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "Select an image", Toast.LENGTH_SHORT).show();
+            mUpdateDialog.dismiss();
         }
     }
 }

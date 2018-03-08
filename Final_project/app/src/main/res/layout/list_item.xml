@@ -4,43 +4,51 @@
     android:id="@+id/list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_margin="16dp">
+    android:layout_margin="16dp"
+    android:background="?android:selectableItemBackground"
+    android:minHeight="88dp"
+    android:orientation="horizontal">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ranking_image"
-        android:layout_width="72dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_gravity="center"
-        android:layout_height="72dp"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="4"
         android:id="@+id/text"
-        android:paddingLeft="16dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_weight="4"
+        android:orientation="vertical"
+        android:paddingLeft="16dp">
 
         <TextView
             android:id="@+id/ranking_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:fontFamily="sans-serif"
             android:gravity="bottom"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textStyle="bold"
             tool:text="Name" />
 
         <TextView
             android:id="@+id/ranking_emission"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:fontFamily="sans-serif"
             android:gravity="top"
-            android:layout_width="match_parent"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textStyle="bold"
             tool:text="Emission: 0.1 KG CO2" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ranking_unfriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_unfriend" />
 </LinearLayout>

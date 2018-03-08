@@ -29,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +40,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class RankingFragment extends Fragment {
     private DatabaseReference mRef;
-    private DatabaseReference mFriendDataRef;
-    private DatabaseReference mFriendReqRef;
     private FirebaseUser mUser;
     private String mUid;
     private RecyclerView mRecyclerView;
@@ -60,14 +57,19 @@ public class RankingFragment extends Fragment {
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUid = mUser.getUid();
 
-        //add self
+        generateRankingData();
+
+    }
+
+    private void generateRankingData() {
+                //add self
         mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String userName = dataSnapshot.child(mUid).child("name").getValue(String.class);
                 String userEmission = dataSnapshot.child(mUid).child("total_emission").getValue(String.class);
                 String userImageUrl = dataSnapshot.child(mUid).child("image").getValue(String.class);
-                RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl);
+                RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl,mUid);
                 mRef.child("ranking").child(mUid).child(mUid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -95,7 +97,7 @@ public class RankingFragment extends Fragment {
                             String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
                             String userEmission = dataSnapshot.child(uid).child("total_emission").getValue(String.class);
                             String userImageUrl = dataSnapshot.child(uid).child("image").getValue(String.class);
-                            RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl);
+                            RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl, uid);
                             mRef.child("ranking").child(mUid).child(uid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -161,6 +163,17 @@ public class RankingFragment extends Fragment {
                 viewHolder.setUser(model.getmName());
                 viewHolder.setEmission(model.getmEmission());
                 viewHolder.setImage(model.getmImageUrl(), getContext(),model.getmName());
+                viewHolder.mView.findViewById(R.id.ranking_unfriend).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DeleteFriendDialogFragment dialog = new DeleteFriendDialogFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("id", model.getmId());
+                        dialog.setArguments(bundle);
+                        // Show Alerto DialogFragment
+                        dialog.show(getFragmentManager(), "Alert Dialog Fragment");
+                    }
+                });
             }
         };
 
@@ -196,6 +209,26 @@ public class RankingFragment extends Fragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        generateRankingData();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Map delete= new HashMap();
+        delete.put("ranking/" + mUser.getUid(), null);
+
+        mRef.updateChildren(delete, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+            }
+        });
+
+    }
 }
 
 
