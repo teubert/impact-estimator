@@ -10,8 +10,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ranking_image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:layout_gravity="center"
         android:src="@mipmap/ic_launcher" />
 
@@ -29,8 +29,10 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif"
+            android:paddingLeft="10dp"
             android:gravity="bottom"
             android:textAppearance="?android:textAppearanceMedium"
+            android:textSize="36sp"
             tool:text="Name" />
 
         <TextView
@@ -41,6 +43,7 @@
             android:fontFamily="sans-serif"
             android:gravity="top"
             android:textAppearance="?android:textAppearanceMedium"
+            android:textSize="36sp"
             tool:text="Emission: 0.1 KG CO2" />
 
     </LinearLayout>

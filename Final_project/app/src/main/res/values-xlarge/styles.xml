@@ -21,11 +21,11 @@
         <item name="colorAccent">#8311D1</item>
     </style>
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">48sp</item>
     </style>
+
     <style name="DialogCustom">
         <item name="android:textSize">32sp</item>
     </style>
-
 
 </resources>

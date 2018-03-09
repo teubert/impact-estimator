@@ -3,6 +3,7 @@ package com.coen.scu.final_project.fragment;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -55,7 +56,7 @@ public class DeleteFriendDialogFragment extends DialogFragment {
 
                 // Positive button
 
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.i("DEBUG_TAG", mUser.getUid());
                         Log.i("DEBUG_TAG", mFreindUid);
@@ -86,5 +87,11 @@ public class DeleteFriendDialogFragment extends DialogFragment {
                         // Do something else
                     }
                 }).create();
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
     }
 }

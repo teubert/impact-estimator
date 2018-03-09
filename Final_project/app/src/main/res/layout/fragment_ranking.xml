@@ -21,12 +21,12 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fltAddBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/float_icon_size"
+        android:layout_height="@dimen/float_icon_size"
         android:layout_gravity= "bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/ic_add_circle_black_48dp"
-        app:backgroundTint="@android:color/white"
+        android:src="@drawable/ic_menu_add"
+        app:backgroundTint="@color/button"
         app:fabSize="mini" />
 
 </FrameLayout>

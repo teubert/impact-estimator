@@ -25,13 +25,13 @@
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
         tool:text="Android Studio"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/head_email"
         android:layout_width="wrap_content"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:layout_height="wrap_content"
         tool:text="android.studio@android.com" />
 

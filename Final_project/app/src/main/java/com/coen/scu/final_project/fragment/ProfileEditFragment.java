@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +106,8 @@ public class ProfileEditFragment extends Fragment {
 
     private void displayPreUserInfo(final String uid) {
         mRef.child("users").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
-            ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Getting Data",
+            Context ctx = getActivity();
+            ProgressDialog progressDialog = ProgressDialog.show(new ContextThemeWrapper(ctx, R.style.DialogCustom), "Getting Data",
                     "Loading...", true);
 
             @Override
@@ -183,6 +185,9 @@ public class ProfileEditFragment extends Fragment {
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Context ctx = getActivity();
+                mUpdateDialog = ProgressDialog.show(new ContextThemeWrapper(ctx, R.style.DialogCustom), "Update",
+                        "Please wait...", true);
                 mUpdateDialog = ProgressDialog.show(getActivity(), "Update",
                         "Please wait...", true);
                 if (mUser != null) {

@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="18dp"
-    xmlns:tool="http://schemas.android.com/tools"
     android:orientation="vertical">
+
     <TextView
         android:id="@+id/friend_request_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="6dp"
-        android:textSize="18sp"
-        tool:text="XXX sent u a notification"/>
+        android:textSize="36sp"
+        android:textColor="@android:color/black"
+        tool:text="XXX sent u a notification" />
 
     <LinearLayout
-        android:layout_marginTop="8dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right">
 
         <Button
             android:id="@+id/accept_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:background="@color/button"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:text="Accept" />
+            android:text="Accept"
+            android:textSize="32sp" />
 
         <Button
             android:id="@+id/reject_btn"
@@ -35,7 +41,8 @@
             android:background="@android:color/holo_red_light"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:text="Reject" />
+            android:text="Reject"
+            android:textSize="32sp" />
 
 
     </LinearLayout>

@@ -161,7 +161,7 @@ public class RankingFragment extends Fragment {
             protected void populateViewHolder(final FriendViewHolder viewHolder, final RankingUser model, int position) {
 
                 viewHolder.setUser(model.getmName());
-                viewHolder.setEmission(model.getmEmission());
+                viewHolder.setEmission("Emission: " + model.getmEmission());
                 viewHolder.setImage(model.getmImageUrl(), getContext(),model.getmName());
                 viewHolder.mView.findViewById(R.id.ranking_unfriend).setOnClickListener(new View.OnClickListener() {
                     @Override
