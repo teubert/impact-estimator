@@ -1,74 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tool="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/my_profile_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:src="@mipmap/ic_user_portrait" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/my_profile_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_user_portrait" />
 
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/my_profile_displayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:textSize="36sp"
+            tool:text="Adam" />
 
-                <TextView
-                    android:id="@+id/my_profile_displayName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginLeft="20dp"
-                    tool:text="Adam"
-                    android:textSize="36sp" />
-
-                <TextView
-                    android:id="@+id/my_profile_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    tool:text="adam@gmail.com"
-                    android:textSize="16sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-
+        <TextView
+            android:id="@+id/my_profile_email"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            tool:text="adam@gmail.com" />
 
         <Button
             android:id="@+id/my_profile_btn"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/button"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
             android:minHeight="20dp"
             android:text="Reset Password"
             android:textAllCaps="false"
             android:textSize="14sp" />
 
         <LinearLayout
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp">
 
             <TextView
                 android:id="@+id/carInfoTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="87dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:text="Car Type:      "
                 android:textSize="18sp" />
@@ -77,18 +66,19 @@
                 android:id="@+id/my_profile_car"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/carInfoTextView"
-                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
                 android:text="SUV"
                 android:textSize="18sp" />
 
         </LinearLayout>
+
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_menu_edit"/>
+        android:src="@drawable/ic_menu_edit" />
 </FrameLayout>

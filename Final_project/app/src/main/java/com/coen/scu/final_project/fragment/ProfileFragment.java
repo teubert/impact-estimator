@@ -81,7 +81,7 @@ public class ProfileFragment extends Fragment {
         mEmail= view.findViewById(R.id.my_profile_email);
         mCar= view.findViewById(R.id.my_profile_car);
         mImage= view.findViewById(R.id.my_profile_image);
-        mBtn = view. findViewById(R.id.my_profile_password_btn);
+        mBtn = view. findViewById(R.id.my_profile_btn);
         displayPreUserInfo(mUser.getUid());
         return view;
 
@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
                     mEmail.setText(email);
                 }
                 if (carType != null) {
-                    mCar.setText(carType);
+                    mCar.setText(carType.replace("_", " ").toLowerCase());
                 }
 
 
