@@ -10,20 +10,23 @@
         android:id="@+id/text_mode_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_gravity="center"
-        android:text="TransportMode"
         android:layout_marginLeft="3dp"
         android:layout_toRightOf="@id/image_icon"
+        android:layout_weight="1"
+        android:text="TransportMode"
+        android:textAlignment="center"
         android:textSize="24sp" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="6">
 
@@ -82,10 +85,10 @@
                 app:srcCompat="@drawable/ic_boat" />
         </LinearLayout>
         <!--<ImageView-->
-            <!--android:id="@+id/imageView2"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:src="@drawable/resource_selector" />-->
+        <!--android:id="@+id/imageView2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@drawable/resource_selector" />-->
     </HorizontalScrollView>
 
     <EditText
@@ -96,6 +99,9 @@
         android:layout_marginStart="7dp"
         android:layout_marginTop="10dp"
         android:hint="distance"
+        android:inputType="numberDecimal"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:textAlignment="center" />
 
     <LinearLayout

@@ -10,9 +10,10 @@
     <EditText
         android:id="@+id/emailEdit"
         android:layout_width="300dp"
-        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="150dp"
+        android:background="#44000000"
         android:backgroundTint="@android:color/white"
         android:drawableLeft="@drawable/ic_person_white_24dp"
         android:drawablePadding="12dp"
@@ -20,18 +21,19 @@
         android:fontFamily="sans-serif"
         android:hint="eg. name@gmail.com"
         android:inputType="textEmailAddress"
-        android:textColor="@android:color/white"
         android:maxLines="1"
         android:padding="8dp"
+        android:textColor="@android:color/white"
         android:textColorHint="#fff" />
 
 
     <EditText
         android:id="@+id/passwordEdit"
         android:layout_width="300dp"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="#44000000"
         android:backgroundTint="@android:color/white"
         android:drawableLeft="@drawable/ic_lock_white_24dp"
         android:drawablePadding="12dp"
@@ -47,17 +49,18 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
 
         <Button
             android:id="@+id/loginBtn"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="24dp"
             android:layout_toEndOf="@+id/progressBar"
+            android:background="#44000000"
             android:text="Login"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
@@ -79,13 +82,14 @@
             android:layout_alignBottom="@+id/loginBtn"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="50dp"
+            android:background="#44000000"
             android:text="Sign up"
             android:textAllCaps="false"
             android:textColor="#fff"
             android:textSize="18sp" />
     </RelativeLayout>
 
-        <!--<com.facebook.login.widget.LoginButton-->
+    <!--<com.facebook.login.widget.LoginButton-->
     <!--todo: comment out text-->
 
     <Button
@@ -93,16 +97,16 @@
         android:layout_width="222dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="facebook"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:text="facebook" />
 
     <Button
         android:id="@+id/googleLogin"
         android:layout_width="222dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/loginGGBtn"
-        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
         android:text="Login with Google" />
 </LinearLayout>
