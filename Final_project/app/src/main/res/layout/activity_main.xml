@@ -3,46 +3,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="40dp"
-    android:layout_marginRight="40dp"
-    android:layout_marginTop="20dp"
+    android:background="@drawable/background_base_no_logo_2"
     android:orientation="vertical"
     tools:context="com.coen.scu.final_project.activity.MainActivity">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher" />
-
     <EditText
         android:id="@+id/emailEdit"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="150dp"
+        android:backgroundTint="@android:color/white"
+        android:drawableLeft="@drawable/ic_person_white_24dp"
+        android:drawablePadding="12dp"
+        android:ems="10"
         android:fontFamily="sans-serif"
         android:hint="eg. name@gmail.com"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:textColor="@android:color/white"
+        android:maxLines="1"
+        android:padding="8dp"
+        android:textColorHint="#fff" />
 
 
     <EditText
         android:id="@+id/passwordEdit"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/white"
+        android:drawableLeft="@drawable/ic_lock_white_24dp"
+        android:drawablePadding="12dp"
+        android:ems="10"
         android:fontFamily="sans-serif"
         android:hint="password"
         android:inputType="textPassword"
-        android:paddingBottom="15dp" />
+        android:maxLines="1"
+        android:padding="8dp"
+        android:paddingBottom="15dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#fff" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/loginBtn"
-            android:layout_width="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="24dp"
+            android:layout_toEndOf="@+id/progressBar"
             android:text="Login"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -53,27 +72,37 @@
 
         <Button
             android:id="@+id/signUpBtn"
-            android:layout_width="wrap_content"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Sign Up"
-            android:textAllCaps="false" />
+            android:layout_alignBaseline="@+id/loginBtn"
+            android:layout_alignBottom="@+id/loginBtn"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp"
+            android:text="Sign up"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="18sp" />
     </RelativeLayout>
+
+        <!--<com.facebook.login.widget.LoginButton-->
+    <!--todo: comment out text-->
 
     <Button
         android:id="@+id/facebookLogin"
-        android:layout_width="match_parent"
+        android:layout_width="222dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/loginFBBtn"
-        android:layout_marginTop="10dp"
-        android:text="Login with FaceBook" />
+        android:layout_gravity="center_horizontal"
+        android:text="facebook"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="30dp" />
 
     <Button
         android:id="@+id/googleLogin"
-        android:layout_width="match_parent"
+        android:layout_width="222dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/loginGGBtn"
         android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
         android:text="Login with Google" />
-
 </LinearLayout>
