@@ -33,6 +33,7 @@
         android:id="@+id/friend_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
+        android:visibility="gone"
         android:layout_gravity="center"
         android:src="@mipmap/ic_launcher" />
 
@@ -40,6 +41,7 @@
     <TextView
         android:id="@+id/friend_name"
         android:layout_width="wrap_content"
+        android:visibility="gone"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
@@ -51,6 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/button"
+        android:visibility="gone"
         android:minWidth="180dp"
         android:layout_gravity="center"
         android:layout_marginBottom="12dp"
@@ -62,6 +65,7 @@
         android:layout_gravity="center"
         android:layout_height="wrap_content"
         android:minWidth="200dp"
+        android:visibility="gone"
         android:background="@android:color/holo_red_light"
         android:layout_marginBottom="20dp"
         android:text="DECLINE FRIEND REQUEST" />
