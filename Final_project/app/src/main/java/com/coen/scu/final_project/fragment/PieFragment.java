@@ -134,7 +134,8 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         mChart.setCenterTextSize(32f);
 
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        mChart.setMinimumHeight(width*3/4);
+//        mChart.setMinimumHeight(width*3/4);
+
 
         // radius of the center hole in percent of maximum radius
         mChart.setHoleRadius(45f);

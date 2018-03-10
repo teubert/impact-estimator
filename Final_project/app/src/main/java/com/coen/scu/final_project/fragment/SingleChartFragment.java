@@ -1,13 +1,11 @@
 package com.coen.scu.final_project.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +15,17 @@ import com.coen.scu.final_project.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TwoChartFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Activities that contain this fragment must implement the
  */
-public class TwoChartFragment extends Fragment {
-    private static final String DEBUG_TAG = "Two Chart Fragment";
+public class SingleChartFragment extends Fragment {
+    private static final String DEBUG_TAG = "One Chart Fragment";
+    private static final String ACTIVE_KEY = "Active";
 
-    ToggleChartFullscreenInterface mListener = null;
+    SummaryFragment.Chart activeChart = null;
 
-    public TwoChartFragment() {
+    TwoChartFragment.ToggleChartFullscreenInterface mListener = null;
+
+    public SingleChartFragment() {
         // Required empty public constructor
     }
 
@@ -35,9 +35,13 @@ public class TwoChartFragment extends Fragment {
      *
      * @return A new instance of fragment TwoChartFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static TwoChartFragment newInstance() {
-        return new TwoChartFragment();
+    public static SingleChartFragment newInstance(SummaryFragment.Chart chart) {
+        SingleChartFragment singleChartFragment =  new SingleChartFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ACTIVE_KEY, chart);
+
+        singleChartFragment.setArguments(bundle);
+        return singleChartFragment;
     }
 
 
@@ -45,11 +49,27 @@ public class TwoChartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_two_chart, container, false);
+        View view = inflater.inflate(R.layout.fragment_single_chart, container, false);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            activeChart = (SummaryFragment.Chart) args.getSerializable(ACTIVE_KEY);
+        }
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.chart1, new PieFragment());
+
+        switch (activeChart) {
+            case LINE:
+                ft.add(R.id.chart1, new LineFragment());
+                break;
+            case PIE:
+                ft.add(R.id.chart1, new PieFragment());
+                break;
+            default:
+                ft.add(R.id.chart1, new LineFragment());
+                break;
+        }
         ImageButton fullChart1 = view.findViewById(R.id.chart1_btn);
         fullChart1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,21 +77,9 @@ public class TwoChartFragment extends Fragment {
                 ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.PIE);
             }
         });
-        ft.add(R.id.chart2, new LineFragment());
-        ImageButton fullChart2 = view.findViewById(R.id.chart2_btn);
-        fullChart2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.LINE);
-            }
-        });
         ft.commit();
 
         return view;
-    }
-
-    public interface ToggleChartFullscreenInterface {
-        void toggle(SummaryFragment.Chart chart);
     }
 
     @Override
@@ -80,7 +88,7 @@ public class TwoChartFragment extends Fragment {
 
         Fragment frag = getParentFragment();
         try {
-            mListener = (ToggleChartFullscreenInterface) frag;
+            mListener = (TwoChartFragment.ToggleChartFullscreenInterface) frag;
         } catch (ClassCastException e) {
             throw new ClassCastException(
                     frag.toString() + " must implement ToggleChartFullscreenInterface");
