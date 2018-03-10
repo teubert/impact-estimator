@@ -1,0 +1,874 @@
+{
+  "2018-03-05" : {
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-06" : {
+    "-L6xtCDw-qMtkQ4Kb9ts" : {
+      "distance" : 20,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521142800000
+      },
+      "estimates" : {
+        "CO2" : 41.61916
+      },
+      "start" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "timestamp" : 1521141120000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEKVcJiKd2duRBm" : {
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "timestamp" : 1521117360000
+      },
+      "estimates" : {
+        "CO2" : 5.474860335195531
+      },
+      "start" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115680000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEhPzdjH-P_nOQH" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115080000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114480000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-07" : {
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-08" : {
+    "-L6xtCDw-qMtkQ4Kb9ts" : {
+      "car_type" : "UNKNOWN",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "speed" : 0,
+        "timestamp" : 1521142800000
+      },
+      "estimates" : {
+        "CO2" : 2.7374301675977657
+      },
+      "start" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "speed" : 0,
+        "timestamp" : 1521141120000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEKVcJiKd2duRBm" : {
+      "car_type" : "UNKNOWN",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "speed" : 0,
+        "timestamp" : 1521117360000
+      },
+      "estimates" : {
+        "CO2" : 2.7374301675977657
+      },
+      "start" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "speed" : 0,
+        "timestamp" : 1521115680000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEhPzdjH-P_nOQH" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115080000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114480000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCEhPzdjH-P_nOQn" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521100950000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.452366,
+        "lon" : -122.109264,
+        "timestamp" : 1521100900000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCEy6rMH_YxD-Hct" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.452366,
+        "lon" : -122.109264,
+        "timestamp" : 1521100900000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "transportation_mode" : "BOAT"
+    },
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "speed" : 0,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "speed" : 0,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "speed" : 0,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "speed" : 0,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-09" : {
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-11" : {
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 7,
+      "end" : {
+        "lat" : 37.347923,
+        "lon" : -122.079446,
+        "speed" : 0,
+        "timestamp" : 1520758800000
+      },
+      "estimates" : {
+        "CO2" : 4.276706000000001
+      },
+      "start" : {
+        "lat" : 37.412985,
+        "lon" : -122.096118,
+        "speed" : 0,
+        "timestamp" : 1520757000000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxA3" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 5.1,
+      "end" : {
+        "lat" : 37.392833,
+        "lon" : -122.076984,
+        "speed" : 0,
+        "timestamp" : 1520763900000
+      },
+      "estimates" : {
+        "CO2" : 3.1158857999999996
+      },
+      "start" : {
+        "lat" : 37.412985,
+        "lon" : -122.096118,
+        "speed" : 0,
+        "timestamp" : 1520763000000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxA4" : {
+      "distance" : 1.0,
+      "end" : {
+        "lat" : 37.392833,
+        "lon" : -122.076984,
+        "timestamp" : 1520766600000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.392833,
+        "lon" : -122.076984,
+        "timestamp" : 1520763900000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA5" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 2.2,
+      "end" : {
+        "lat" : 37.412985,
+        "lon" : -122.096118,
+        "speed" : 0,
+        "timestamp" : 1520767800000
+      },
+      "estimates" : {
+        "CO2" : 1.3441076
+      },
+      "start" : {
+        "lat" : 37.392833,
+        "lon" : -122.076984,
+        "speed" : 0,
+        "timestamp" : 1520766600000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxA6" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 13.9,
+      "end" : {
+        "lat" : 37.352133,
+        "lon" : -121.943094,
+        "speed" : 0,
+        "timestamp" : 1520776800000
+      },
+      "estimates" : {
+        "CO2" : 8.492316200000001
+      },
+      "start" : {
+        "lat" : 37.412985,
+        "lon" : -122.096118,
+        "speed" : 0,
+        "timestamp" : 1520775000000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxA9" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 13.9,
+      "end" : {
+        "lat" : 37.412985,
+        "lon" : -122.096118,
+        "speed" : 0,
+        "timestamp" : 1520786400000
+      },
+      "estimates" : {
+        "CO2" : 8.492316200000001
+      },
+      "start" : {
+        "lat" : 37.352133,
+        "lon" : -121.943094,
+        "speed" : 0,
+        "timestamp" : 1520784600000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-12" : {
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-13" : {
+    "-L6xtCDw-qMtkQ4Kb9ts" : {
+      "distance" : 20,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521142800000
+      },
+      "estimates" : {
+        "CO2" : 41.61916
+      },
+      "start" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "timestamp" : 1521141120000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEKVcJiKd2duRBm" : {
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "timestamp" : 1521117360000
+      },
+      "estimates" : {
+        "CO2" : 5.474860335195531
+      },
+      "start" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115680000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEhPzdjH-P_nOQH" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115080000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114480000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-14" : {
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  },
+  "2018-03-15" : {
+    "-L6xtCDw-qMtkQ4Kb9ts" : {
+      "car_type" : "UNKNOWN",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "speed" : 0,
+        "timestamp" : 1521142800000
+      },
+      "estimates" : {
+        "CO2" : 2.7374301675977657
+      },
+      "start" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "speed" : 0,
+        "timestamp" : 1521141120000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEKVcJiKd2duRBm" : {
+      "car_type" : "UNKNOWN",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.35315,
+        "lon" : -121.93585,
+        "speed" : 0,
+        "timestamp" : 1521117360000
+      },
+      "estimates" : {
+        "CO2" : 2.7374301675977657
+      },
+      "start" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "speed" : 0,
+        "timestamp" : 1521115680000
+      },
+      "transportation_mode" : "TRAIN"
+    },
+    "-L6xtCEhPzdjH-P_nOQH" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.407096,
+        "lon" : -122.106957,
+        "timestamp" : 1521115080000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521114480000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCEhPzdjH-P_nOQn" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "timestamp" : 1521100950000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.452366,
+        "lon" : -122.109264,
+        "timestamp" : 1521100900000
+      },
+      "transportation_mode" : "BIKE"
+    },
+    "-L6xtCEy6rMH_YxD-Hct" : {
+      "distance" : 5,
+      "end" : {
+        "lat" : 37.452366,
+        "lon" : -122.109264,
+        "timestamp" : 1521100900000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "transportation_mode" : "BOAT"
+    },
+    "-L6xtCFCw8CcgDapeoYn" : {
+      "distance" : 2,
+      "end" : {
+        "lat" : 37.433536,
+        "lon" : -122.061113,
+        "timestamp" : 1521100850000
+      },
+      "estimates" : {
+        "CO2" : 0
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "timestamp" : 1521100800000
+      },
+      "transportation_mode" : "WALK"
+    },
+    "-L6xtCFHiAO_pgoOuxA2" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "speed" : 0,
+        "timestamp" : 1521114080000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "speed" : 0,
+        "timestamp" : 1521113480000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    },
+    "-L6xtCFHiAO_pgoOuxQq" : {
+      "car_type" : "SMALL_CAR",
+      "distance" : 10,
+      "end" : {
+        "lat" : 37.418609,
+        "lon" : -122.064461,
+        "speed" : 0,
+        "timestamp" : 1521100800000
+      },
+      "estimates" : {
+        "CO2" : 6.10958
+      },
+      "start" : {
+        "lat" : 37.41287,
+        "lon" : -122.09624,
+        "speed" : 0,
+        "timestamp" : 1521099911000
+      },
+      "transportation_mode" : "AUTOMOBILE"
+    }
+  }
+}
