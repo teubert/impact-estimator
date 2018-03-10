@@ -1,112 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_base_no_logo_2"
-    android:orientation="vertical"
     tools:context="com.coen.scu.final_project.activity.MainActivity">
 
-    <EditText
-        android:id="@+id/emailEdit"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="150dp"
-        android:background="#44000000"
-        android:backgroundTint="@android:color/white"
-        android:drawableLeft="@drawable/ic_person_white_24dp"
-        android:drawablePadding="12dp"
-        android:ems="10"
-        android:fontFamily="sans-serif"
-        android:hint="eg. name@gmail.com"
-        android:inputType="textEmailAddress"
-        android:maxLines="1"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textColorHint="#fff" />
-
-
-    <EditText
-        android:id="@+id/passwordEdit"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:background="#44000000"
-        android:backgroundTint="@android:color/white"
-        android:drawableLeft="@drawable/ic_lock_white_24dp"
-        android:drawablePadding="12dp"
-        android:ems="10"
-        android:fontFamily="sans-serif"
-        android:hint="password"
-        android:inputType="textPassword"
-        android:maxLines="1"
-        android:padding="8dp"
-        android:paddingBottom="15dp"
-        android:textColor="@android:color/white"
-        android:textColorHint="#fff" />
-
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_centerInParent="true">
+
+        <EditText
+            android:id="@+id/emailEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="#44000000"
+            android:drawableStart="@drawable/ic_person_white_24dp"
+            android:drawablePadding="12dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="eg. name@gmail.com"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#fff" />
+
+        <EditText
+            android:id="@+id/passwordEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/emailEdit"
+            android:background="#44000000"
+            android:drawableStart="@drawable/ic_lock_white_24dp"
+            android:drawablePadding="12dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="password"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:paddingBottom="15dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="#fff" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="24dp"
+            android:layout_below="@id/passwordEdit"
+            android:theme="@style/PBar"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/loginBtn"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="24dp"
-            android:layout_toEndOf="@+id/progressBar"
+            android:layout_alignStart="@id/passwordEdit"
+            android:layout_alignBottom="@+id/progressBar"
             android:background="#44000000"
             android:text="Login"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/PBar"
-            android:visibility="gone" />
-
         <Button
             android:id="@+id/signUpBtn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/loginBtn"
-            android:layout_alignBottom="@+id/loginBtn"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="50dp"
+            android:layout_alignEnd="@id/passwordEdit"
+            android:layout_alignBottom="@id/progressBar"
             android:background="#44000000"
             android:text="Sign up"
             android:textAllCaps="false"
             android:textColor="#fff"
             android:textSize="18sp" />
+
+        <!--<com.facebook.login.widget.LoginButton-->
+        <Button
+            android:id="@+id/facebookLogin"
+            android:layout_width="222dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="Login with Facebook"/>
+
+        <Button
+            android:id="@+id/googleLogin"
+            android:layout_width="222dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/facebookLogin"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="Login with Google" />
     </RelativeLayout>
-
-    <!--<com.facebook.login.widget.LoginButton-->
-    <!--todo: comment out text-->
-
-    <Button
-        android:id="@+id/facebookLogin"
-        android:layout_width="222dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="30dp"
-        android:text="facebook" />
-
-    <Button
-        android:id="@+id/googleLogin"
-        android:layout_width="222dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/loginGGBtn"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:text="Login with Google" />
-</LinearLayout>
+</RelativeLayout>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -11,15 +12,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-//import com.facebook.AccessToken;
-//import com.facebook.CallbackManager;
-//import com.facebook.FacebookCallback;
-//import com.facebook.FacebookException;
-//import com.facebook.login.LoginManager;
-//import com.facebook.login.LoginResult;
-//import com.facebook.login.widget.LoginButton;
-
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.java.CommonUtil;
+import com.coen.scu.final_project.java.FirebaseUtils;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar mPBar;
 
     private final String TAG = "FACELOG";
-//    private CallbackManager mCallbackManager;
+    private CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,75 +126,75 @@ public class MainActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
     }
 
-//    private void setupFBLoginButton() {
-//        mCallbackManager = CallbackManager.Factory.create();
-//
-//        LoginButton loginButton = findViewById(R.id.facebookLogin);
-//        loginButton.setReadPermissions("email", "public_profile");
-//        // If you are using in a fragment, call loginButton.setFragment(this);
-//
-//        // Callback registration
-//        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-//                AuthCredential credential = FacebookAuthProvider
-//                        .getCredential(loginResult.getAccessToken().getToken());
-//                mAuth.signInWithCredential(credential)
-//                        .addOnCompleteListener(
-//                                MainActivity.this, new OnCompleteListener<AuthResult>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                                        if (task.isSuccessful()) {
-//                                            Log.d(TAG, "signInWithCredential:success");
-//                                            FirebaseUser user = mAuth.getCurrentUser();
-//                                            syncFBUser(user);
-//                                            onLoginSuccess();
-//                                        } else {
-//                                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-//                                            onLoginFailure("Failed to login with Facebook!");
-//                                        }
-//                                    }
-//                                });
-//
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                Log.d(TAG, "facebook:onCancel");
-//            }
-//
-//            @Override
-//            public void onError(FacebookException exception) {
-//                Log.d(TAG, "facebook:onError", exception);
-//                onLoginFailure(exception.getMessage());
-//
-//            }
-//        });
-//    }
-//
-//    /**
-//     * sync FB user with Firebase. Update anything that needs to be stored in Firebase here.
-//     */
-//    private void syncFBUser(final FirebaseUser user) {
-//        final String email = user.getEmail() + "_facebook_login";
-//
-//        DatabaseReference database = FirebaseUtils.getDatabase();
-//        database.child("userList").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if(dataSnapshot==null || !dataSnapshot.hasChild(CommonUtil.emailToUser(email))) {
-//                    Toast.makeText(MainActivity.this, "New FB User!", Toast.LENGTH_SHORT).show();
-//                    FirebaseUtils.addUserToFirebase(user, email);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
+    private void setupFBLoginButton() {
+        mCallbackManager = CallbackManager.Factory.create();
+
+        LoginButton loginButton = findViewById(R.id.facebookLogin);
+        loginButton.setReadPermissions("email", "public_profile");
+        // If you are using in a fragment, call loginButton.setFragment(this);
+
+        // Callback registration
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                AuthCredential credential = FacebookAuthProvider
+                        .getCredential(loginResult.getAccessToken().getToken());
+                mAuth.signInWithCredential(credential)
+                        .addOnCompleteListener(
+                                MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "signInWithCredential:success");
+                                            FirebaseUser user = mAuth.getCurrentUser();
+                                            syncFBUser(user);
+                                            onLoginSuccess();
+                                        } else {
+                                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                            onLoginFailure("Failed to login with Facebook!");
+                                        }
+                                    }
+                                });
+
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.d(TAG, "facebook:onError", exception);
+                onLoginFailure(exception.getMessage());
+
+            }
+        });
+    }
+
+    /**
+     * sync FB user with Firebase. Update anything that needs to be stored in Firebase here.
+     */
+    private void syncFBUser(final FirebaseUser user) {
+        final String email = user.getEmail() + "_facebook_login";
+
+        DatabaseReference database = FirebaseUtils.getDatabase();
+        database.child("userList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot==null || !dataSnapshot.hasChild(CommonUtil.emailToUser(email))) {
+                    Toast.makeText(MainActivity.this, "New FB User!", Toast.LENGTH_SHORT).show();
+                    FirebaseUtils.addUserToFirebase(user, email);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public void signUp() {
         mSignUpBtn.setOnClickListener(new View.OnClickListener(){
