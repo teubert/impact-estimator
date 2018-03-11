@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
@@ -104,17 +105,21 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             TextView estimate = listItem.findViewById(R.id.text_impact);
             estimate.setText(String.format(getString(R.string.emmission_label_format), currentTrip.getEstimate().CO2));
 
-            Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
-            TextView time = (TextView) listItem.findViewById(R.id.text_time);
-            Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(currentTrip.getStart().timestamp);
-            Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(currentTrip.getEnd().timestamp);
-            int startHr     = start.get(Calendar.HOUR);
-            int startMin    = start.get(Calendar.MINUTE);
-            int endHr       = end.get(Calendar.HOUR);
-            int endMin      = end.get(Calendar.MINUTE);
-            time.setText(String.format(getString(R.string.timerange_lbl_format), startHr, startMin, endHr, endMin));
+            if (currentTrip.getStart() != null && currentTrip.getEnd() != null) {
+                Log.v(DEBUG_TAG, "LogAdapter.getView: Setting timestamp");
+                TextView time = (TextView) listItem.findViewById(R.id.text_time);
+                Calendar start = Calendar.getInstance();
+                start.setTimeInMillis(currentTrip.getStart().timestamp);
+                Calendar end = Calendar.getInstance();
+                end.setTimeInMillis(currentTrip.getEnd().timestamp);
+                int startHr = start.get(Calendar.HOUR);
+                int startMin = start.get(Calendar.MINUTE);
+                int endHr = end.get(Calendar.HOUR);
+                int endMin = end.get(Calendar.MINUTE);
+                time.setText(String.format(getString(R.string.timerange_lbl_format), startHr, startMin, endHr, endMin));
+            } else {
+                Log.v(DEBUG_TAG, "No Time, Skipping timestamp");
+            }
 
             Log.v(DEBUG_TAG, "LogAdapter.getView: Setting icon");
             ImageView icon = listItem.findViewById(R.id.image_icon);
@@ -154,6 +159,14 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                     break;
             }
 
+            ImageButton delete = listItem.findViewById(R.id.delete_button);
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dayTripsSummary.deleteTrip(userId, currentTrip);
+                }
+            });
+
             ImageButton edit = listItem.findViewById(R.id.edit_button);
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +175,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                     // DialogFragment.show() will take care of adding the fragment
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
@@ -181,7 +194,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
 
     // TODO: Rename and change types of parameters
     private Calendar mDate;
-    private DayTripsSummary dayTripsSummary;
+    public DayTripsSummary dayTripsSummary;
     private String userId;
 
     public MainPageFragment() {
@@ -288,6 +301,24 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             date.setText(DayTripsSummary.getDateString(mDate));
         }
         date.setOnClickListener(onClickDate);
+
+        FloatingActionButton fab = v.findViewById(R.id.floatingActionButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // DialogFragment.show() will take care of adding the fragment
+                // in a transaction.  We also want to remove any currently showing
+                // dialog, so make our own transaction and take care of that here.
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+
+                // Create and show the dialog.
+                EditTripDialogFragment newFragment =
+                        EditTripDialogFragment.newInstance(null,
+                                getTimestamp(mDate), userId);
+                newFragment.show(ft, "dialog");
+            }
+        });
 
         return v;
     }

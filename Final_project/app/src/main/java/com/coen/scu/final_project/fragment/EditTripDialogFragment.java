@@ -2,6 +2,8 @@ package com.coen.scu.final_project.fragment;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -26,7 +28,7 @@ import com.coen.scu.final_project.R;
 agment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditTripDialogFragment extends DialogFragment implements DayTripsSummary.TripUpdateInterface{
+public class EditTripDialogFragment extends DialogFragment { //implements DayTripsSummary.TripUpdateInterface
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_TRIPID = "tripId";
@@ -37,7 +39,7 @@ public class EditTripDialogFragment extends DialogFragment implements DayTripsSu
     Map<Transportation.TransportMode, View> transportButtons;
 
     // TODO: Rename and change types of parameters
-    Trip trip = null;
+    Trip trip = new Trip();
     EditText editText;
     DayTripsSummary tripSummary;
     Transportation.TransportMode activeTransportMode = null;
@@ -61,7 +63,7 @@ public class EditTripDialogFragment extends DialogFragment implements DayTripsSu
      * @return A new instance of fragment EditTripDialogFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EditTripDialogFragment newInstance(String trip, long timestamp, String user) {
+    public static EditTripDialogFragment newInstance(@Nullable String trip, long timestamp, @NonNull String user) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(timestamp);
         Log.d(DEBUG_TAG, "Configuring EditTripDialog (" + user + "/" +
@@ -89,8 +91,10 @@ public class EditTripDialogFragment extends DialogFragment implements DayTripsSu
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(mTimestamp);
             mUserId = getArguments().getString(ARG_USERID);
-            tripSummary = DayTripsSummary.getDayTripsForDay(mUserId, cal);
-            tripSummary.addCallback(this);
+//            tripSummary = DayTripsSummary.getDayTripsForDay(mUserId, cal);
+//            if (mTripId != null) {
+//                tripSummary.addCallback(this);
+//            }
         }
     }
 
@@ -162,23 +166,37 @@ public class EditTripDialogFragment extends DialogFragment implements DayTripsSu
             @Override
             public void onClick(View v) {
                 Log.i(DEBUG_TAG, "onClick(Submit): Updating trip");
-                trip.setDistance(Double.parseDouble(editText.getText().toString()));
-                trip.setTransport_mode(activeTransportMode);
-                DayTripsSummary.updateTrip(mUserId, trip);
+                try {
+                    trip.setDistance(Double.parseDouble(editText.getText().toString()));
+                } catch (java.lang.NumberFormatException ex) {
+                    Log.e(DEBUG_TAG, "Could not parse distance");
+                }
+
+                try {
+                    trip.setTransport_mode(activeTransportMode);
+                } catch (Exception ex) {
+                    Log.e(DEBUG_TAG, "Could not parse transport mode");
+                }
+
+                if (mTripId == null) {
+                    // New Trip
+                    DayTripsSummary.append(mUserId, trip);
+                } else {
+                    DayTripsSummary.updateTrip(mUserId, trip);
+                }
                 EditTripDialogFragment.this.dismiss();
             }
         });
 
-        return v;
-    }
-
-    @Override
-    public void onTripUpdate() {
-        trip = tripSummary.getTrip(mTripId);
-        if (trip != null) {
-            // Editing trip
-            updateSelected(trip.getTransport_mode());
-            editText.setText(Double.toString(trip.getDistance()));
+        if (mTripId != null) {
+            trip = ((MainPageFragment) getParentFragment()).dayTripsSummary.getTrip(mTripId);
+            if (trip != null) {
+                // Editing trip
+                updateSelected(trip.getTransport_mode());
+                editText.setText(Double.toString(trip.getDistance()));
+            }
         }
+
+        return v;
     }
 }

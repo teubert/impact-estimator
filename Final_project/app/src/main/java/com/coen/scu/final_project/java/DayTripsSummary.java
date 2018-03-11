@@ -36,9 +36,12 @@ public class DayTripsSummary implements ChildEventListener {
 
     static public void updateTrip(String id, Trip trip) {
         Log.d(DEBUG_TAG, "Updating trip " + trip.getTripId());
+
         // Get day
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(trip.getEnd().timestamp);
+        if (trip.getEnd() != null) {
+            cal.setTimeInMillis(trip.getEnd().timestamp);
+        }
         String dayKey = getDateString(cal);
 
         // Update
@@ -51,21 +54,54 @@ public class DayTripsSummary implements ChildEventListener {
         myRef.child("end").setValue(trip.getEnd());
     }
 
+    static public void deleteTrip(String id, Trip trip) {
+        Log.d(DEBUG_TAG, "Updating trip " + trip.getTripId());
+
+        // Get day
+        Calendar cal = Calendar.getInstance();
+        if (trip.getEnd() != null) {
+            cal.setTimeInMillis(trip.getEnd().timestamp);
+        }
+        String dayKey = getDateString(cal);
+
+        // Remove
+        DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey).child(trip.getTripId());
+        myRef.removeValue();
+    }
+
     /**
      *
      * @param tripSnapshot
      */
     private Trip addTripSnapshot(DataSnapshot tripSnapshot) {
         String key = tripSnapshot.getKey();
-       try {
-            GPSPoint start = tripSnapshot.child("start").getValue(GPSPoint.class);
-            GPSPoint end = tripSnapshot.child("end").getValue(GPSPoint.class);
-            double dist = tripSnapshot.child("distance").getValue(Double.class);
-            Transportation.TransportMode mode = Transportation.TransportMode.fromValue(
-                   tripSnapshot.child("transportation_mode").getValue(String.class));
-            Transportation.CarType carType = Transportation.CarType.fromValue(
-                   tripSnapshot.child("car_type").getValue(String.class));
-            double co2 = tripSnapshot.child("estimates").child("CO2").getValue(Double.class);
+        GPSPoint start = null;
+        GPSPoint end = null;
+        double dist = 0;
+        Transportation.TransportMode mode = Transportation.TransportMode.WALK;
+        Transportation.CarType carType = Transportation.CarType.UNKNOWN;
+        try {
+            if (tripSnapshot.child("start").exists()) {
+                start = tripSnapshot.child("start").getValue(GPSPoint.class);
+            }
+            if (tripSnapshot.child("end").exists()) {
+                end = tripSnapshot.child("end").getValue(GPSPoint.class);
+            }
+            if (tripSnapshot.child("distance").exists()) {
+                dist = tripSnapshot.child("distance").getValue(Double.class);
+            }
+            if (tripSnapshot.child("transportation_mode").exists()) {
+                mode = Transportation.TransportMode.fromValue(
+                        tripSnapshot.child("transportation_mode").getValue(String.class));
+            }
+            if (tripSnapshot.child("car_type").exists()) {
+                carType = Transportation.CarType.fromValue(
+                        tripSnapshot.child("car_type").getValue(String.class));
+            }
+            double co2 = 0;
+            if (tripSnapshot.child("estimates").exists()) {
+                co2 = tripSnapshot.child("estimates").child("CO2").getValue(Double.class);
+            }
             FootprintEstimate estimate = new FootprintEstimate(co2, 1);
             return new Trip(start, end, dist, mode, carType, tripSnapshot.getKey(), estimate);
         } catch (IllegalArgumentException ex) {
@@ -148,6 +184,18 @@ public class DayTripsSummary implements ChildEventListener {
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
         Log.d(DEBUG_TAG, "onChildRemoved: removed trip");
+        try {
+            Trip removedTrip = addTripSnapshot(dataSnapshot);
+            // TODO(CT): HANDLE WHERE LOWER IS REMOVED
+            for (int pos = 0; pos < trips.size(); pos++) {
+                if (trips.get(pos).getTripId().equals(removedTrip.getTripId())) {
+                    trips.remove(pos);
+                }
+            }
+        } catch (Exception ex) {
+
+        }
+
         if (callbacks != null) {
             for (TripUpdateInterface callback : callbacks) {
                 callback.onTripUpdate();
@@ -212,7 +260,10 @@ public class DayTripsSummary implements ChildEventListener {
 
         // Get day
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(trip.getEnd().timestamp);
+        if (trip.getEnd() != null) {
+            // End point has been set
+            cal.setTimeInMillis(trip.getEnd().timestamp);
+        }
         String dayKey = getDateString(cal);
 
         // Push for day
@@ -221,9 +272,11 @@ public class DayTripsSummary implements ChildEventListener {
         myRef.child("car_type").setValue(trip.getCar_type());
         myRef.child("transportation_mode").setValue(trip.getTransport_mode());
         myRef.child("distance").setValue(trip.getDistance());
-        myRef.child("estimates").child("CO2").setValue(trip.getEstimate().CO2);
-        myRef.child("start").setValue(trip.getStart());
-        myRef.child("end").setValue(trip.getEnd());
+        myRef.child("estimates").setValue(trip.getEstimate());
+        if (trip.getEnd() != null) {
+            myRef.child("start").setValue(trip.getStart());
+            myRef.child("end").setValue(trip.getEnd());
+        }
 
         Log.v(DEBUG_TAG, "append: Done");
     }

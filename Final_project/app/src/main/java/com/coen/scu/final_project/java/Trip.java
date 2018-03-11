@@ -15,13 +15,13 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class Trip {
     private final static String DEBUG_TAG = "Trip";
 
-    private GPSPoint start;
-    private GPSPoint end;
+    private GPSPoint start = null;
+    private GPSPoint end = null;
     private String tripId = null;
     private Transportation.TransportMode transport_mode = Transportation.TransportMode.WALK;
     private Transportation.CarType car_type = Transportation.CarType.SMALL_CAR;
     private double distance = 0;
-    private FootprintEstimate estimate;
+    private FootprintEstimate estimate = null;
 
     public GPSPoint getStart() {
         return start;
@@ -86,7 +86,6 @@ public class Trip {
      *
      */
     public Trip() {
-
     }
 
     /**

@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_weight="0"
-        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
         android:backgroundTint="@android:color/white"
         app:srcCompat="@android:drawable/star_off" />
 
@@ -31,8 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:text="TextView" />
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/text_impact"
@@ -49,9 +48,21 @@
         android:id="@+id/edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="5dp"
+        android:layout_toStartOf="@id/delete_button"
         android:layout_below="@id/text_time"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
         app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <ImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@id/edit_button"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/text_time"
+        android:backgroundTint="@android:color/holo_red_light"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
 
 </RelativeLayout>

@@ -11,7 +11,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class GPSPoint {
     private final static String DEBUG_TAG = "GPSPoint";
 
-    public long timestamp; // Linux time (timestamp.getTime())
+    public long timestamp = -1; // Linux time (timestamp.getTime())
     public double lon; // Longitude (deg)
     public double lat; // Latitude (deg)
     public double speed; // km/s

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.FriendUser;
 import com.coen.scu.final_project.java.RankingUser;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;

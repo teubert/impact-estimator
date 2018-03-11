@@ -33,6 +33,7 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.fragment.ProfileFragment;
 import com.coen.scu.final_project.fragment.RankingFragment;
 import com.coen.scu.final_project.fragment.SummaryFragment;
+import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.GPSPath;
 import com.coen.scu.final_project.java.GPSPoint;
 import com.coen.scu.final_project.java.FriendUser;
@@ -46,6 +47,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -114,6 +117,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         id = firebaseUser.getUid();
