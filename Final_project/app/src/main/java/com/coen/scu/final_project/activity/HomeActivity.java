@@ -53,12 +53,13 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String DEBUG_TAG = "HomeActivity";
+    private final String ACTIVE_KEY = "Active view";
+
+    private int mActiveId;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mRef;
     private FirebaseUser mUser;
-
-
 
     private LocationManager lm;
     private String id;
@@ -175,37 +176,44 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        Intent intent = getIntent();
-        boolean isNewUser = intent.getBooleanExtra("newUser", false);
-        boolean isOldUser = intent.getBooleanExtra("preUser", false);
-        String newUserEmail = intent.getStringExtra("email");
-        if (isNewUser) {
-            Class fragmentClass = ProfileEditFragment.class;
-            try {
-                Bundle bundle = new Bundle();
-                bundle.putInt("key", 1);
-                bundle.putString("email", newUserEmail);
-                Fragment fragment = (Fragment) fragmentClass.newInstance();
-                fragment.setArguments(bundle);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.flContent, fragment, "initial_profile_edit").commit();
-                getSupportActionBar().setTitle("My Profile");
-            } catch (Exception e) {
-                Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+        if (savedInstanceState != null) {
+            mActiveId = savedInstanceState.getInt(ACTIVE_KEY);
+            openPage();
+        } else {
+            Intent intent = getIntent();
+            boolean isNewUser = intent.getBooleanExtra("newUser", false);
+            boolean isOldUser = intent.getBooleanExtra("preUser", false);
+            String newUserEmail = intent.getStringExtra("email");
+            if (isNewUser) {
+                Class fragmentClass = ProfileEditFragment.class;
+                try {
+                    mActiveId = R.id.nav_profile_page;
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("key", 1);
+                    bundle.putString("email", newUserEmail);
+                    Fragment fragment = (Fragment) fragmentClass.newInstance();
+                    fragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment, "initial_profile_edit").commit();
+                    getSupportActionBar().setTitle("My Profile");
+                } catch (Exception e) {
+                    Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
-        }
 
-        if (isOldUser) {
-            Class fragmentClass = MainPageFragment.class;
-            try {
-                Fragment fragment = (Fragment) fragmentClass.newInstance();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.flContent, fragment).commit();
-                getSupportActionBar().setTitle("Home Page");
-            } catch (Exception e) {
-                Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+            if (isOldUser) {
+                Class fragmentClass = MainPageFragment.class;
+                try {
+                    mActiveId = R.id.nav_home_page;
+                    Fragment fragment = (Fragment) fragmentClass.newInstance();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+                    getSupportActionBar().setTitle("Home Page");
+                } catch (Exception e) {
+                    Toast.makeText(HomeActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -277,31 +285,36 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        mActiveId = item.getItemId();
+        openPage();
+        return true;
+    }
+
+    void openPage() {
         Class fragmentClass = null;
         String title = "";
 
-        if (id == R.id.nav_home_page) {
+        if (mActiveId == R.id.nav_home_page) {
             fragmentClass = MainPageFragment.class;
             title = "Home Page";
-        } else if (id == R.id.nav_summary_page) {
+        } else if (mActiveId == R.id.nav_summary_page) {
             fragmentClass = SummaryFragment.class;
             title = "Summary";
-        } else if (id == R.id.nav_ranking_page) {
+        } else if (mActiveId == R.id.nav_ranking_page) {
             fragmentClass = RankingFragment.class;
             title = "Ranking";
-        } else if (id == R.id.nav_profile_page) {
+        } else if (mActiveId == R.id.nav_profile_page) {
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
-        } else if (id == R.id.nav_notification_page) {
+        } else if (mActiveId == R.id.nav_notification_page) {
             fragmentClass = NotificationFragment.class;
             title = "Notification";
-        } else if (id == R.id.nav_log_out) {
+        } else if (mActiveId == R.id.nav_log_out) {
             FirebaseAuth.getInstance().signOut();
             sendToSart();
         }
 
-        if (id != R.id.nav_log_out) {
+        if (mActiveId != R.id.nav_log_out) {
             try {
                 Fragment fragment = (Fragment) fragmentClass.newInstance();
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -319,7 +332,6 @@ public class HomeActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     /**
@@ -330,6 +342,9 @@ public class HomeActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+        savedState.putInt(ACTIVE_KEY, mActiveId);
+    }
 }
-
-

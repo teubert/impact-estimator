@@ -1,10 +1,21 @@
-<com.github.mikephil.charting.charts.PieChart
-    android:id="@+id/pie_chart"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginStart="@dimen/summary_horiz_margin"
-    android:layout_marginEnd="@dimen/summary_horiz_margin"
-    tools:context="com.coen.scu.final_project.activity.HomeActivity">
-</com.github.mikephil.charting.charts.PieChart>
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|top"
+        android:text="CO2 Equivalent\n By Source"
+        android:textSize="32dp"/>
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pie_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/summary_horiz_margin"
+        android:layout_marginEnd="@dimen/summary_horiz_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        tools:context="com.coen.scu.final_project.activity.HomeActivity">
+    </com.github.mikephil.charting.charts.PieChart>
+</FrameLayout>

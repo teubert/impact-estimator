@@ -31,7 +31,6 @@
 
         <activity android:name=".activity.HomeActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

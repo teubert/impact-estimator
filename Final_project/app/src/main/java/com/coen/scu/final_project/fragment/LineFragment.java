@@ -76,50 +76,42 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
         userId = firebaseUser.getUid();
 
         user = UserProfile.getUserProfileById(userId);
-        user.addCallback(this);
 
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.US);
 
         Calendar date = mDate;
         dayList.add(dayFormat.format(date.getTime()));
         DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         date.add(Calendar.DATE, -1);
         dayList.add(dayFormat.format(date.getTime()));
         dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
         list.add(dayTripsSummary);
 
         for (int c : ColorTemplate.LIBERTY_COLORS)
@@ -197,5 +189,23 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
     public void onUserUpdate() {
         userSet = true;
         update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        for (DayTripsSummary tripsSummary : list) {
+            tripsSummary.addCallback(this);
+        }
+        user.addCallback(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        for (DayTripsSummary tripsSummary : list) {
+            tripsSummary.removeCallback(this);
+        }
+        user.removeCallback(this);
     }
 }

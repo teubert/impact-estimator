@@ -158,7 +158,7 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
      */
     @Override
     public void onTripUpdate() {
-        if (userSet) {
+        if (userSet && isAdded()) {
             update();
         }
     }
@@ -222,6 +222,26 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
     @Override
     public void onUserUpdate() {
         userSet = true;
+        if(!isAdded ())
+            return;
         update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        for (DayTripsSummary tripsSummary : list) {
+            tripsSummary.addCallback(this);
+        }
+        user.addCallback(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        for (DayTripsSummary tripsSummary : list) {
+            tripsSummary.removeCallback(this);
+        }
+        user.removeCallback(this);
     }
 }

@@ -309,6 +309,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
         public void onClick(View v) {
             Log.i(DEBUG_TAG, "Clicked date- opening date selector");
             DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                    R.style.DialogTheme,
                     MainPageFragment.this,
                     mDate.get(Calendar.YEAR),
                     mDate.get(Calendar.MONTH),

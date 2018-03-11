@@ -62,6 +62,14 @@ public class UserProfile implements ValueEventListener {
         callbacks.add(callback);
     }
 
+    public void removeCallback(UserUpdateInterface callbackToRemove) {
+        boolean success = callbacks.remove(callbackToRemove);
+        if (!success) {
+            Log.w(DEBUG_TAG, "Could not remove callback");
+        }
+        Log.v(DEBUG_TAG, "Removing Callback. " + Integer.toString(callbacks.size()) + " remaining");
+    }
+
     /**
      *
      * @return

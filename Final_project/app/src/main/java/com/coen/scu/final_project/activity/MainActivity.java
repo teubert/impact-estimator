@@ -129,48 +129,48 @@ public class MainActivity extends AppCompatActivity {
     private void setupFBLoginButton() {
         mCallbackManager = CallbackManager.Factory.create();
 
-        LoginButton loginButton = findViewById(R.id.facebookLogin);
-        loginButton.setReadPermissions("email", "public_profile");
+        Button loginButton = findViewById(R.id.facebookLogin);
+//        loginButton.setReadPermissions("email", "public_profile");
         // If you are using in a fragment, call loginButton.setFragment(this);
 
         // Callback registration
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                AuthCredential credential = FacebookAuthProvider
-                        .getCredential(loginResult.getAccessToken().getToken());
-                mAuth.signInWithCredential(credential)
-                        .addOnCompleteListener(
-                                MainActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.d(TAG, "signInWithCredential:success");
-                                            FirebaseUser user = mAuth.getCurrentUser();
-                                            syncFBUser(user);
-                                            onLoginSuccess();
-                                        } else {
-                                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                                            onLoginFailure("Failed to login with Facebook!");
-                                        }
-                                    }
-                                });
-
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Log.d(TAG, "facebook:onError", exception);
-                onLoginFailure(exception.getMessage());
-
-            }
-        });
+//        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+//                AuthCredential credential = FacebookAuthProvider
+//                        .getCredential(loginResult.getAccessToken().getToken());
+//                mAuth.signInWithCredential(credential)
+//                        .addOnCompleteListener(
+//                                MainActivity.this, new OnCompleteListener<AuthResult>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                                        if (task.isSuccessful()) {
+//                                            Log.d(TAG, "signInWithCredential:success");
+//                                            FirebaseUser user = mAuth.getCurrentUser();
+//                                            syncFBUser(user);
+//                                            onLoginSuccess();
+//                                        } else {
+//                                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+//                                            onLoginFailure("Failed to login with Facebook!");
+//                                        }
+//                                    }
+//                                });
+//
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Log.d(TAG, "facebook:onCancel");
+//            }
+//
+//            @Override
+//            public void onError(FacebookException exception) {
+//                Log.d(TAG, "facebook:onError", exception);
+//                onLoginFailure(exception.getMessage());
+//
+//            }
+//        });
     }
 
     /**

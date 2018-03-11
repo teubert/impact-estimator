@@ -1,5 +1,10 @@
 <resources>
 
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -26,6 +31,5 @@
     <style name="DialogCustom">
         <item name="android:textSize">32sp</item>
     </style>
-
 
 </resources>
