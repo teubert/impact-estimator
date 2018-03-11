@@ -41,6 +41,7 @@ public class ProfileFragment extends Fragment {
     private TextView mUserName;
     private TextView mEmail;
     private TextView mCar;
+    private TextView mDiet;
     private Button mBtn;
     private CircleImageView mImage;
     private ProgressDialog mUpdateDialog;
@@ -80,6 +81,7 @@ public class ProfileFragment extends Fragment {
         mUserName = view.findViewById(R.id.my_profile_displayName);
         mEmail= view.findViewById(R.id.my_profile_email);
         mCar= view.findViewById(R.id.my_profile_car);
+        mDiet = view.findViewById(R.id.my_profile_diet);
         mImage= view.findViewById(R.id.my_profile_image);
         mBtn = view. findViewById(R.id.my_profile_btn);
         displayPreUserInfo(mUser.getUid());
@@ -110,6 +112,7 @@ public class ProfileFragment extends Fragment {
                 String email = dataSnapshot.child(uid).child("email").getValue(String.class);
                 String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
                 String carType = dataSnapshot.child(uid).child("car_type").getValue(String.class);
+                String dietType = dataSnapshot.child(uid).child("diet_type").getValue(String.class);
                 String url = dataSnapshot.child(uid).child("image").getValue(String.class);
 
                 //display
@@ -124,20 +127,26 @@ public class ProfileFragment extends Fragment {
                     mCar.setText(carType.replace("_", " ").toLowerCase());
                 }
 
+                if (dietType != null) {
+                    mDiet.setText(dietType.replace("_", " ").toLowerCase());
+                }
 
-                Picasso.with(getContext())
-                        .load(url)
-                        .resize(100, 100)
-                        .into(mImage, new com.squareup.picasso.Callback() {
-                            @Override
-                            public void onSuccess() {
-                                progressDialog.dismiss();
-                            }
-                            @Override
-                            public void onError() {
+                if (url != null) {
+                    Picasso.with(getContext())
+                            .load(url)
+                            .resize(100, 100)
+                            .into(mImage, new com.squareup.picasso.Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    progressDialog.dismiss();
+                                }
 
-                            }
-                        });
+                                @Override
+                                public void onError() {
+
+                                }
+                            });
+                }
             }
 
             @Override

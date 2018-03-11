@@ -26,10 +26,41 @@ public class UserProfile implements ValueEventListener {
     private String name = null;
     private String id = null;
     private Transportation.CarType car_type = Transportation.CarType.UNKNOWN;
+    private DietType dietType = DietType.BALANCED;
 
     private DatabaseReference myRef;
     private static FirebaseDatabase database = FirebaseDatabase.getInstance();
     Vector<UserUpdateInterface> callbacks = new Vector<UserUpdateInterface>();
+
+    public enum DietType {
+        // CO2 Emissions: http://www.greeneatz.com/foods-carbon-footprint.html - does not include freight
+        // Only production
+        MEAT_HEAVY  (9.04), // kg/day
+        BALANCED    (6.85), // kg/day
+        NO_BEEF     (5.25), // kg/day
+        VEGETARIAN  (4.66), // kg/day
+        VEGAN       (4.11); // kg/day
+
+        double emissions;
+
+        DietType(double emissions) {
+            this.emissions = emissions;
+        }
+
+        public double getEmissions() {
+            return this.emissions;
+        }
+
+        public static DietType fromValue(String dietTypeName){
+            for (DietType l : DietType.values()){
+                if (l.name().equals(dietTypeName)){
+                    return l;
+                }
+            }
+            Log.d(DEBUG_TAG, "Invalid diet type: " + dietTypeName);
+            return BALANCED;
+        }
+    }
 
     /**
      *
@@ -87,6 +118,14 @@ public class UserProfile implements ValueEventListener {
             this.name = name;
             myRef.child("name").setValue(name);
         }
+    }
+
+    public DietType getDiet() {
+        return dietType;
+    }
+
+    public void setDiet(DietType diet) {
+        this.dietType = diet;
     }
 
     /**
@@ -152,6 +191,9 @@ public class UserProfile implements ValueEventListener {
         this.name = dataSnapshot.child("name").getValue(String.class);
         this.email = dataSnapshot.child("email").getValue(String.class);
         this.car_type = Transportation.CarType.fromValue(dataSnapshot.child("car_type").getValue(String.class));
+        if (dataSnapshot.child("diet_type").exists()) {
+            this.dietType = DietType.fromValue(dataSnapshot.child("diet_type").getValue(String.class));
+        }
         Log.d(DEBUG_TAG, "onDataChange: Updated user to " + this.name + " (" + this.email + ")");
         if (callbacks != null) {
             for (UserUpdateInterface callback : callbacks) {
@@ -183,9 +225,10 @@ public class UserProfile implements ValueEventListener {
      *
      * @param email     Email address
      * @param name      Name
-     * @param car_type  Car type
+     * @param car_type  Car type user drives
+     * @param dietType  Diet type of user
      */
-    static public UserProfile addNewUserProfile(String email, String name, Transportation.CarType car_type) {
+    static public UserProfile addNewUserProfile(String email, String name, Transportation.CarType car_type, DietType dietType) {
         UserProfile userProfile = new UserProfile(emailToUsername(email));
         DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY);
 
@@ -200,6 +243,7 @@ public class UserProfile implements ValueEventListener {
         myRef.child("email").setValue(email);
         myRef.child("name").setValue(name);
         myRef.child("car_type").setValue(car_type);
+        myRef.child("diet_type").setValue(dietType);
 
         myRef.child("user_since").setValue(currentTime);
         myRef.child("last_login").setValue(currentTime);
