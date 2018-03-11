@@ -51,13 +51,7 @@ public class FootprintEstimate {
         //  - Transport Decreased through farmers market
         //  - Farm decreased by going vegetarian/vegan
 
-        // CO2 Emissions: http://www.greeneatz.com/foods-carbon-footprint.html - does not include freight
-        // Only production
-        final double mealCO2            = 9.04; // kg/day
-        final double averageFoodCO2     = 6.85; // kg/day
-        final double noBeefCO2          = 5.25; // kg/day
-        final double vegitarianFoodCO2  = 4.66; // kg/day
-        final double veganFoodCO2       = 4.11; // kg/day
+        final double foodCO2 = user.getDiet().getEmissions(); // kg/day
 
         // https://www.npr.org/sections/thesalt/2011/12/31/144478009/the-average-american-ate-literally-a-ton-this-year
         final double food_consumption   = 2.4787; // kg food/day
@@ -74,11 +68,12 @@ public class FootprintEstimate {
         final double average_distance   = 2414;      // km - how far food travels
         final double local_distance     = 125;       // km
 
-        final double freight_far        = far_distance * (air_cargo + train + sea)/3; // average
-        final double freight_average    = average_distance * (air_cargo + train + sea)/3; // average
-        final double freight_local      = local_distance * truck;  // local typically truck
+        // Frieght impact (kg CO2/ kg food)
+        final double freight_far        = far_distance * (air_cargo + train + sea)/3; // average // kg/kg
+        final double freight_average    = average_distance * (air_cargo + train + sea)/3; // average // kg/kg
+        final double freight_local      = local_distance * truck;  // local typically truck // kg/kg
 
-        footprint.food = averageFoodCO2 + freight_average;
+        footprint.food = foodCO2 + freight_average * food_consumption;
         footprint.CO2 += footprint.food;
 
         // Add electricity

@@ -72,6 +72,30 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp">
+
+            <TextView
+                android:id="@+id/dietInfoText"
+                android:layout_width="87dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:text="Diet Type:      "
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/my_profile_diet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Balanced"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

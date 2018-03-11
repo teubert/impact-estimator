@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.Transportation;
+import com.coen.scu.final_project.java.UserProfile;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,6 +39,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.common.StringUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -58,6 +61,7 @@ public class ProfileEditFragment extends Fragment {
     private DatabaseReference mRef;
     private StorageReference mStorageRef;
     private Spinner mCarType;
+    private Spinner mDietType;
     private EditText mUserName;
     private CircleImageView mImage;
     private Button mUpdateBtn;
@@ -65,7 +69,37 @@ public class ProfileEditFragment extends Fragment {
     private boolean mChangeImage = false;
     private boolean mFirstTime = false;
     private ArrayAdapter<CharSequence> mAdapter;
+    private ArrayAdapter<CharSequence> mDietAdapter;
     private final int PICK_IMAGE_REQUEST = 999;
+
+    public static String toTitleCase(String str) {
+
+        if (str == null) {
+            return null;
+        }
+
+        boolean space = true;
+        StringBuilder builder = new StringBuilder(str);
+        final int len = builder.length();
+
+        for (int i = 0; i < len; ++i) {
+            char c = builder.charAt(i);
+            if (space) {
+                if (!Character.isWhitespace(c)) {
+                    // Convert to title case and switch out of whitespace mode.
+                    builder.setCharAt(i, Character.toTitleCase(c));
+                    space = false;
+                }
+            } else if (Character.isWhitespace(c)) {
+                space = true;
+            } else {
+                builder.setCharAt(i, Character.toLowerCase(c));
+            }
+        }
+
+        return builder.toString();
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,6 +126,7 @@ public class ProfileEditFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         mCarType = view.findViewById(R.id.profile_carType);
+        mDietType = view.findViewById(R.id.profile_dietType);
         mUserName = view.findViewById(R.id.profile_userName);
         mImage = view.findViewById(R.id.profile_image);
         mUpdateBtn = view.findViewById(R.id.btn_updateProfile);
@@ -116,18 +151,30 @@ public class ProfileEditFragment extends Fragment {
                 String carType = dataSnapshot.child(uid).child("car_type").getValue(String.class);
                 String url = dataSnapshot.child(uid).child("image").getValue(String.class);
 
+                String dietType = "Average";
+                if (dataSnapshot.child(uid).child("diet_type").exists()) {
+                    dietType = dataSnapshot.child(uid).child("diet_type").getValue(String.class);
+                }
+
                 //display
                 if (userName != null) {
                     mUserName.setText(userName);
                 }
                 if (carType != null) {
+                    carType.replace("_", " ");
+                    carType = toTitleCase(carType);
+                    Log.v("Edit Profile", "Looking for " + carType);
                     int position = mAdapter.getPosition(carType);
                     mCarType.setSelection(position);
                 }
+                if (dietType != null) {
+                    dietType.replace("_", " ");
+                    dietType = toTitleCase(dietType);
+                    int position = mDietAdapter.getPosition(dietType);
+                    mDietType.setSelection(position);
+                }
 
-
-                if (!mFirstTime) {
-
+                if (!mFirstTime && url != null) {
                     Picasso.with(getContext())
                             .load(url)
                             .resize(100, 100)
@@ -171,7 +218,14 @@ public class ProfileEditFragment extends Fragment {
         mAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.myCarType, android.R.layout.simple_spinner_item);
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDietAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.myDietType, android.R.layout.simple_spinner_item);
+        mDietAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (savedInstanceState == null) {
+            savedInstanceState = new Bundle();
+        }
         mCarType.setAdapter(mAdapter);
+        mDietType.setAdapter(mDietAdapter);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,25 +242,39 @@ public class ProfileEditFragment extends Fragment {
                 Context ctx = getActivity();
                 mUpdateDialog = ProgressDialog.show(new ContextThemeWrapper(ctx, R.style.DialogCustom), "Update",
                         "Please wait...", true);
-                mUpdateDialog = ProgressDialog.show(getActivity(), "Update",
-                        "Please wait...", true);
+//                mUpdateDialog = ProgressDialog.show(getActivity(), "Update",
+//                        "Please wait...", true);
                 if (mUser != null) {
                     String carText = mCarType.getSelectedItem().toString();
+                    String dietText = mCarType.getSelectedItem().toString();
                     String userNameText = mUserName.getText().toString();
                     String uid = mUser.getUid();
+                    DatabaseReference userRef = mRef.child("users").child(uid);
                     if (userNameText != null) {
-                        mRef.child("users").child(uid).child("name").setValue(userNameText);
+                        userRef.child("name").setValue(userNameText);
                     }
                     if (carText != null) {
                         String carItemText = carText.toUpperCase()
                                 .replace(" ", "_");
                         Transportation.CarType selectedCarType = Transportation.CarType.fromValue(carItemText);
-                        mRef.child("users").child(uid).child("car_type").setValue(carItemText);
+                        userRef.child("car_type").setValue(carItemText);
+                    }
+                    if (dietText != null) {
+                        String dietItemText = dietText.toUpperCase()
+                                .replace(" ", "_");
+                        UserProfile.DietType selectedDietType = UserProfile.DietType.fromValue(dietItemText);
+                        userRef.child("diet_type").setValue(selectedDietType);
                     }
                     if (mChangeImage) {
                         uploadPicture(mUser);
                     } else {
                         mUpdateDialog.dismiss();
+                        Fragment fragment = new ProfileFragment();
+                        getFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.flContent, fragment)
+                                .addToBackStack(null)
+                                .commit();
                         Toast.makeText(getContext(), "Update successful", Toast.LENGTH_SHORT).show();
                     }
                 }
