@@ -1,17 +1,28 @@
 package com.coen.scu.final_project.fragment;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +33,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.coen.scu.final_project.BuildConfig;
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.activity.MainActivity;
 import com.coen.scu.final_project.java.Transportation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,6 +79,16 @@ public class ProfileEditFragment extends Fragment {
     private boolean mFirstTime = false;
     private ArrayAdapter<CharSequence> mAdapter;
     private final int PICK_IMAGE_REQUEST = 999;
+    protected final int CAMERA_REQUEST = 0;
+    protected final int GALLERY_PICTURE = 1;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startCameraIntent();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +103,8 @@ public class ProfileEditFragment extends Fragment {
                 mFirstTime = true;
             }
         }
+
+
         //Log.i(TAG, FirebaseAuth.getInstance().getCurrentUser().getClass().toString());
     }
 
@@ -120,8 +145,46 @@ public class ProfileEditFragment extends Fragment {
                 if (userName != null) {
                     mUserName.setText(userName);
                 }
+                String output = "Unknown";
                 if (carType != null) {
-                    int position = mAdapter.getPosition(carType);
+
+                        if(carType.equals("MOTORCYCLE")){
+                           output = "Motorcycle";
+                        }
+                        if(carType.equals("SMALL_CAR")){
+                            output = "Small Car";
+                        }
+                        if(carType.equals("MID_CAR")){
+                            output = "Mid Car";
+                        }
+                        if(carType.equals("LARGE_CAR")){
+                            output = "Large Car";
+                        }
+                        if(carType.equals("SMALL_TRUCK")){
+                            output = "Small Truck";
+                        }
+                        if(carType.equals("LARGE_TRUCK")){
+                            output = "Large Truck";
+                        }
+                        if(carType.equals("SUV")){
+                            output = "SUV";
+                        }
+                        if(carType.equals("HYBRID_CAR")){
+                            output = "Hybrid Car";
+                        }
+                        if(carType.equals("HYBRID_TRUCK")){
+                            output = "Hybrid Truck";
+                        }
+                        if(carType.equals("ELECTRIC_CAR")){
+                            output = "Electric Car";
+                        }
+                        if(carType.equals("ELECTRIC_TRUCK")){
+                            output = "Electric Truck";
+                        }
+                        if(carType.equals("UNKNOWN")){
+                            output = "Unknown";
+                        }
+                    int position = mAdapter.getPosition(output);
                     mCarType.setSelection(position);
                 }
 
@@ -143,14 +206,6 @@ public class ProfileEditFragment extends Fragment {
 
                                 }
                             });
-//                    InputStream in = null;
-//                    try {
-//                        in = new URL(url).openStream();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Bitmap bitmap = BitmapFactory.decodeStream(in);
-//                    mImage.setImageBitmap(bitmap);
                 } else {
                     progressDialog.dismiss();
 
@@ -175,10 +230,11 @@ public class ProfileEditFragment extends Fragment {
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_PICK);
-                startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+                startDialog();
+//                Intent intent = new Intent();
+//                intent.setType("image/*");
+//                intent.setAction(Intent.ACTION_PICK);
+//                startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
                 mChangeImage = true;
             }
         });
@@ -187,8 +243,6 @@ public class ProfileEditFragment extends Fragment {
             public void onClick(View v) {
                 Context ctx = getActivity();
                 mUpdateDialog = ProgressDialog.show(new ContextThemeWrapper(ctx, R.style.DialogCustom), "Update",
-                        "Please wait...", true);
-                mUpdateDialog = ProgressDialog.show(getActivity(), "Update",
                         "Please wait...", true);
                 if (mUser != null) {
                     String carText = mCarType.getSelectedItem().toString();
@@ -214,12 +268,133 @@ public class ProfileEditFragment extends Fragment {
         });
     }
 
+    private void startDialog() {
+        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
+                getActivity());
+        myAlertDialog.setTitle("Upload Pictures Option");
+        myAlertDialog.setMessage("How do you want to set your picture?");
+
+        myAlertDialog.setPositiveButton("Gallery",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent pictureActionIntent = null;
+
+                        pictureActionIntent = new Intent(
+                                Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(
+                                pictureActionIntent,
+                                GALLERY_PICTURE);
+
+                    }
+                });
+
+        myAlertDialog.setNegativeButton("Camera",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        checkCameraPermission();
+//                        Intent intent = new Intent(
+//                                MediaStore.ACTION_IMAGE_CAPTURE);
+//                        File f = new File(android.os.Environment
+//                                .getExternalStorageDirectory(), "temp.jpg");
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+//                        FileProvider.getUriForFile(getContext(),
+//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                f));
+//
+//                        startActivityForResult(intent,
+//                                CAMERA_REQUEST);
+
+                    }
+                });
+        myAlertDialog.show();
+    }
+
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
+        } else {
+            startCameraIntent();
+        }
+
+    }
+
+    private void startCameraIntent() {
+        Intent intent = new Intent(
+                MediaStore.ACTION_IMAGE_CAPTURE);
+        File f = new File(android.os.Environment
+                .getExternalStorageDirectory(), "temp.jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                FileProvider.getUriForFile(getContext(),
+                        BuildConfig.APPLICATION_ID + ".provider",
+                        f));
+        startActivityForResult(intent,
+                CAMERA_REQUEST);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+            File f = new File(Environment.getExternalStorageDirectory()
+                    .toString());
+            for (File temp : f.listFiles()) {
+                if (temp.getName().equals("temp.jpg")) {
+                    f = temp;
+                    break;
+                }
+            }
+            if (!f.exists()) {
+                Toast.makeText(getContext(),
+                        "Error while capturing image", Toast.LENGTH_LONG)
+                        .show();
+
+                return;
+
+            }
+
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+
+                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+
+                int rotate = 0;
+                try {
+                    ExifInterface exif = new ExifInterface(f.getAbsolutePath());
+                    int orientation = exif.getAttributeInt(
+                            ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL);
+
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            rotate = 270;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            rotate = 180;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            rotate = 90;
+                            break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotate);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                        bitmap.getHeight(), matrix, true);
+
+
+                mImage.setImageBitmap(bitmap);
+                //storeImageTosdCard(bitmap);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
             mUri = data.getData();
             if (mUri != null) {
                 try {
