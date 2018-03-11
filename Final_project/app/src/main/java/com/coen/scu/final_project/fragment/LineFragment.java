@@ -122,9 +122,7 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
         mLine = (LineChart) view.findViewById(R.id.line_chart);
         mLine.getLegend().setEnabled(false);
 //        mLine.setMinimumHeight(width*3/4);
-        Description lineDesc = new Description();
-        lineDesc.setText(getString(R.string.line_desc));
-        mLine.setDescription(lineDesc);
+        mLine.getDescription().setEnabled(false);
         mLine.getAxisLeft().setEnabled(true);
         mLine.getAxisLeft().setTextSize(16f);
         mLine.getAxisLeft().setValueFormatter(new IAxisValueFormatter() {

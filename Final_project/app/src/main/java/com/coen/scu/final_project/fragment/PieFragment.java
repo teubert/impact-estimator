@@ -141,9 +141,7 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         mChart.setHoleRadius(45f);
         mChart.setTransparentCircleRadius(47f);
         mChart.getLegend().setEnabled(false);
-        Description chartDesc = new Description();
-        chartDesc.setText(getString(R.string.pie_desc));
-        mChart.setDescription(chartDesc);
+        mChart.getDescription().setEnabled(false);
 
         if (HALF_CHART) {
             mChart.setMaxAngle(180f); // HALF CHART
