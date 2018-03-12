@@ -37,7 +37,6 @@ public class UserProfile implements ValueEventListener {
         // Only production
         MEAT_HEAVY  (9.04), // kg/day
         BALANCED    (6.85), // kg/day
-        NO_BEEF     (5.25), // kg/day
         VEGETARIAN  (4.66), // kg/day
         VEGAN       (4.11); // kg/day
 

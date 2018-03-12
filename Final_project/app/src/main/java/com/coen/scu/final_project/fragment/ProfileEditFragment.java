@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -175,16 +176,33 @@ public class ProfileEditFragment extends Fragment {
                 String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
                 String carType = dataSnapshot.child(uid).child("car_type").getValue(String.class);
                 String url = dataSnapshot.child(uid).child("image").getValue(String.class);
-
-                String dietType = "Average";
-                if (dataSnapshot.child(uid).child("diet_type").exists()) {
-                    dietType = dataSnapshot.child(uid).child("diet_type").getValue(String.class);
-                }
-
+                String dietType = dataSnapshot.child(uid).child("diet_type").getValue(String.class);
                 //display
                 if (userName != null) {
                     mUserName.setText(userName);
                 }
+                if (dietType!= null) {
+                    String diet = "No Beef";
+                    if(dietType.equals("NO_BEEF")){
+                        diet = "No Beef";
+                    }
+//                    if(dietType.equals("MEAT_HEAVY")){
+//                        diet = "Meat Heavy";
+//                    }
+                    if(dietType.equals("BALANCED")){
+                        diet = "Balanced";
+                    }
+                    if(dietType.equals("VEGETARIAN")){
+                        diet = "Vegetarian";
+                    }
+                    if(dietType.equals("VEGAN")){
+                        diet = "Vegan";
+                    }
+                    int position = mDietAdapter.getPosition("No beef");
+                    mDietType.setSelection(position);
+                }
+
+
                 String output = "Unknown";
                 if (carType != null) {
 
@@ -297,7 +315,7 @@ public class ProfileEditFragment extends Fragment {
                         "Please wait...", true);
                 if (mUser != null) {
                     String carText = mCarType.getSelectedItem().toString();
-                    String dietText = mCarType.getSelectedItem().toString();
+                    String dietText = mDietType.getSelectedItem().toString();
                     String userNameText = mUserName.getText().toString();
                     String uid = mUser.getUid();
                     DatabaseReference userRef = mRef.child("users").child(uid);
@@ -312,20 +330,19 @@ public class ProfileEditFragment extends Fragment {
                     }
                     if (dietText != null) {
                         String dietItemText = dietText.toUpperCase()
-                                .replace(" ", "_");
-                        UserProfile.DietType selectedDietType = UserProfile.DietType.fromValue(dietItemText);
-                        userRef.child("diet_type").setValue(selectedDietType);
+                                .replace(" ", "_").toUpperCase();
+                        userRef.child("diet_type").setValue(dietItemText);
                     }
                     if (mChangeImage) {
                         uploadPicture(mUser);
                     } else {
                         mUpdateDialog.dismiss();
-                        Fragment fragment = new ProfileFragment();
-                        getFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.flContent, fragment)
-                                .addToBackStack(null)
-                                .commit();
+//                        Fragment fragment = new ProfileFragment();
+//                        getFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.flContent, fragment)
+//                                .addToBackStack(null)
+//                                .commit();
                         Toast.makeText(getContext(), "Update successful", Toast.LENGTH_SHORT).show();
                     }
                 }

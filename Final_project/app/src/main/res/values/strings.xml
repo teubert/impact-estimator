@@ -33,7 +33,6 @@
     <string-array name="myDietType">
         <item> Meat Heavy </item>
         <item> Balanced </item>
-        <item> No Beef </item>
         <item> Vegetarian </item>
         <item> Vegan </item>
     </string-array>
