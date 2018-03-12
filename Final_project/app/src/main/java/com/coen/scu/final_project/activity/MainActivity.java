@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.TripRecognitionService;
 import com.coen.scu.final_project.java.CommonUtil;
 import com.coen.scu.final_project.java.FirebaseUtils;
 import com.facebook.CallbackManager;
@@ -115,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
         // Sign in success, update UI with the signed-in user's information
         Toast.makeText(MainActivity.this, "Login succeed",
                 Toast.LENGTH_SHORT).show();
+
+        Intent serviceIntent = new Intent(this, TripRecognitionService.class);
+        startService(serviceIntent);
+
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         intent.putExtra("preUser", true);
         startActivity(intent);

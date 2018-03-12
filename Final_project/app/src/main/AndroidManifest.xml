@@ -14,7 +14,6 @@
     <uses-feature
         android:name="android.hardware.camera.any"
         android:required="true" />
-
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
@@ -31,11 +30,13 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
-        <activity android:name=".activity.MainActivity"
-            android:screenOrientation="portrait"
+
+        <activity
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,8 +51,11 @@
         <activity
             android:name=".activity.HomeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
+        <service
+            android:name=".TripRecognitionService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

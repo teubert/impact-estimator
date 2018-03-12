@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.TripRecognitionService;
 import com.coen.scu.final_project.java.RankingUser;
 import com.coen.scu.final_project.java.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -109,6 +110,10 @@ public class Sign_up_acitivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 //                            Toast.makeText(getApplicationContext(), "Registration succeed",
 //                                    Toast.LENGTH_SHORT).show();
+
+                            Intent serviceIntent = new Intent(getBaseContext(), TripRecognitionService.class);
+                            startService(serviceIntent);
+
                             mUser = mAuth.getCurrentUser();
                             String userEmail = mEmail.getText().toString().trim();
                             addToFireBase(userEmail);
