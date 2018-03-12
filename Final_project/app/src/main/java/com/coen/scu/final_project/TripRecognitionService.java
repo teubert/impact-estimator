@@ -9,72 +9,140 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.GPSPoint;
 import com.coen.scu.final_project.java.Transportation;
 import com.coen.scu.final_project.java.Trip;
+import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class TripRecognitionService extends Service {
     static final String DEBUG_TAG = "TripRecognitionService";
+
+    // Configurables
+    private static final int LOCATION_INTERVAL = 500; // in milliseconds
+    private static final float LOCATION_DISTANCE = 10f; // in meters
+    static final int WINDOW_SIZE = 20;
+    static final int INERTIA = 3;
+
     int mStartMode;       // indicates how to behave if the service is killed
     IBinder mBinder;      // interface for clients that bind
     boolean mAllowRebind; // indicates whether onRebind should be used
 
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
-    Queue<Location> locationQueue;
-    Transportation.TransportMode currentMode;
-    static final int WINDOW_SIZE = 20;
-    static final int INERTIA = 3;
-    int inertiaCounter = 0;
+    Queue<Location> locationQueue = new PriorityQueue<>();
+    private Transportation.TransportMode currentMode;
+
+    private int inertiaCounter = 0;
     Location startLocation = null;
     Location mGlobalLastLocation = null;
+    Location lastDeletedLocation = null;
+    double distance = 0;
+    String activeUser = null;
+    static Location lastForAverageSpeed = null;
 
+    /**
+     * Process the queue- the main trip inferring algorithm
+     */
     void processQueue() {
-        if (locationQueue.size() < WINDOW_SIZE) {
+        // Calculate average speed
+        double averageSpeed = averageSpeed();
+
+        // Check minimum requirements for continuing
+        if (locationQueue.size() < WINDOW_SIZE || aircraftTest(averageSpeed)) {
+            Log.d(DEBUG_TAG, "Minimum threshold for trip not yet met, skipping");
             return;
         }
-        double averageSpeed = averageSpeed();
+
+        // Infer mode
         Transportation.TransportMode mode = getModeFromSpeed(averageSpeed);
 
+        // Trip binning logic
         if (currentMode == null) {
-            mode = currentMode;
+            // Start a new trip
+            Log.d(DEBUG_TAG, "New trip begun of type " + mode.name());
+            currentMode = mode;
             startLocation = locationQueue.peek();
         } else if (mode == currentMode) {
+            // Continuation of current trip
+            Log.d(DEBUG_TAG, "New point for current trip (" + currentMode.name() + ")");
             handleAddedPoint();
         } else {
+            // Different mode from current trip- could be new trip or momentary change
+            //      (e.g., stop at stoplight)
             if (inertiaCounter < INERTIA) {
+                // Take as part of current trip if within inertia
                 inertiaCounter++;
                 handleAddedPoint();
             } else {
+                // Outside of inertia- trip has ended
                 createTrip();
                 resetCounters();
             }
         }
     }
 
+    /**
+     * Test to see if active mode of transport is aircraft
+     * Used to handle case where phone is turned off during flight
+     *
+     * @param speed Average speed
+     * @return  If aircraft rule applies (if you were likely flying
+     */
+    boolean aircraftTest(final double speed) {
+        return (speed > 200 || currentMode == Transportation.TransportMode.AIRCRAFT);
+    }
+
+    /**
+     * Reset all the counters (called when trip finishes)
+     */
     void resetCounters() {
-        locationQueue.clear();
         currentMode = null;
         startLocation = null;
         inertiaCounter = 0;
+        distance = 0;
     }
 
+    /**
+     * Create a trip and write to database (called when trip finishes before reset)
+     */
     void createTrip() {
+        Log.i(DEBUG_TAG, "Trip ended of type " + currentMode.name());
         GPSPoint start = new GPSPoint(startLocation.getTime(),
                 startLocation.getLongitude(),
                 startLocation.getLatitude());
+        GPSPoint end = new GPSPoint(mGlobalLastLocation.getTime(),
+                mGlobalLastLocation.getLongitude(),
+                mGlobalLastLocation.getLatitude());
+        while (locationQueue.size() > INERTIA) {
+            // Keep one
+            handleAddedPoint();
+        }
 
-//        GPSPoint end = mGlobalLastLocation;
-        Trip newTrip = new Trip();
+        // TODO(CT): Get user carType
+        Trip newTrip = new Trip(start, end, distance, currentMode, Transportation.CarType.UNKNOWN);
+        DayTripsSummary.append(activeUser, newTrip);
     }
 
+    /**
+     * Handle when a point was added- remove oldest point to move window
+     */
     void handleAddedPoint() {
-        locationQueue.remove();
+        Location loc = locationQueue.remove();
+        if (lastDeletedLocation != null) {
+            // Add to distance calculation
+            distance += lastDeletedLocation.distanceTo(loc);
+        }
     }
 
+    /**
+     * Infer the current mode of transportation from the speed (uses binning)
+     *
+     * @param speed Average speed for window
+     * @return  Inferred transport mode
+     */
     Transportation.TransportMode getModeFromSpeed(double speed) {
         // TODO(CT): Change to km
 
@@ -93,63 +161,104 @@ public class TripRecognitionService extends Service {
         }
     }
 
+    /**
+     * Calculate the average speed for the locations in the location queue (current window)
+     *
+     * @return  Average speed (km/s)
+     */
     double averageSpeed() {
         double averageSpeed = 0;
-        // TODO(CT): CACHE
         for (Location location : locationQueue) {
-            averageSpeed += location.getSpeed();
+            if (lastForAverageSpeed == null) {
+                // Convert to km/s
+                averageSpeed += location.getSpeed()/1000.0;
+            } else {
+                // Note- distance is in m and time is in ms, so this comes out to km/s
+                averageSpeed += location.distanceTo(lastForAverageSpeed)/
+                        (location.getTime() - lastForAverageSpeed.getTime());
+            }
         }
-        // TODO(CT): CHANGE TO DISTANCE-BASED
         return averageSpeed/locationQueue.size();
     }
 
+    /**
+     * Location listener- listens for changes in location
+     */
     private class LocationListener implements android.location.LocationListener
     {
-        Location mLastLocation;
+        Location mLastLocation; // Last location for this mode
 
-        public LocationListener(String provider)
-        {
-            Log.e(DEBUG_TAG, "LocationListener " + provider);
+        // Create location listener by provider
+        LocationListener(String provider) {
+            Log.i(DEBUG_TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
+        /**
+         * Called when location changes by at least min threshold (LOCATION_DISTANCE)
+         *
+         * @param location  New location
+         */
         @Override
-        public void onLocationChanged(Location location)
-        {
-            Log.e(DEBUG_TAG, "onLocationChanged: " + location);
+        public void onLocationChanged(Location location) {
+            Log.i(DEBUG_TAG, "onLocationChanged: " + location);
             locationQueue.add(location);
             mLastLocation.set(location);
             mGlobalLastLocation.set(location);
+            processQueue();
         }
 
+        /**
+         * Called when provider is disabled
+         *
+         * @param provider  Provider that was disabled
+         */
         @Override
-        public void onProviderDisabled(String provider)
-        {
-            Log.e(DEBUG_TAG, "onProviderDisabled: " + provider);
+        public void onProviderDisabled(String provider) {
+            Log.i(DEBUG_TAG, "onProviderDisabled: " + provider);
         }
 
+        /**
+         * Called when provider is enabled
+         *
+         * @param provider  Provider that was enabled
+         */
         @Override
         public void onProviderEnabled(String provider)
         {
-            Log.e(DEBUG_TAG, "onProviderEnabled: " + provider);
+            Log.i(DEBUG_TAG, "onProviderEnabled: " + provider);
         }
 
+        /**
+         * Called when status for provider changes
+         *
+         * @param provider  Provider where status changed
+         * @param status    New status
+         * @param extras    Extra information
+         */
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
-            Log.e(DEBUG_TAG, "onStatusChanged: " + provider);
+            Log.i(DEBUG_TAG, "onStatusChanged: " + provider);
         }
     }
 
+    /**
+     * The location listeners (one for each provider)
+     */
     LocationListener[] mLocationListeners = new LocationListener[] {
             new LocationListener(LocationManager.GPS_PROVIDER),
             new LocationListener(LocationManager.NETWORK_PROVIDER)
     };
 
-
+    /**
+     * Called on creation of the service, starts the location managers
+     */
     @Override
     public void onCreate() {
         // The service is being created
+        activeUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(
@@ -170,36 +279,73 @@ public class TripRecognitionService extends Service {
             Log.d(DEBUG_TAG, "gps provider does not exist " + ex.getMessage());
         }
     }
+
+    /**
+     * Called on service start command
+     *
+     * @param intent    Used intent
+     * @param flags     Flags
+     * @param startId   Start id
+     * @return  Start mode
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // The service is starting, due to a call to startService()
+        Log.d(DEBUG_TAG, "onStartCommand");
 
         return mStartMode;
     }
+
+    /**
+     * Called on bind of the service
+     *
+     * @param intent    Binding intent
+     * @return  Ibinder
+     */
     @Override
     public IBinder onBind(Intent intent) {
         // A client is binding to the service with bindService()
+        Log.d(DEBUG_TAG, "onBind");
         return mBinder;
     }
+
+    /**
+     * Called on unbinding this service
+     *
+     * @param intent unbinding intent
+     * @return  If successful/allowed
+     */
     @Override
     public boolean onUnbind(Intent intent) {
         // All clients have unbound with unbindService()
+        Log.d(DEBUG_TAG, "onUnbind");
         return mAllowRebind;
     }
+
+    /**
+     * Called on rebinding the service
+     *
+     * @param intent    Rebinding intent
+     */
     @Override
     public void onRebind(Intent intent) {
         // A client is binding to the service with bindService(),
         // after onUnbind() has already been called
+        Log.d(DEBUG_TAG, "onRebind");
     }
+
+    /**
+     * Called on destroying the service- cleans the location managers
+     */
     @Override
     public void onDestroy() {
         // The service is no longer used and is being destroyed
-        Log.e(DEBUG_TAG, "onDestroy");
+        Log.d(DEBUG_TAG, "onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
+            for (LocationListener locationListener :  mLocationListeners) {
                 try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
+                    mLocationManager.removeUpdates(locationListener);
                 } catch (Exception ex) {
                     Log.i(DEBUG_TAG, "fail to remove location listners, ignore", ex);
                 }
@@ -207,8 +353,11 @@ public class TripRecognitionService extends Service {
         }
     }
 
+    /**
+     * Initialize the location managers
+     */
     private void initializeLocationManager() {
-        Log.e(DEBUG_TAG, "initializeLocationManager");
+        Log.d(DEBUG_TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
