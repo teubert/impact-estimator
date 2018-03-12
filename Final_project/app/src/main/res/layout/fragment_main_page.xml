@@ -45,13 +45,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/white"
-                android:paddingStart="10dp"
-                android:paddingEnd="15dp"
+                android:paddingStart="5dp"
                 android:src="@drawable/ic_right_arrow" />
         </LinearLayout>
 
         <ListView
             android:id="@android:id/list"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

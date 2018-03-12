@@ -98,7 +98,7 @@
         android:layout_marginEnd="7dp"
         android:layout_marginStart="7dp"
         android:layout_marginTop="10dp"
-        android:hint="distance"
+        android:hint="Edit Trip Distance"
         android:inputType="numberDecimal"
         android:selectAllOnFocus="true"
         android:singleLine="true"

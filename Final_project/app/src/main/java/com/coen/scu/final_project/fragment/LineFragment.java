@@ -124,7 +124,7 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
 //        mLine.setMinimumHeight(width*3/4);
         mLine.getDescription().setEnabled(false);
         mLine.getAxisLeft().setEnabled(true);
-        mLine.getAxisLeft().setTextSize(16f);
+        mLine.getAxisLeft().setTextSize(20f);
         mLine.getAxisLeft().setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {

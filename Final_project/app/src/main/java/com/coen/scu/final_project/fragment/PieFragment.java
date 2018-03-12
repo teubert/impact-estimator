@@ -1,8 +1,6 @@
 package com.coen.scu.final_project.fragment;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,18 +11,10 @@ import com.coen.scu.final_project.R;
 import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.FootprintEstimate;
 import com.coen.scu.final_project.java.UserProfile;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -196,6 +186,7 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         entries.add(new PieEntry((float) ((services + products + breathing)/total*100), getString(R.string.home_category_label)));
 
         PieDataSet dataSet = new PieDataSet(entries, getString(R.string.pie_dataset_label));
+        dataSet.setValueTextColor(Color.BLACK);
         dataSet.setDrawIcons(false);
 
         dataSet.setSliceSpace(3f);
