@@ -204,7 +204,7 @@ public class TripRecognitionService extends Service {
             Log.i(DEBUG_TAG, "onLocationChanged: " + location);
             locationQueue.add(location);
             mLastLocation.set(location);
-            mGlobalLastLocation.set(location);
+            mGlobalLastLocation = location;
             processQueue();
         }
 
