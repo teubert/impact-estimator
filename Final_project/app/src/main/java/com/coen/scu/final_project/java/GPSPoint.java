@@ -4,9 +4,6 @@ import android.util.Log;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
-/**
- * Created by teubert on 2/27/18.
- */
 @IgnoreExtraProperties
 public class GPSPoint {
     private final static String DEBUG_TAG = "GPSPoint";

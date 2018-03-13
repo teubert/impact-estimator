@@ -10,6 +10,28 @@ import android.util.Log;
 public class FootprintEstimate {
     private static final String DEBUG_TAG = "FootprintEstimate";
 
+    //https://www.sciencedaily.com/releases/2008/04/080428120658.htm
+    final double lbsPerGal = 19.6;
+
+    // https://www.fhwa.dot.gov/ohim/onh00/bar8.htm
+    // Average distance 13,476 mi per year
+    // = 36.9 mi/day
+    // Assuming 30 mi/gal
+    // 1.23 gal/day
+    // Transport = 1.23*19.6 + 0.120958 * 36.9
+    // = 28.59 kg/day
+    // + 7.666 + 8.214
+    // = 44.47
+    // + 1.0437f
+    // = 45.5137
+    // + 6.85 +2.4787 * 2414 * 1e-8
+    // = 52.364
+    // + 0.55428988 * 29.4757
+    // = 68.7
+
+    public static final double AVERAGE_US_CO2 = 68.7; //54.79;
+    public static final double AVERAGE_CO2 = 13.74; // 10.96;
+
     // It's own class for extendability
     public double CO2 = 0;
     // Future versions could include other metrics
@@ -25,9 +47,8 @@ public class FootprintEstimate {
     public long nDays;
 
     public static FootprintEstimate generateEstimate(DayTripsSummary dayTrips, UserProfile user) {
-        double co2 = 0;
+        Log.d(DEBUG_TAG, "Producing Estimate");
 
-        // TODO(CT): FIX UNITS- KG
         FootprintEstimate footprint = new FootprintEstimate(1);
 
         // http://shrinkthatfootprint.com/what-is-your-carbon-footprint
@@ -41,16 +62,14 @@ public class FootprintEstimate {
 
         // Add breathing
         // From http://www.slate.com/articles/news_and_politics/explainer/2009/08/7_billion_carbon_sinks.html
-        final double humanCO2Breathing = 2.3;
+        final double humanCO2Breathing = 1.0437f; // kg
         footprint.breathing = humanCO2Breathing;
-        // TODO(CT): Add pets
         footprint.CO2 += footprint.breathing;
 
         // Add food
         // 	= Σ[CO2 from farm] + Σ[CO2 from transport]
         //  - Transport Decreased through farmers market
         //  - Farm decreased by going vegetarian/vegan
-
         final double foodCO2 = user.getDiet().getEmissions(); // kg/day
 
         // https://www.npr.org/sections/thesalt/2011/12/31/144478009/the-average-american-ate-literally-a-ton-this-year
@@ -80,14 +99,10 @@ public class FootprintEstimate {
         //= Σ[Source efficiency]*[Percentage from source]*[Total Amount]
        // - Decreased through more efficient sources (get solar panel, etc)
         // - Decreased by degrading amount
-        final double lbsPerKWh = 1.222;
+        final double kgPerKWh = 0.55428988;
         final double averageKWh = 29.4757; // from: https://www.eia.gov/tools/faqs/faq.php?id=97&t=3
-        footprint.electricity = averageKWh*lbsPerKWh;
+        footprint.electricity = averageKWh*kgPerKWh;
         footprint.CO2 += footprint.electricity;
-
-        // TODO(CT): Add locality for power source/average house use
-        // TODO(CT): Add actual energy use
-        // TODO(CT): Add house size
 
         // Add other sources
         // http://shrinkthatfootprint.com/what-is-your-carbon-footprint
