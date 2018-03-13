@@ -1,8 +1,6 @@
 package com.coen.scu.final_project.fragment;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,20 +12,14 @@ import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.FootprintEstimate;
 import com.coen.scu.final_project.java.UserProfile;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -120,7 +112,8 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
         int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
 
         mLine = (LineChart) view.findViewById(R.id.line_chart);
-        mLine.getLegend().setEnabled(false);
+        mLine.getLegend().setEnabled(true);
+        mLine.getLegend().setTextSize(16f);
 //        mLine.setMinimumHeight(width*3/4);
         mLine.getDescription().setEnabled(false);
         mLine.getAxisLeft().setEnabled(true);
@@ -173,7 +166,19 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
         // Create Line Chart
         LineDataSet lineDataSet = new LineDataSet(lineEntries, getString(R.string.line_dataset_label));
         lineDataSet.setDrawFilled(true);
-        LineData lineData = new LineData(lineDataSet);
+
+        List<Entry> aveLineEntries = new ArrayList<>();
+        aveLineEntries.add(new Entry((float) 1, (float) FootprintEstimate.AVERAGE_US_CO2));
+        aveLineEntries.add(new Entry((float) 7, (float) FootprintEstimate.AVERAGE_US_CO2));
+        LineDataSet aveLineDataSet = new LineDataSet(aveLineEntries, "average");
+        aveLineDataSet.setColor(Color.BLUE);
+        aveLineDataSet.setLineWidth(3);
+
+        List<ILineDataSet> iLineDataSets = new ArrayList<>();
+        iLineDataSets.add(lineDataSet);
+        iLineDataSets.add(aveLineDataSet);
+
+        LineData lineData = new LineData(iLineDataSets);
         lineData.setDrawValues(false);
         mLine.setData(lineData);
 
