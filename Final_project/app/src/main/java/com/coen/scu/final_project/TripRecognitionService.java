@@ -28,7 +28,7 @@ public class TripRecognitionService extends Service {
     private static final int WINDOW_SIZE = 20;
     private static final int INERTIA = 3;
 
-    // Variables
+    // Variables 
     private int mStartMode;       // indicates how to behave if the service is killed
     private IBinder mBinder;      // interface for clients that bind
     private boolean mAllowRebind; // indicates whether onRebind should be used

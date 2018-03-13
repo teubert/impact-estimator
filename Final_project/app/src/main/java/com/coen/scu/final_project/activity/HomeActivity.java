@@ -40,6 +40,8 @@ import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.GPSPath;
 import com.coen.scu.final_project.java.GPSPoint;
 import com.coen.scu.final_project.java.FriendUser;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -122,6 +124,13 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setApplicationId("1:399190248092:android:73d604e7f9404069") // Required for Analytics.
+                .setApiKey("AIzaSyAJm6QTs69bH7oYCGwXVYBdrQgYxPKonKk") // Required for Auth.
+                .setDatabaseUrl("https://project-399190248092.firebaseio.com/") // Required for RTDB.
+                .build();
+        FirebaseApp.initializeApp(this /* Context */, options, "secondary");
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
