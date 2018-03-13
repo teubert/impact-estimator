@@ -63,7 +63,7 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         FloatingActionButton fab = view.findViewById(R.id.fabEdit);
-        fab.setBackgroundColor(0);
+        //fab.setBackgroundColor(0);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

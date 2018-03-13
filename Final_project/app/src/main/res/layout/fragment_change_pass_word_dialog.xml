@@ -8,13 +8,14 @@
     <TextView
         android:id="@+id/password_title"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="@color/change"
         android:minWidth="100dp"
         android:minHeight="45dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="24dp"
-        android:text="Change Password" />
+        android:textColor="@color/white"
+        android:text="RESET PASSWORD" />
 
     <EditText
         android:id="@+id/new_password1"
@@ -34,15 +35,18 @@
         android:hint="repeat password"
         android:inputType="textPassword" />
 
+
     <Button
         android:id="@+id/update_password"
         android:layout_gravity="center"
+        android:layout_marginTop="@dimen/fab_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="80dp"
         android:minHeight="25dp"
         android:layout_marginBottom="15dp"
-        android:background="@color/colorPrimary"
-        android:text="Update" />
+        android:background="@drawable/background_button"
+        android:text="Update"
+        android:textColor="@color/white"/>
 
 </LinearLayout>

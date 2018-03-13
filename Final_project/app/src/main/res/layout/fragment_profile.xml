@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,10 +44,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
-            android:minHeight="20dp"
-            android:text="Reset Password"
+            android:minHeight="30dp"
+            android:minWidth="140dp"
+            android:background="@drawable/background_button_main"
+            android:text="@string/reset_pw"
             android:textAllCaps="false"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/white"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -59,7 +63,7 @@
                 android:layout_width="87dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:text="Car Type:      "
+                android:text="@string/car_type"
                 android:textSize="18sp" />
 
             <TextView
@@ -67,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="SUV"
+                android:text="@string/suv"
                 android:textSize="18sp" />
 
         </LinearLayout>
@@ -83,7 +87,7 @@
                 android:layout_width="87dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:text="Diet Type:      "
+                android:text="@string/diet_type"
                 android:textSize="18sp" />
 
             <TextView
@@ -91,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Balanced"
+                android:text="@string/diet_type_default"
                 android:textSize="18sp" />
 
         </LinearLayout>
@@ -104,5 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_menu_edit" />
+        android:backgroundTint="@color/colorPrimary"
+        app:fabSize="mini"
+        android:src="@drawable/ic_pencil_new" />
 </FrameLayout>

@@ -41,5 +41,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="line_desc">CO2 Equivalent Emmisions by Day</string>
     <string name="pie_desc">CO2 Equivalent Emmisions by Source</string>
+    <string name="reset_pw">Reset Password</string>
+    <string name="car_type">Car Type:      </string>
+    <string name="suv">"SUV"</string>
+    <string name="diet_type">Diet Type:      </string>
+    <string name="diet_type_default">Balanced</string>
 </resources>
 

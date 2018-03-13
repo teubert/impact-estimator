@@ -63,9 +63,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
         android:focusable="true"
-        android:backgroundTint="@color/colorPrimaryDark"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        android:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_plus_white_new"
+        app:fabSize="mini"/>
 
 </FrameLayout>

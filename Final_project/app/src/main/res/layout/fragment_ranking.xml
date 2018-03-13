@@ -26,7 +26,7 @@
         android:layout_gravity= "bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_menu_add"
-        app:backgroundTint="@color/button"
+        app:backgroundTint="@color/colorPrimary"
         app:fabSize="mini" />
 
 </FrameLayout>
