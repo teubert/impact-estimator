@@ -28,6 +28,7 @@
     <style name="PBar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">#8311D1</item>
     </style>
+
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">48sp</item>
     </style>

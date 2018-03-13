@@ -231,6 +231,7 @@ public class HomeActivity extends AppCompatActivity
      */
     @Override
     public void onBackPressed() {
+        String fragmentTag = "";
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -238,8 +239,19 @@ public class HomeActivity extends AppCompatActivity
             Fragment fragment = getSupportFragmentManager().findFragmentByTag("initial_profile_edit");
             if (fragment instanceof ProfileEditFragment) {
                 sendToSart();
-            }
+            }else
             super.onBackPressed();
+            try{
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+//                Toast.makeText(HomeActivity.this, fragmentTag, Toast.LENGTH_LONG).show();
+            } catch(Exception e) {
+//                Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                fragmentTag = "Home Page";
+            }
+            if(fragmentTag != ""){
+                getSupportActionBar().setTitle(fragmentTag);
+            }
         }
     }
     @Override
@@ -301,22 +313,28 @@ public class HomeActivity extends AppCompatActivity
     void openPage() {
         Class fragmentClass = null;
         String title = "";
+        String tag = "";
 
         if (mActiveId == R.id.nav_home_page) {
             fragmentClass = MainPageFragment.class;
             title = "Home Page";
+            tag = "Home Page";
         } else if (mActiveId == R.id.nav_summary_page) {
             fragmentClass = SummaryFragment.class;
             title = "Summary";
+            tag = "Summary";
         } else if (mActiveId == R.id.nav_ranking_page) {
             fragmentClass = RankingFragment.class;
             title = "Ranking";
+            tag = "Ranking";
         } else if (mActiveId == R.id.nav_profile_page) {
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
+            tag = "My Profile";
         } else if (mActiveId == R.id.nav_notification_page) {
             fragmentClass = NotificationFragment.class;
             title = "Notification";
+            tag = "Notification";
         } else if (mActiveId == R.id.nav_log_out) {
             FirebaseAuth.getInstance().signOut();
             sendToSart();
@@ -329,7 +347,7 @@ public class HomeActivity extends AppCompatActivity
                 fragmentManager
                         .beginTransaction()
                         .replace(R.id.flContent, fragment)
-                        .addToBackStack(null)
+                        .addToBackStack(tag)
                         .commit();
                 getSupportActionBar().setTitle(title);
             } catch (Exception e) {
