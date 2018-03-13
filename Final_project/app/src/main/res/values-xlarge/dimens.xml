@@ -3,13 +3,18 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
-    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="nav_header_height">250dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="summary_horiz_margin">20dp</dimen>
     <dimen name="float_icon_size">72dp</dimen>
-    <dimen name="icon_size">36dp</dimen>
+    <dimen name="icon_size">48dp</dimen>
     <dimen name="dialog_frag_text_size">24dp</dimen>
     <dimen name="chart_text_size">32sp</dimen>
     <dimen name="chart_title_size">36sp</dimen>
     <dimen name="chart_height_size">650dp</dimen>
+    <dimen name="drawer_width">500dp</dimen>
+    <dimen name="drawer_pic">108dp</dimen>
+    <dimen name="drawer_name">24sp</dimen>
+    <dimen name="drawer_email">24sp</dimen>
+    <dimen name="action_bar_height">126dp</dimen>
 </resources>

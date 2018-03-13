@@ -11,6 +11,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -20,7 +22,15 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
+    </style>
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">24dp</item>
+        <item name="android:maxWidth">40dp</item>
+        <item name="android:width">40dp</item>
+    </style>
 
     <style name="PBar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">#8311D1</item>
@@ -31,5 +41,10 @@
     <style name="DialogCustom">
         <item name="android:textSize">16dp</item>
     </style>
+    <style name="NavigationViewStyle">
+        <item name="android:textSize">16sp</item> <!-- menu item text size-->
+        <item name="listPreferredItemHeight">80dp</item>
+    </style>
+
 
 </resources>

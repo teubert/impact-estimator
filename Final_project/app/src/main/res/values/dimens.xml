@@ -12,4 +12,9 @@
     <dimen name="chart_text_size">22sp</dimen>
     <dimen name="chart_title_size">24sp</dimen>
     <dimen name="chart_height_size">350dp</dimen>
+    <dimen name="drawer_width">300dp</dimen>
+    <dimen name="drawer_pic">72dp</dimen>
+    <dimen name="drawer_name">18sp</dimen>
+    <dimen name="drawer_email">18sp</dimen>
+    <dimen name="action_bar_height">80dp</dimen>
 </resources>

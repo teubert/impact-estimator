@@ -15,7 +15,15 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
+    </style>
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">84dp</item>
+        <item name="android:maxWidth">180dp</item>
+        <item name="android:width">180dp</item>
+    </style>
 
     <style name="PBar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">#8311D1</item>
@@ -27,5 +35,10 @@
     <style name="DialogCustom">
         <item name="android:textSize">32sp</item>
     </style>
+    <style name="NavigationViewStyle">
+        <item name="android:textSize">24sp</item> <!-- menu item text size-->
+        <item name="listPreferredItemHeight">220dp</item><!-- item size in menu-->
+    </style>
+
 
 </resources>

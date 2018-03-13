@@ -15,8 +15,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/head_pic"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="@dimen/drawer_pic"
+        android:layout_height="@dimen/drawer_pic"
         android:src="@mipmap/ic_user_portrait" />
 
     <TextView
@@ -25,13 +25,13 @@
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
         tool:text="Android Studio"
-        android:textSize="18sp"
+        android:textSize="@dimen/drawer_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/head_email"
         android:layout_width="wrap_content"
-        android:textSize="18sp"
+        android:textSize="@dimen/drawer_email"
         android:layout_height="wrap_content"
         tool:text="android.studio@android.com" />
 
