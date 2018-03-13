@@ -13,35 +13,37 @@ import com.coen.scu.final_project.java.DayTripsSummary;
 import com.coen.scu.final_project.java.GPSPoint;
 import com.coen.scu.final_project.java.Transportation;
 import com.coen.scu.final_project.java.Trip;
+import com.coen.scu.final_project.java.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class TripRecognitionService extends Service {
-    static final String DEBUG_TAG = "TripRecognitionService";
+    private static final String DEBUG_TAG = "TripRecognitionService";
 
     // Configurables
     private static final int LOCATION_INTERVAL = 500; // in milliseconds
     private static final float LOCATION_DISTANCE = 10f; // in meters
-    static final int WINDOW_SIZE = 20;
-    static final int INERTIA = 3;
+    private static final int WINDOW_SIZE = 20;
+    private static final int INERTIA = 3;
 
-    int mStartMode;       // indicates how to behave if the service is killed
-    IBinder mBinder;      // interface for clients that bind
-    boolean mAllowRebind; // indicates whether onRebind should be used
+    // Variables
+    private int mStartMode;       // indicates how to behave if the service is killed
+    private IBinder mBinder;      // interface for clients that bind
+    private boolean mAllowRebind; // indicates whether onRebind should be used
 
     private LocationManager mLocationManager = null;
-    Queue<Location> locationQueue = new PriorityQueue<>();
+    private Queue<Location> locationQueue = new PriorityQueue<>();
     private Transportation.TransportMode currentMode;
 
     private int inertiaCounter = 0;
-    Location startLocation = null;
-    Location mGlobalLastLocation = null;
-    Location lastDeletedLocation = null;
-    double distance = 0;
-    String activeUser = null;
-    static Location lastForAverageSpeed = null;
+    private Location startLocation = null;
+    private Location mGlobalLastLocation;
+    private Location lastDeletedLocation = null;
+    private double distance = 0; // km
+    private Location lastForAverageSpeed = null;
+    private UserProfile mUser;
 
     /**
      * Process the queue- the main trip inferring algorithm
@@ -92,7 +94,7 @@ public class TripRecognitionService extends Service {
      * @return  If aircraft rule applies (if you were likely flying
      */
     boolean aircraftTest(final double speed) {
-        return (speed > 200 || currentMode == Transportation.TransportMode.AIRCRAFT);
+        return (speed > 166.66 || currentMode == Transportation.TransportMode.AIRCRAFT);
     }
 
     /**
@@ -121,9 +123,8 @@ public class TripRecognitionService extends Service {
             handleAddedPoint();
         }
 
-        // TODO(CT): Get user carType
-        Trip newTrip = new Trip(start, end, distance, currentMode, Transportation.CarType.UNKNOWN);
-        DayTripsSummary.append(activeUser, newTrip);
+        Trip newTrip = new Trip(start, end, distance, currentMode, mUser.getCarType());
+        DayTripsSummary.append(mUser.getId(), newTrip);
     }
 
     /**
@@ -132,8 +133,8 @@ public class TripRecognitionService extends Service {
     void handleAddedPoint() {
         Location loc = locationQueue.remove();
         if (lastDeletedLocation != null) {
-            // Add to distance calculation
-            distance += lastDeletedLocation.distanceTo(loc);
+            // Add to distance calculation (km)
+            distance += lastDeletedLocation.distanceTo(loc) / 1000f;
         }
     }
 
@@ -144,17 +145,18 @@ public class TripRecognitionService extends Service {
      * @return  Inferred transport mode
      */
     Transportation.TransportMode getModeFromSpeed(double speed) {
-        // TODO(CT): Change to km
 
-        if (speed < 2) {
+        // All in m/s
+        if (speed < 0.5) {
             return null;
-        } else if (speed < 10) {
+        } else if (speed < 3) {
             return Transportation.TransportMode.WALK;
-        } else if (speed < 20) {
+        } else if (speed < 9) {
             return Transportation.TransportMode.BIKE;
-        } else if (speed < 80) {
+        } else if (speed < 35) {
             return Transportation.TransportMode.AUTOMOBILE;
-        } else if (speed < 200) {
+        } else if (speed < 166.66) {
+            // 166.66 is fastest bullet train
             return Transportation.TransportMode.TRAIN;
         } else {
             return Transportation.TransportMode.AIRCRAFT;
@@ -164,18 +166,18 @@ public class TripRecognitionService extends Service {
     /**
      * Calculate the average speed for the locations in the location queue (current window)
      *
-     * @return  Average speed (km/s)
+     * @return  Average speed (m/s)
      */
     double averageSpeed() {
         double averageSpeed = 0;
         for (Location location : locationQueue) {
             if (lastForAverageSpeed == null) {
-                // Convert to km/s
-                averageSpeed += location.getSpeed()/1000.0;
+                // Convert to m/s
+                averageSpeed += location.getSpeed();
             } else {
-                // Note- distance is in m and time is in ms, so this comes out to km/s
+                // Note- distance is in m and time is in ms, so this comes out to m/s
                 averageSpeed += location.distanceTo(lastForAverageSpeed)/
-                        (location.getTime() - lastForAverageSpeed.getTime());
+                        ((location.getTime() - lastForAverageSpeed.getTime())/1000);
             }
         }
         return averageSpeed/locationQueue.size();
@@ -257,7 +259,8 @@ public class TripRecognitionService extends Service {
     @Override
     public void onCreate() {
         // The service is being created
-        activeUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String activeUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mUser = UserProfile.getUserProfileById(activeUser);
 
         initializeLocationManager();
         try {
