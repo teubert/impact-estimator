@@ -2,7 +2,9 @@ package com.coen.scu.final_project.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +21,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,86 +31,36 @@ import java.util.Locale;
 public class LineFragment extends Fragment implements UserProfile.UserUpdateInterface, DayTripsSummary.TripUpdateInterface {
     private static final String DEBUG_TAG = "Summary Fragment";
 
-    private Calendar mDate = null;
-    UserProfile user;
-    String userId;
-    List<DayTripsSummary> list = new ArrayList<>();
-    List<String> dayList = new ArrayList<>();
     private LineChart mLine;
 
     boolean userSet = false;
-    private ArrayList<Integer> colors = new ArrayList<>();
-
     public LineFragment() {
         // Required empty public constructor
     }
 
     /**
+     * Create the list fragment view, involves setting callbacks and creating chart
      *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * @param inflater              Layout inflater
+     * @param container             Viewgroup container
+     * @param savedInstanceState    Saved Instance State
+     * @return  Inflated View
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d(DEBUG_TAG, "onCreateView: Creating Line Fragment");
         View view = inflater.inflate(R.layout.fragment_line, container, false);
 
-        mDate = Calendar.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        userId = firebaseUser.getUid();
+        for (DayTripsSummary dayTripsSummary : SummaryFragment.list) {
+            dayTripsSummary.addCallback(this);
+        }
+        SummaryFragment.user.addCallback(this);
 
-        user = UserProfile.getUserProfileById(userId);
-
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.US);
-
-        Calendar date = mDate;
-        dayList.add(dayFormat.format(date.getTime()));
-        DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        list.add(dayTripsSummary);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-
-        mLine = (LineChart) view.findViewById(R.id.line_chart);
+        mLine = view.findViewById(R.id.line_chart);
         mLine.getLegend().setEnabled(true);
         mLine.getLegend().setTextSize(16f);
-//        mLine.setMinimumHeight(width*3/4);
         mLine.getDescription().setEnabled(false);
         mLine.getAxisLeft().setEnabled(true);
         mLine.getAxisLeft().setTextSize(20f);
@@ -130,13 +76,13 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(16f);
         xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(00);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return dayList.get((int) value-1);
+                return SummaryFragment.dayList.get((int) value-1);
             }
         });
+        update();
 
         return view;
     }
@@ -155,11 +101,18 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
      *
      */
     public void update() {
+        if (!isAdded()) {
+            // Not attached to activity
+            return;
+        }
+        Log.d(DEBUG_TAG, "update: Updating Line Chart");
+
         // Prepare data
         List<Entry> lineEntries = new ArrayList<>();
         int i = 1;
-        for (DayTripsSummary dayTripsSummary : list) {
-            FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary, user);
+        for (DayTripsSummary dayTripsSummary : SummaryFragment.list) {
+            FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary,
+                    SummaryFragment.user);
             lineEntries.add(new Entry((float) i++, (float) estimate.CO2));
         }
 
@@ -198,18 +151,18 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
     @Override
     public void onResume() {
         super.onResume();
-        for (DayTripsSummary tripsSummary : list) {
+        for (DayTripsSummary tripsSummary : SummaryFragment.list) {
             tripsSummary.addCallback(this);
         }
-        user.addCallback(this);
+        SummaryFragment.user.addCallback(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        for (DayTripsSummary tripsSummary : list) {
+        for (DayTripsSummary tripsSummary : SummaryFragment.list) {
             tripsSummary.removeCallback(this);
         }
-        user.removeCallback(this);
+        SummaryFragment.user.removeCallback(this);
     }
 }

@@ -2,7 +2,9 @@ package com.coen.scu.final_project.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +18,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -34,98 +29,39 @@ import java.util.Locale;
 public class PieFragment extends Fragment implements UserProfile.UserUpdateInterface, DayTripsSummary.TripUpdateInterface {
     private static final String DEBUG_TAG = "Summary Fragment";
 
-    private Calendar mDate = null;
-    UserProfile user;
-    String userId;
-    List<DayTripsSummary> list = new ArrayList<>();
-    List<String> dayList = new ArrayList<>();
     private PieChart mChart;
 
-    boolean userSet = false;
-    private ArrayList<Integer> colors = new ArrayList<>();
-
-    final boolean HALF_CHART = false;
+    private boolean userSet = false;
 
     public PieFragment() {
         // Required empty public constructor
     }
 
     /**
+     * Create the pie fragment view, involves setting callbacks and creating chart
      *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * @param inflater              Layout inflater
+     * @param container             Viewgroup container
+     * @param savedInstanceState    Saved Instance State
+     * @return  Inflated View
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(DEBUG_TAG, "onCreateView: Creating Pie Fragment View");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_pie, container, false);
 
-        mDate = Calendar.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        userId = firebaseUser.getUid();
 
-        user = UserProfile.getUserProfileById(userId);
-        user.addCallback(this);
+        for (DayTripsSummary dayTripsSummary : SummaryFragment.list) {
+            dayTripsSummary.addCallback(this);
+        }
+        SummaryFragment.user.addCallback(this);
 
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.US);
-
-        Calendar date = mDate;
-        dayList.add(dayFormat.format(date.getTime()));
-        DayTripsSummary dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        date.add(Calendar.DATE, -1);
-        dayList.add(dayFormat.format(date.getTime()));
-        dayTripsSummary = DayTripsSummary.getDayTripsForDay(userId, date);
-        dayTripsSummary.addCallback(this);
-        list.add(dayTripsSummary);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        mChart = (PieChart) view.findViewById(R.id.pie_chart);
+        mChart = view.findViewById(R.id.pie_chart);
 
         mChart.setCenterText(getString(R.string.pie_chart_center_text));
         mChart.setCenterTextSize(32f);
-
-        int width = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-//        mChart.setMinimumHeight(width*3/4);
-
 
         // radius of the center hole in percent of maximum radius
         mChart.setHoleRadius(45f);
@@ -133,10 +69,13 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         mChart.getLegend().setEnabled(false);
         mChart.getDescription().setEnabled(false);
 
-        if (HALF_CHART) {
-            mChart.setMaxAngle(180f); // HALF CHART
-            mChart.setRotationAngle(180f);
-        }
+//        final boolean HALF_CHART = false;
+//        if (HALF_CHART) {
+//            mChart.setMaxAngle(180f); // HALF CHART
+//            mChart.setRotationAngle(180f);
+//        }
+
+        update();
 
         return view;
     }
@@ -155,6 +94,12 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
      *
      */
     public void update() {
+        if (!isAdded()) {
+            // Not attached to activity
+            return;
+        }
+        Log.d(DEBUG_TAG, "update: Updating Pie Chart");
+
         // Initialize Data
         double trips = 0;
         double breathing = 0;
@@ -164,8 +109,8 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         double services = 0;
 
         // Prepare data
-        for (DayTripsSummary dayTripsSummary : list) {
-            FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary, user);
+        for (DayTripsSummary dayTripsSummary : SummaryFragment.list) {
+            FootprintEstimate estimate = FootprintEstimate.generateEstimate(dayTripsSummary, SummaryFragment.user);
             trips       += estimate.trips;
             breathing   += estimate.breathing;
             food        += estimate.food;
@@ -192,7 +137,7 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         dataSet.setSliceSpace(3f);
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(colors);
+        dataSet.setColors(SummaryFragment.colors);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
@@ -221,18 +166,18 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
     @Override
     public void onResume() {
         super.onResume();
-        for (DayTripsSummary tripsSummary : list) {
+        for (DayTripsSummary tripsSummary : SummaryFragment.list) {
             tripsSummary.addCallback(this);
         }
-        user.addCallback(this);
+        SummaryFragment.user.addCallback(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        for (DayTripsSummary tripsSummary : list) {
+        for (DayTripsSummary tripsSummary : SummaryFragment.list) {
             tripsSummary.removeCallback(this);
         }
-        user.removeCallback(this);
+        SummaryFragment.user.removeCallback(this);
     }
 }
