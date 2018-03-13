@@ -132,11 +132,12 @@ public class LineFragment extends Fragment implements UserProfile.UserUpdateInte
             }
         });
         mLine.getAxisRight().setEnabled(false);
+        mLine.setExtraBottomOffset(4);
         XAxis xAxis = mLine.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextSize(20f);
+        xAxis.setTextSize(16f);
         xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(75);
+        xAxis.setLabelRotationAngle(00);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {

@@ -3,21 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/line_chart"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/summary_horiz_margin"
-        android:layout_marginEnd="@dimen/summary_horiz_margin"
-        android:layout_marginBottom="40dp"
-        tools:context="com.coen.scu.final_project.activity.HomeActivity">
-    </com.github.mikephil.charting.charts.LineChart>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
         android:text="CO2 Equivalent By Day"
-        android:textSize="@dimen/chart_text_size"/>
+        android:textSize="@dimen/chart_title_size"/>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/line_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="@dimen/summary_horiz_margin"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        tools:context="com.coen.scu.final_project.activity.HomeActivity">
+    </com.github.mikephil.charting.charts.LineChart>
 </FrameLayout>

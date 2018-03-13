@@ -200,6 +200,8 @@ public class PieFragment extends Fragment implements UserProfile.UserUpdateInter
         data.setValueTextColor(Color.BLACK);
 
         mChart.setData(data);
+        mChart.setEntryLabelColor(Color.BLACK);
+        mChart.setEntryLabelTextSize(16f);
 
         // Update
         mChart.invalidate();

@@ -10,4 +10,6 @@
     <dimen name="icon_size">36dp</dimen>
     <dimen name="dialog_frag_text_size">24dp</dimen>
     <dimen name="chart_text_size">32sp</dimen>
+    <dimen name="chart_title_size">36sp</dimen>
+    <dimen name="chart_height_size">650dp</dimen>
 </resources>
