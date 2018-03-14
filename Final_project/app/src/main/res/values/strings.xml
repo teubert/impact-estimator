@@ -46,5 +46,8 @@
     <string name="suv">"SUV"</string>
     <string name="diet_type">Diet Type:      </string>
     <string name="diet_type_default">Balanced</string>
+
+    <string name="facebook_app_id">149404365877048</string>
+    <string name="fb_login_protocol_scheme">fbf707e1772312273168d2a90ba001a0</string>
 </resources>
 
