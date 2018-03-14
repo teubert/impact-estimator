@@ -44,6 +44,7 @@ public class RankingFragment extends Fragment {
     private FirebaseUser mUser;
     private String mUid;
     private RecyclerView mRecyclerView;
+    private int mLastPos;
 
 
     public RankingFragment() {
@@ -63,26 +64,7 @@ public class RankingFragment extends Fragment {
     }
 
     private void generateRankingData() {
-                //add self
-        mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String userName = dataSnapshot.child(mUid).child("name").getValue(String.class);
-                String userEmission = dataSnapshot.child(mUid).child("total_emission").getValue(String.class);
-                String userImageUrl = dataSnapshot.child(mUid).child("image").getValue(String.class);
-                RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl,mUid);
-                mRef.child("ranking").child(mUid).child(mUid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                });
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         //loop through each friend
         mRef.child("friend_data").getRef().addValueEventListener(new ValueEventListener() {
@@ -96,7 +78,8 @@ public class RankingFragment extends Fragment {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String userName = dataSnapshot.child(uid).child("name").getValue(String.class);
-                            String userEmission = dataSnapshot.child(uid).child("total_emission").getValue(String.class);
+                            Log.i("DEBUG_TAG",userName);
+                            Double userEmission = dataSnapshot.child(uid).child("total_emission").getValue(Double.class);
                             String userImageUrl = dataSnapshot.child(uid).child("image").getValue(String.class);
                             RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl, uid);
                             mRef.child("ranking").child(mUid).child(uid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -112,6 +95,27 @@ public class RankingFragment extends Fragment {
                         }
                     });
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //add self
+        mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userName = dataSnapshot.child(mUid).child("name").getValue(String.class);
+                Log.i("DEBUG_TAG",userName);
+                Double userEmission = dataSnapshot.child(mUid).child("total_emission").getValue(Double.class);
+                String userImageUrl = dataSnapshot.child(mUid).child("image").getValue(String.class);
+                RankingUser rankingUser = new RankingUser(userName, userEmission, userImageUrl,mUid);
+                mRef.child("ranking").child(mUid).child(mUid).setValue(rankingUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                });
             }
 
             @Override
@@ -141,8 +145,9 @@ public class RankingFragment extends Fragment {
             }
         });
         mRecyclerView = view.findViewById(R.id.ranking_recycleview);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.getStackFromEnd();
         mRecyclerView.setLayoutManager(layoutManager);
         return view;
 
@@ -151,7 +156,7 @@ public class RankingFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i("DEBUG_TAG", mUser.getUid());
+//        Log.i("DEBUG_TAG", mUser.getUid());
         FirebaseRecyclerAdapter<RankingUser, FriendViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<RankingUser, FriendViewHolder>(
                 RankingUser.class,
                 R.layout.list_item,
@@ -162,7 +167,7 @@ public class RankingFragment extends Fragment {
             protected void populateViewHolder(final FriendViewHolder viewHolder, final RankingUser model, int position) {
 
                 viewHolder.setUser(model.getmName());
-                viewHolder.setEmission("Emission: " + model.getmEmission());
+                viewHolder.setEmission("Emission: " + model.getmEmission() + " kg");//  No." + String.valueOf(position + 1));
                 viewHolder.setImage(model.getmImageUrl(), getContext(),model.getmName());
                 viewHolder.mView.findViewById(R.id.ranking_unfriend).setOnClickListener(new View.OnClickListener() {
                     @Override

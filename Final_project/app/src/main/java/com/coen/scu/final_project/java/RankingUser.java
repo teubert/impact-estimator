@@ -6,7 +6,7 @@ package com.coen.scu.final_project.java;
 
 public class RankingUser {
     private String mName;
-    private String mEmission;
+    private Double mEmission;
     private String mImageUrl;
     private String mId;
 
@@ -22,7 +22,7 @@ public class RankingUser {
         this.mId = mId;
     }
 
-    public RankingUser(String name, String emission, String image, String id){
+    public RankingUser(String name, Double emission, String image, String id){
        mName = name;
        mEmission = emission;
        mImageUrl = image;
@@ -37,11 +37,11 @@ public class RankingUser {
         this.mName = mName;
     }
 
-    public String getmEmission() {
+    public Double getmEmission() {
         return mEmission;
     }
 
-    public void setmEmission(String mEmission) {
+    public void  setmEmission(Double mEmission) {
         this.mEmission = mEmission;
     }
 
