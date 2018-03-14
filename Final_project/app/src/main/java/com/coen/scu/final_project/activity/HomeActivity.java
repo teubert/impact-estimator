@@ -145,7 +145,7 @@ public class HomeActivity extends AppCompatActivity
         final TextView name = (TextView) header.findViewById(R.id.head_name);
         final TextView email = (TextView) header.findViewById(R.id.head_email);
         final CircleImageView image = header.findViewById(R.id.head_pic);
-        mRef.child("users").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+        mRef.child("users").getRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String uid = mUser.getUid();
