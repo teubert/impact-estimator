@@ -197,6 +197,8 @@ public class HomeActivity extends AppCompatActivity
                 getSupportActionBar().setTitle(fragmentTag);
             }
         }
+
+        super.onBackPressed();
     }
     @Override
     protected void onStart() {
