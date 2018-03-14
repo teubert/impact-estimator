@@ -125,18 +125,6 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setApplicationId("1:399190248092:android:73d604e7f9404069") // Required for Analytics.
-                .setApiKey("AIzaSyAJm6QTs69bH7oYCGwXVYBdrQgYxPKonKk") // Required for Auth.
-                .setDatabaseUrl("https://project-399190248092.firebaseio.com/") // Required for RTDB.
-                .build();
-        FirebaseApp.initializeApp(this /* Context */, options, "secondary");
-
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        id = firebaseUser.getUid();
-        startConnection();
-
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
