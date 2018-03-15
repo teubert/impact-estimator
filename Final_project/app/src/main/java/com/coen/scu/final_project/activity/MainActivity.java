@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void emailLogin(String email, String password) {
-        mRootLayout.setVisibility(View.INVISIBLE);
+        //mRootLayout.setVisibility(View.INVISIBLE);
         mPBar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
@@ -239,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                             onLoginSuccess();
                         } else {
                             onLoginFailure(task.getException().getMessage());
+                            //mRootLayout.setVisibility(View.VISIBLE);
                         }
 
                         // ...
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-        mRootLayout.setVisibility(View.INVISIBLE);
+        //mRootLayout.setVisibility(View.INVISIBLE);
 
         DatabaseReference database = FirebaseUtils.getDatabase();
         database.child("users").addValueEventListener(new ValueEventListener() {
