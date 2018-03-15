@@ -41,6 +41,10 @@
         <item name="android:textSize">24sp</item> <!-- menu item text size-->
         <item name="listPreferredItemHeight">220dp</item><!-- item size in menu-->
     </style>
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/black</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
 
 
 </resources>

@@ -351,8 +351,7 @@ public class ProfileEditFragment extends Fragment {
     }
 
     private void startDialog() {
-        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
-                getActivity());
+        AlertDialog.Builder myAlertDialog= new AlertDialog.Builder(getContext(), R.style.AppCompatAlertDialogStyle);
         myAlertDialog.setTitle("Upload Pictures Option");
         myAlertDialog.setMessage("How do you want to set your picture?");
 
