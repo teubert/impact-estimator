@@ -112,11 +112,13 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
                 start.setTimeInMillis(currentTrip.getStart().timestamp);
                 Calendar end = Calendar.getInstance();
                 end.setTimeInMillis(currentTrip.getEnd().timestamp);
-                int startHr = start.get(Calendar.HOUR);
+                int startHr = start.get(Calendar.HOUR_OF_DAY);
                 int startMin = start.get(Calendar.MINUTE);
-                int endHr = end.get(Calendar.HOUR);
+                int endHr = end.get(Calendar.HOUR_OF_DAY);
                 int endMin = end.get(Calendar.MINUTE);
-                time.setText(String.format(getString(R.string.timerange_lbl_format), startHr, startMin, endHr, endMin));
+                time.setText(String.format(getString(R.string.timerange_lbl_format),
+                        startHr, startMin,
+                        endHr, endMin));
             } else {
                 Log.v(DEBUG_TAG, "No Time, Skipping timestamp");
             }
