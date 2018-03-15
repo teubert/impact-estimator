@@ -50,21 +50,21 @@ public class TwoChartFragment extends Fragment {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.chart1, new PieFragment());
-        ImageButton fullChart1 = view.findViewById(R.id.chart1_btn);
-        fullChart1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.PIE);
-            }
-        });
+//        ImageButton fullChart1 = view.findViewById(R.id.chart1_btn);
+//        fullChart1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.PIE);
+//            }
+//        });
         ft.add(R.id.chart2, new LineFragment());
-        ImageButton fullChart2 = view.findViewById(R.id.chart2_btn);
-        fullChart2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.LINE);
-            }
-        });
+//        ImageButton fullChart2 = view.findViewById(R.id.chart2_btn);
+//        fullChart2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((SummaryFragment) getParentFragment()).toggle(SummaryFragment.Chart.LINE);
+//            }
+//        });
         ft.commit();
 
         return view;
