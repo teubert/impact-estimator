@@ -9,12 +9,13 @@
         android:id="@+id/friend_request_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_gravity="center"
         android:textSize="18sp"
         tool:text="XXX sent u a notification"/>
 
     <LinearLayout
         android:layout_marginTop="8dp"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -22,20 +23,22 @@
             android:id="@+id/accept_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/button"
+            android:background="@drawable/background_button_change"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:text="Accept" />
+            android:text="Accept"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/reject_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:background="@android:color/holo_red_light"
+            android:background="@drawable/background_button_reject"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:text="Reject" />
+            android:text="Reject"
+            android:textColor="@color/white"/>
 
 
     </LinearLayout>

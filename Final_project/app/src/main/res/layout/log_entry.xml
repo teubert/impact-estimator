@@ -50,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/delete_button"
         android:layout_below="@id/text_time"
+        android:backgroundTint="@color/change"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         app:srcCompat="@android:drawable/ic_menu_edit" />

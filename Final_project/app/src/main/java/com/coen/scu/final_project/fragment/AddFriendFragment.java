@@ -125,8 +125,9 @@ public class AddFriendFragment extends Fragment {
                                             public void onSuccess(Void aVoid) {
                                                 Toast.makeText(getContext(), "Request sent", Toast.LENGTH_SHORT).show();
                                                 mCurrent_state = 1;
-                                                mRequestBtn.setText("Cancel Friend Request");
-                                                mDeclineBtn.setVisibility(View.GONE);
+                                                //mRequestBtn.setText("Cancel Friend Request");
+                                                mRequestBtn.setVisibility(View.GONE);
+                                                mDeclineBtn.setVisibility(View.VISIBLE);
                                             }
                                         });
                                     }
