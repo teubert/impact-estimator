@@ -165,7 +165,7 @@ public class MainPageFragment extends ListFragment implements DayTripsSummary.Tr
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dayTripsSummary.deleteTrip(userId, currentTrip);
+                    dayTripsSummary.deleteTrip(userId, DayTripsSummary.getDateString(mDate), currentTrip);
                 }
             });
 

@@ -1,5 +1,6 @@
 package com.coen.scu.final_project.java;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
@@ -34,6 +35,17 @@ public class DayTripsSummary implements ChildEventListener {
         void onTripUpdate();
     }
 
+    static public void updateTrip(String id, String dayKey, Trip trip) {
+        // Update
+        DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey).child(trip.getTripId());
+        myRef.child("car_type").setValue(trip.getCar_type());
+        myRef.child("transportation_mode").setValue(trip.getTransport_mode());
+        myRef.child("distance").setValue(trip.getDistance());
+        myRef.child("estimates").child("CO2").setValue(trip.getEstimate().CO2);
+        myRef.child("start").setValue(trip.getStart());
+        myRef.child("end").setValue(trip.getEnd());
+    }
+
     static public void updateTrip(String id, Trip trip) {
         Log.d(DEBUG_TAG, "Updating trip " + trip.getTripId());
 
@@ -44,14 +56,13 @@ public class DayTripsSummary implements ChildEventListener {
         }
         String dayKey = getDateString(cal);
 
-        // Update
+        updateTrip(id, dayKey, trip);
+    }
+
+    static public void deleteTrip(String id, String dayKey, Trip trip) {
+        // Remove
         DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey).child(trip.getTripId());
-        myRef.child("car_type").setValue(trip.getCar_type());
-        myRef.child("transportation_mode").setValue(trip.getTransport_mode());
-        myRef.child("distance").setValue(trip.getDistance());
-        myRef.child("estimates").child("CO2").setValue(trip.getEstimate().CO2);
-        myRef.child("start").setValue(trip.getStart());
-        myRef.child("end").setValue(trip.getEnd());
+        myRef.removeValue();
     }
 
     static public void deleteTrip(String id, Trip trip) {
@@ -64,9 +75,7 @@ public class DayTripsSummary implements ChildEventListener {
         }
         String dayKey = getDateString(cal);
 
-        // Remove
-        DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey).child(trip.getTripId());
-        myRef.removeValue();
+        deleteTrip(id, dayKey, trip);
     }
 
     /**
@@ -249,23 +258,7 @@ public class DayTripsSummary implements ChildEventListener {
         Log.v(DEBUG_TAG, "Removing Callback. " + Integer.toString(callbacks.size()) + " remaining");
     }
 
-    /**
-     * Append a new trip to the database
-     *
-     * @param id    User id
-     * @param trip  The new trip to add
-     */
-    static public void append(String id, Trip trip) {
-        Log.d(DEBUG_TAG, "append: Adding new trip to day");
-
-        // Get day
-        Calendar cal = Calendar.getInstance();
-        if (trip.getEnd() != null) {
-            // End point has been set
-            cal.setTimeInMillis(trip.getEnd().timestamp);
-        }
-        String dayKey = getDateString(cal);
-
+    static public void append(@NonNull String id, @NonNull String dayKey, @NonNull Trip trip) {
         // Push for day
         DatabaseReference myRef = database.getReference(TOP_LEVEL_KEY).child(id).child(dayKey);
         myRef = myRef.push();
@@ -279,6 +272,25 @@ public class DayTripsSummary implements ChildEventListener {
         }
 
         Log.v(DEBUG_TAG, "append: Done");
+    }
+
+    /**
+     * Append a new trip to the database
+     *
+     * @param id    User id
+     * @param trip  The new trip to add
+     */
+    static public void append(@NonNull String id, @NonNull Trip trip) {
+        Log.d(DEBUG_TAG, "append: Adding new trip to day");
+
+        // Get day
+        Calendar cal = Calendar.getInstance();
+        if (trip.getEnd() != null) {
+            // End point has been set
+            cal.setTimeInMillis(trip.getEnd().timestamp);
+        }
+        String dayKey = getDateString(cal);
+        append(id, dayKey, trip);
     }
 
     /**

@@ -42,6 +42,7 @@ public class EditTripDialogFragment extends DialogFragment { //implements DayTri
     Trip trip = new Trip();
     EditText editText;
     DayTripsSummary tripSummary;
+    String mDate;
     Transportation.TransportMode activeTransportMode = null;
     String mTripId;
     String mUserId;
@@ -90,6 +91,7 @@ public class EditTripDialogFragment extends DialogFragment { //implements DayTri
             long mTimestamp = getArguments().getLong(ARG_DAYID);
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(mTimestamp);
+            mDate = DayTripsSummary.getDateString(cal);
             mUserId = getArguments().getString(ARG_USERID);
 //            tripSummary = DayTripsSummary.getDayTripsForDay(mUserId, cal);
 //            if (mTripId != null) {
@@ -180,9 +182,9 @@ public class EditTripDialogFragment extends DialogFragment { //implements DayTri
 
                 if (mTripId == null) {
                     // New Trip
-                    DayTripsSummary.append(mUserId, trip);
+                    DayTripsSummary.append(mUserId, mDate, trip);
                 } else {
-                    DayTripsSummary.updateTrip(mUserId, trip);
+                    DayTripsSummary.updateTrip(mUserId, mDate, trip);
                 }
                 EditTripDialogFragment.this.dismiss();
             }
