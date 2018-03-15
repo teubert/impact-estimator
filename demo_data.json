@@ -672,7 +672,7 @@
       "end" : {
         "lat" : 37.433536,
         "lon" : -122.061113,
-        "timestamp" : 1521100850000
+        "timestamp" : 1521080445000
       },
       "estimates" : {
         "CO2" : 0
@@ -680,7 +680,7 @@
       "start" : {
         "lat" : 37.418609,
         "lon" : -122.064461,
-        "timestamp" : 1521100800000
+        "timestamp" : 1521076845000
       },
       "transportation_mode" : "WALK"
     },
@@ -690,7 +690,7 @@
       "end" : {
         "lat" : 37.41287,
         "lon" : -122.09624,
-        "timestamp" : 1521114080000
+        "timestamp" : 1521076845000
       },
       "estimates" : {
         "CO2" : 6.10958
@@ -698,7 +698,7 @@
       "start" : {
         "lat" : 37.418609,
         "lon" : -122.064461,
-        "timestamp" : 1521113480000
+        "timestamp" : 1521075645000
       },
       "transportation_mode" : "AUTOMOBILE"
     },
@@ -708,7 +708,7 @@
       "end" : {
         "lat" : 37.418609,
         "lon" : -122.064461,
-        "timestamp" : 1521100800000
+        "timestamp" : 1521039645000
       },
       "estimates" : {
         "CO2" : 6.10958
@@ -716,7 +716,7 @@
       "start" : {
         "lat" : 37.41287,
         "lon" : -122.09624,
-        "timestamp" : 1521099911000
+        "timestamp" : 1521038745000
       },
       "transportation_mode" : "AUTOMOBILE"
     }

@@ -16,7 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coen.scu.final_project.R;
+import com.coen.scu.final_project.activity.HomeActivity;
 import com.coen.scu.final_project.java.DayTripsSummary;
+import com.coen.scu.final_project.java.FootprintEstimate;
 import com.coen.scu.final_project.java.FriendUser;
 import com.coen.scu.final_project.java.RankingUser;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -39,7 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RankingFragment extends Fragment {
+public class RankingFragment extends Fragment implements DayTripsSummary.TripUpdateInterface {
     private DatabaseReference mRef;
     private FirebaseUser mUser;
     private String mUid;
@@ -181,6 +183,12 @@ public class RankingFragment extends Fragment {
         mRecyclerView.setAdapter(firebaseRecyclerAdapter);
     }
 
+    @Override
+    public void onTripUpdate() {
+        FootprintEstimate footprintEstimate = FootprintEstimate.generateEstimate(HomeActivity.today, HomeActivity.me);
+        mRef.child("users").child(mUid).child("total_emission").setValue(Math.round(footprintEstimate.CO2));
+    }
+
     public static class FriendViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
@@ -213,12 +221,15 @@ public class RankingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        HomeActivity.today.addCallback(this);
+        onTripUpdate();
         generateRankingData();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        HomeActivity.today.removeCallback(this);
         Map delete= new HashMap();
         delete.put("ranking/" + mUser.getUid(), null);
 
