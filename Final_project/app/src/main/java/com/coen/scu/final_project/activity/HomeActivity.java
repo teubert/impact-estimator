@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.coen.scu.final_project.TripRecognitionService;
 import com.coen.scu.final_project.fragment.MainPageFragment;
 import com.coen.scu.final_project.fragment.NotificationFragment;
 import com.coen.scu.final_project.fragment.ProfileEditFragment;
@@ -46,6 +47,7 @@ public class HomeActivity extends AppCompatActivity
     private final String ACTIVE_KEY = "Active view";
 
     private int mActiveId;
+    static Intent serviceIntent = null;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mRef;
@@ -70,6 +72,13 @@ public class HomeActivity extends AppCompatActivity
         mUserId = firebaseUser.getUid();
         today = DayTripsSummary.getDayTripsForDay(mUserId, mDate);
         me = UserProfile.getUserProfileById(mUserId);
+
+        // Start Service
+        if (serviceIntent == null) {
+            Log.i(DEBUG_TAG, "Starting trip recognition service");
+            serviceIntent = new Intent(getBaseContext(), TripRecognitionService.class);
+            startService(serviceIntent);
+        }
 
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -260,27 +269,35 @@ public class HomeActivity extends AppCompatActivity
         String tag = "";
 
         if (mActiveId == R.id.nav_home_page) {
+            Log.d(DEBUG_TAG, "Home selected");
             fragmentClass = MainPageFragment.class;
             title = "Home Page";
             tag = "Home Page";
         } else if (mActiveId == R.id.nav_summary_page) {
+            Log.d(DEBUG_TAG, "Summary selected");
             fragmentClass = SummaryFragment.class;
             title = "Summary";
             tag = "Summary";
         } else if (mActiveId == R.id.nav_ranking_page) {
+            Log.d(DEBUG_TAG, "Ranking selected");
             fragmentClass = RankingFragment.class;
             title = "Ranking";
             tag = "Ranking";
         } else if (mActiveId == R.id.nav_profile_page) {
+            Log.d(DEBUG_TAG, "Profile selected");
             fragmentClass = ProfileFragment.class;
             title = "My Profile";
             tag = "My Profile";
         } else if (mActiveId == R.id.nav_notification_page) {
+            Log.d(DEBUG_TAG, "Notification selected");
             fragmentClass = NotificationFragment.class;
             title = "Notification";
             tag = "Notification";
         } else if (mActiveId == R.id.nav_log_out) {
+            Log.d(DEBUG_TAG, "Logout selected");
             FirebaseAuth.getInstance().signOut();
+            Log.i(DEBUG_TAG, "LogOut- stopping service");
+            stopService(serviceIntent);
             sendToSart();
         }
 
@@ -316,5 +333,12 @@ public class HomeActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
         savedState.putInt(ACTIVE_KEY, mActiveId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(DEBUG_TAG, "Destroying activity- stopping service");
+        stopService(serviceIntent);
     }
 }

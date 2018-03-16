@@ -111,9 +111,6 @@ public class Sign_up_acitivity extends AppCompatActivity {
 //                            Toast.makeText(getApplicationContext(), "Registration succeed",
 //                                    Toast.LENGTH_SHORT).show();
 
-                            Intent serviceIntent = new Intent(getBaseContext(), TripRecognitionService.class);
-                            startService(serviceIntent);
-
                             mUser = mAuth.getCurrentUser();
                             String userEmail = mEmail.getText().toString().trim();
                             addToFireBase(userEmail);
