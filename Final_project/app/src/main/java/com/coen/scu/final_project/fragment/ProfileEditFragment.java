@@ -70,7 +70,6 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  */
 public class ProfileEditFragment extends Fragment {
-    private Uri mUri;
     private FirebaseUser mUser;
     private DatabaseReference mRef;
     private StorageReference mStorageRef;
@@ -87,6 +86,7 @@ public class ProfileEditFragment extends Fragment {
     private final int PICK_IMAGE_REQUEST = 999;
     protected final int CAMERA_REQUEST = 0;
     protected final int GALLERY_PICTURE = 1;
+    private byte mByteArray[];
 
     public static String toTitleCase(String str) {
 
@@ -374,18 +374,6 @@ public class ProfileEditFragment extends Fragment {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         checkCameraPermission();
-//                        Intent intent = new Intent(
-//                                MediaStore.ACTION_IMAGE_CAPTURE);
-//                        File f = new File(android.os.Environment
-//                                .getExternalStorageDirectory(), "temp.jpg");
-//                        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-//                        FileProvider.getUriForFile(getContext(),
-//                                BuildConfig.APPLICATION_ID + ".provider",
-//                                f));
-//
-//                        startActivityForResult(intent,
-//                                CAMERA_REQUEST);
-
                     }
                 });
         myAlertDialog.show();
@@ -401,16 +389,9 @@ public class ProfileEditFragment extends Fragment {
     }
 
     private void startCameraIntent() {
-        Intent intent = new Intent(
-                MediaStore.ACTION_IMAGE_CAPTURE);
-        File f = new File(android.os.Environment
-                .getExternalStorageDirectory(), "temp.jpg");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                FileProvider.getUriForFile(getContext(),
-                        BuildConfig.APPLICATION_ID + ".provider",
-                        f));
-        startActivityForResult(intent,
-                CAMERA_REQUEST);
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //cameraIntent.setType("image/*");
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
 
@@ -419,70 +400,33 @@ public class ProfileEditFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
-            File f = new File(Environment.getExternalStorageDirectory()
-                    .toString());
-            for (File temp : f.listFiles()) {
-                if (temp.getName().equals("temp.jpg")) {
-                    f = temp;
-                    break;
-                }
-            }
-            if (!f.exists()) {
-                Toast.makeText(getContext(),
-                        "Error while capturing image", Toast.LENGTH_LONG)
-                        .show();
+            Bundle extras = data.getExtras();
 
-                return;
+            if (extras != null) {
+                Bitmap yourImage = extras.getParcelable("data");
+                // convert bitmap to byte
+                Log.i("DEBUG_TAG" , "image");
+                mImage.setImageBitmap(yourImage);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                yourImage.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                byte byteArray[] = stream.toByteArray();
+                mByteArray = byteArray;
 
-            }
-
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-
-                bitmap = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
-
-                int rotate = 0;
-                try {
-                    ExifInterface exif = new ExifInterface(f.getAbsolutePath());
-                    int orientation = exif.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_NORMAL);
-
-                    switch (orientation) {
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            rotate = 270;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            rotate = 180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            rotate = 90;
-                            break;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Matrix matrix = new Matrix();
-                matrix.postRotate(rotate);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                        bitmap.getHeight(), matrix, true);
-
-
-                mImage.setImageBitmap(bitmap);
-                //storeImageTosdCard(bitmap);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
 
         } else if (resultCode == RESULT_OK && requestCode == GALLERY_PICTURE) {
-            mUri = data.getData();
-            if (mUri != null) {
+            Uri myUri = data.getData();
+            Log.i("DEBUG_TAG" , myUri.toString());
+            if (myUri != null) {
                 try {
                     //getting image from gallery
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), myUri);
                     //Setting image to ImageView
                     mImage.setImageBitmap(bitmap);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                    byte byteArray[] = stream.toByteArray();
+                    mByteArray = byteArray;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -492,20 +436,11 @@ public class ProfileEditFragment extends Fragment {
 
 
     public void uploadPicture(final FirebaseUser firebaseUser) {
-        byte[] data = new byte[0];
-        if (mUri != null) {
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, out);
-                data = out.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (mByteArray!= null) {
             StorageReference childRef = mStorageRef.child("Portrait").child(firebaseUser.getUid());
 
             //uploading the image
-            UploadTask uploadTask = childRef.putBytes(data);
+            UploadTask uploadTask = childRef.putBytes(mByteArray);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -524,6 +459,7 @@ public class ProfileEditFragment extends Fragment {
         } else {
 //            Toast.makeText(getContext(), "Select an image", Toast.LENGTH_SHORT).show();
             mUpdateDialog.dismiss();
+            Toast.makeText(getContext(), "Update successful", Toast.LENGTH_SHORT).show();
         }
     }
 }
