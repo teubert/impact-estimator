@@ -31,11 +31,12 @@ public class TripRecognitionService extends Service {
     private static final int WINDOW_SIZE = 5; // 20
     // Note: To work well, intertia should be significantly lower than window_size
     private static final int INERTIA = 2;
-    public static final double MIN_WALK_SPEED_MPS = 0.5;
+    public static final double MIN_WALK_SPEED_MPS = 0.5; // minimum walk speed in m/s
     public static final int MIN_BIKE_SPEED_MPS = 3;
     public static final int MIN_AUTO_SPEED_MPS = 9;
     public static final int MIN_TRAIN_SPEED_MPS = 35;
-    public static final double MIN_AIRCRAFT_SPEED_MPS = 166.66;
+    public static final double MIN_AIRCRAFT_SPEED_MPS = 166.66; // 166.66 is fastest bullet train
+
 
     // Variables 
     private int mStartMode = START_STICKY;       // indicates how to behave if the service is killed
@@ -61,6 +62,9 @@ public class TripRecognitionService extends Service {
 
         // Check minimum requirements for continuing
         if (locationQueue.size() < WINDOW_SIZE && !aircraftTest(averageSpeed)) {
+            // Skip if window not full & not travelling by aircraft
+            // This is to handle situation where phone is turned off/not connected for flight, and
+            // turned back on many miles from previous location
             Log.d(DEBUG_TAG, "Minimum threshold for trip not yet met, skipping");
             return;
         }
@@ -87,7 +91,8 @@ public class TripRecognitionService extends Service {
         } else {
             // Different mode from current trip- could be new trip or momentary change
             //      (e.g., stop at stoplight)
-            if (inertiaCounter < INERTIA) {
+            if (inertiaCounter < INERTIA && !aircraftTest(averageSpeed)) {
+                // Immediately end if on aircraft
                 // Take as part of current trip if within inertia
                 Log.d(DEBUG_TAG, String.format("New point out of current trip (%s) mode, but in previous trip intertia (New Trip: %s)", currentMode.name(), mode.name()));
                 inertiaCounter++;
@@ -132,7 +137,7 @@ public class TripRecognitionService extends Service {
         GPSPoint start = new GPSPoint(startLocation.getTime(),
                 startLocation.getLongitude(),
                 startLocation.getLatitude());
-        while (locationQueue.size() >= INERTIA) {
+        while (locationQueue.size() > INERTIA) {
             // Keep one
             handleAddedPoint();
         }
@@ -178,7 +183,6 @@ public class TripRecognitionService extends Service {
         } else if (speed < MIN_TRAIN_SPEED_MPS) {
             return Transportation.TransportMode.AUTOMOBILE;
         } else if (speed < MIN_AIRCRAFT_SPEED_MPS) {
-            // 166.66 is fastest bullet train
             return Transportation.TransportMode.TRAIN;
         } else {
             return Transportation.TransportMode.AIRCRAFT;
@@ -197,12 +201,10 @@ public class TripRecognitionService extends Service {
             if (lastForAverageSpeed == null) {
                 // Convert to m/s
                 averageSpeed += location.getSpeed();
-                Log.v(DEBUG_TAG, String.format("Travelled with average speed %f", averageSpeed));
             } else {
                 // Note- distance is in m and time is in ms, so this comes out to m/s
                 double dt = ((location.getTime() - lastForAverageSpeed.getTime())/1000.0);
                 double dx = location.distanceTo(lastForAverageSpeed);
-                Log.v(DEBUG_TAG, String.format("Travelled %f m in %f sec", dx, dt));
                 averageSpeed += dx/dt;
             }
             lastForAverageSpeed = location;
