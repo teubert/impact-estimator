@@ -16,6 +16,9 @@ import com.coen.scu.final_project.java.Trip;
 import com.coen.scu.final_project.java.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -23,26 +26,31 @@ public class TripRecognitionService extends Service {
     private static final String DEBUG_TAG = "TripRecognitionService";
 
     // Configurables
-    private static final int LOCATION_INTERVAL = 500; // in milliseconds
-    private static final float LOCATION_DISTANCE = 10f; // in meters
-    private static final int WINDOW_SIZE = 20;
-    private static final int INERTIA = 3;
+    private static final int LOCATION_INTERVAL = 10000; // in milliseconds
+    private static final float LOCATION_DISTANCE = 20f; // in meters
+    private static final int WINDOW_SIZE = 5; // 20
+    // Note: To work well, intertia should be significantly lower than window_size
+    private static final int INERTIA = 2;
+    public static final double MIN_WALK_SPEED_MPS = 0.5; // minimum walk speed in m/s
+    public static final int MIN_BIKE_SPEED_MPS = 3;
+    public static final int MIN_AUTO_SPEED_MPS = 9;
+    public static final int MIN_TRAIN_SPEED_MPS = 35;
+    public static final double MIN_AIRCRAFT_SPEED_MPS = 166.66; // 166.66 is fastest bullet train
+
 
     // Variables 
-    private int mStartMode;       // indicates how to behave if the service is killed
+    private int mStartMode = START_STICKY;       // indicates how to behave if the service is killed
     private IBinder mBinder;      // interface for clients that bind
     private boolean mAllowRebind; // indicates whether onRebind should be used
 
     private LocationManager mLocationManager = null;
-    private Queue<Location> locationQueue = new PriorityQueue<>();
+    private LinkedList<Location> locationQueue = new LinkedList<>();
     private Transportation.TransportMode currentMode;
 
     private int inertiaCounter = 0;
     private Location startLocation = null;
-    private Location mGlobalLastLocation;
     private Location lastDeletedLocation = null;
     private double distance = 0; // km
-    private Location lastForAverageSpeed = null;
     private UserProfile mUser;
 
     /**
@@ -53,13 +61,21 @@ public class TripRecognitionService extends Service {
         double averageSpeed = averageSpeed();
 
         // Check minimum requirements for continuing
-        if (locationQueue.size() < WINDOW_SIZE || aircraftTest(averageSpeed)) {
+        if (locationQueue.size() < WINDOW_SIZE && !aircraftTest(averageSpeed)) {
+            // Skip if window not full & not travelling by aircraft
+            // This is to handle situation where phone is turned off/not connected for flight, and
+            // turned back on many miles from previous location
             Log.d(DEBUG_TAG, "Minimum threshold for trip not yet met, skipping");
             return;
         }
 
         // Infer mode
         Transportation.TransportMode mode = getModeFromSpeed(averageSpeed);
+
+        if (mode == null) {
+            Log.d(DEBUG_TAG, String.format("getModeFromSpeed returned null mode (speed %f)", averageSpeed));
+            return;
+        }
 
         // Trip binning logic
         if (currentMode == null) {
@@ -70,17 +86,23 @@ public class TripRecognitionService extends Service {
         } else if (mode == currentMode) {
             // Continuation of current trip
             Log.d(DEBUG_TAG, "New point for current trip (" + currentMode.name() + ")");
+            inertiaCounter = 0;
             handleAddedPoint();
         } else {
             // Different mode from current trip- could be new trip or momentary change
             //      (e.g., stop at stoplight)
-            if (inertiaCounter < INERTIA) {
+            if (inertiaCounter < INERTIA && !aircraftTest(averageSpeed)) {
+                // Immediately end if on aircraft
                 // Take as part of current trip if within inertia
+                Log.d(DEBUG_TAG, String.format("New point out of current trip (%s) mode, but in previous trip intertia (New Trip: %s)", currentMode.name(), mode.name()));
                 inertiaCounter++;
                 handleAddedPoint();
             } else {
                 // Outside of inertia- trip has ended
                 createTrip();
+                Log.d(DEBUG_TAG,
+                        String.format("New point out of current trip (%s) mode, outside of intertia. Ending trip (New Trip: %s)", currentMode.name(), mode.name()));
+                inertiaCounter = 0;
                 resetCounters();
             }
         }
@@ -94,7 +116,7 @@ public class TripRecognitionService extends Service {
      * @return  If aircraft rule applies (if you were likely flying
      */
     boolean aircraftTest(final double speed) {
-        return (speed > 166.66 || currentMode == Transportation.TransportMode.AIRCRAFT);
+        return (speed > MIN_AIRCRAFT_SPEED_MPS || currentMode == Transportation.TransportMode.AIRCRAFT);
     }
 
     /**
@@ -115,16 +137,18 @@ public class TripRecognitionService extends Service {
         GPSPoint start = new GPSPoint(startLocation.getTime(),
                 startLocation.getLongitude(),
                 startLocation.getLatitude());
-        GPSPoint end = new GPSPoint(mGlobalLastLocation.getTime(),
-                mGlobalLastLocation.getLongitude(),
-                mGlobalLastLocation.getLatitude());
         while (locationQueue.size() > INERTIA) {
             // Keep one
             handleAddedPoint();
         }
+        GPSPoint end = new GPSPoint(locationQueue.peek().getTime(),
+                locationQueue.peek().getLongitude(),
+                locationQueue.peek().getLatitude());
 
         Trip newTrip = new Trip(start, end, distance, currentMode, mUser.getCarType());
-        DayTripsSummary.append(mUser.getId(), newTrip);
+        Calendar date = Calendar.getInstance();
+        Log.i(DEBUG_TAG, "Adding trip to " + DayTripsSummary.getDateString(date));
+        DayTripsSummary.append(mUser.getId(), DayTripsSummary.getDateString(date), newTrip);
     }
 
     /**
@@ -135,7 +159,10 @@ public class TripRecognitionService extends Service {
         if (lastDeletedLocation != null) {
             // Add to distance calculation (km)
             distance += lastDeletedLocation.distanceTo(loc) / 1000f;
+            Log.v(DEBUG_TAG,
+                    String.format("Removing point and adding to distance estimate (point=%f, total=%f)", lastDeletedLocation.distanceTo(loc) / 1000f, distance));
         }
+        lastDeletedLocation = loc;
     }
 
     /**
@@ -147,16 +174,15 @@ public class TripRecognitionService extends Service {
     Transportation.TransportMode getModeFromSpeed(double speed) {
 
         // All in m/s
-        if (speed < 0.5) {
+        if (speed < MIN_WALK_SPEED_MPS) {
             return null;
-        } else if (speed < 3) {
+        } else if (speed < MIN_BIKE_SPEED_MPS) {
             return Transportation.TransportMode.WALK;
-        } else if (speed < 9) {
+        } else if (speed < MIN_AUTO_SPEED_MPS) {
             return Transportation.TransportMode.BIKE;
-        } else if (speed < 35) {
+        } else if (speed < MIN_TRAIN_SPEED_MPS) {
             return Transportation.TransportMode.AUTOMOBILE;
-        } else if (speed < 166.66) {
-            // 166.66 is fastest bullet train
+        } else if (speed < MIN_AIRCRAFT_SPEED_MPS) {
             return Transportation.TransportMode.TRAIN;
         } else {
             return Transportation.TransportMode.AIRCRAFT;
@@ -170,15 +196,18 @@ public class TripRecognitionService extends Service {
      */
     double averageSpeed() {
         double averageSpeed = 0;
+        Location lastForAverageSpeed = null;
         for (Location location : locationQueue) {
             if (lastForAverageSpeed == null) {
                 // Convert to m/s
                 averageSpeed += location.getSpeed();
             } else {
                 // Note- distance is in m and time is in ms, so this comes out to m/s
-                averageSpeed += location.distanceTo(lastForAverageSpeed)/
-                        ((location.getTime() - lastForAverageSpeed.getTime())/1000);
+                double dt = ((location.getTime() - lastForAverageSpeed.getTime())/1000.0);
+                double dx = location.distanceTo(lastForAverageSpeed);
+                averageSpeed += dx/dt;
             }
+            lastForAverageSpeed = location;
         }
         return averageSpeed/locationQueue.size();
     }
@@ -206,7 +235,6 @@ public class TripRecognitionService extends Service {
             Log.i(DEBUG_TAG, "onLocationChanged: " + location);
             locationQueue.add(location);
             mLastLocation.set(location);
-            mGlobalLastLocation = location;
             processQueue();
         }
 
